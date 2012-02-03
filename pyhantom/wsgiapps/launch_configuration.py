@@ -1,6 +1,6 @@
 import logging
 import webob
-from pyhantom.in_data_types import DeleteLaunchConfigurationType, DescribeLaunchConfigurationsType, LaunchConfigurationInput
+from pyhantom.in_data_types import LaunchConfigurationInput, DeleteLaunchConfigurationInput, DescribeLaunchConfigurationsInput
 from pyhantom.out_data_types import LaunchConfigurationType
 from pyhantom.util import make_arn, CatchErrorDecorator, log
 from pyhantom.wsgiapps import PhantomBaseService
@@ -16,7 +16,7 @@ class CreateLaunchConfiguration(PhantomBaseService):
         input = LaunchConfigurationInput()
         input.set_from_dict(req.params)
         lc = LaunchConfigurationType('LaunchConfiguration')
-        lc.set_from_intype(input, make_arn(input.LaunchConfigurationName, self.xamznRequestId))
+        lc.set_from_intype(input, make_arn(input.LaunchConfigurationName, self.xamznRequestId, 'launchConfigurationName'))
 
         self._system.create_launch_config(lc)
 
@@ -33,7 +33,7 @@ class DeleteLaunchConfiguration(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteLaunchConfiguration")
     def __call__(self, req):
-        input = DeleteLaunchConfigurationType()
+        input = DeleteLaunchConfigurationInput()
         input.set_from_dict(req.params)
 
         self._system.delete_launch_config(input.LaunchConfigurationName)
@@ -50,7 +50,7 @@ class DescribeLaunchConfigurations(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeLaunchConfigurations")
     def __call__(self, req):
-        input = DescribeLaunchConfigurationsType()
+        input = DescribeLaunchConfigurationsInput()
         input.set_from_dict(req.params)
 
         names = None

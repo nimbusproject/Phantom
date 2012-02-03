@@ -16,6 +16,8 @@ class AWSListType(object):
         for l in self.type_list:
             member_el = doc.createElement('member')
             container_element.appendChild(member_el)
+            if l is None:
+                continue
             if _is_primative(type(l)):
                 txt_el = doc.createTextNode(str(l))
                 member_el.appendChild(txt_el)
@@ -42,6 +44,8 @@ class AWSType(object):
             container_element.appendChild(i_el)
             if m in self.__dict__:
                 v = self.__dict__[m]
+                if v is None:
+                    continue
                 t = self.members_type_dict[m]
                 if _is_primative(t):
                     txt_el = doc.createTextNode(str(v))
@@ -72,6 +76,12 @@ class DateTimeType(AWSType):
         txt_el = doc.createTextNode(tm_str)
         container_element.appendChild(txt_el)
 
+class TagDescription(AWSType):
+    members_type_dict = {'Key': str, 'PropagateAtLaunch': bool, 'ResourceId' : str,
+                         'ResourceType': str, 'Value': str}
+
+    def __init__(self, name):
+        AWSType.__init__(self, name)
 
 class InstanceMonitoringType(AWSType):
     members_type_dict = {'Enabled': bool}
@@ -106,4 +116,60 @@ class LaunchConfigurationType(AWSType):
         for sg in lc.SecurityGroups:
             self.SecurityGroups.add_item(sg)
 
+class EnabledMetricType(AWSType):
+    members_type_dict = {'Granularity': str, 'Metric': str}
 
+    def __init__(self, name):
+        AWSType.__init__(self, name)
+
+class InstanceType(AWSType):
+    members_type_dict = {'AvailabilityZone': str, 'HealthStatus': str, 'InstanceId' : str,
+                         'LaunchConfigurationName': str, 'LifecycleState': str}
+    
+    def __init__(self, name):
+        AWSType.__init__(self, name)
+
+class SuspendedProcessType(AWSType):
+    members_type_dict = {'ProcessName': str, 'SuspensionReason': str}
+
+    def __init__(self, name):
+        AWSType.__init__(self, name)
+
+class AutoScalingGroupType(AWSType):
+    members_type_dict = {'AutoScalingGroupARN': str, 'AutoScalingGroupName': str, 'AvailabilityZones' : AWSListType,
+                         'CreatedTime': DateTimeType, 'DefaultCooldown': int, 'DesiredCapacity': int,
+                         'EnabledMetrics': AWSListType, 'HealthCheckGracePeriod': int, 'HealthCheckType': str, 'Instances': AWSListType,
+                         'LaunchConfigurationName': str, 'LoadBalancerNames': AWSListType, 'MaxSize': int, 'MinSize': int,
+                         'PlacementGroup': str, 'Status': AWSListType, 'SuspendedProcesses': AWSListType, 'Tags': AWSListType, 'VPCZoneIdentifier': str}
+
+    def __init__(self, name):
+        AWSType.__init__(self, name)
+
+    def set_from_intype(self, asg, arn):
+        self.AutoScalingGroupARN = arn
+        self.AutoScalingGroupName = asg.AutoScalingGroupName
+        self.CreatedTime = DateTimeType('CreatedTime', datetime.datetime.utcnow())
+        self.DefaultCooldown = asg.DefaultCooldown
+        self.DesiredCapacity = asg.DesiredCapacity
+
+        self.EnabledMetrics = AWSListType('EnabledMetrics')
+        self.HealthCheckGracePeriod = asg.HealthCheckGracePeriod
+        self.HealthCheckType = asg.HealthCheckType
+        self.Instances = AWSListType('Instances')
+        self.LaunchConfigurationName = asg.LaunchConfigurationName
+        self.LoadBalancerNames = AWSListType('LoadBalancerNames')
+        self.MaxSize = asg.MaxSize
+        self.MinSize = asg.MinSize
+        self.PlacementGroup = asg.PlacementGroup
+        self.Status = AWSListType('Status')
+        self.SuspendedProcesses = AWSListType('SuspendedProcesses')
+        self.Tags = AWSListType('Tags')
+        self.VPCZoneIdentifier = asg.VPCZoneIdentifier
+
+        if self.DesiredCapacity is None:
+            self.DesiredCapacity = self.MinSize
+        # XXX work around for boto
+        if self.HealthCheckGracePeriod is None:
+            self.HealthCheckGracePeriod = 0
+        if self.DefaultCooldown is None:
+            self.DefaultCooldown = 0

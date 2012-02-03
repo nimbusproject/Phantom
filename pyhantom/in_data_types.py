@@ -41,9 +41,18 @@ class ObjectFromReqInput(object):
 
     def set_from_dict(self, params):
 
-        for p in self.needed_param_keys.keys() + self.needed_param_list_keys.keys():
+        for p in self.needed_param_keys.keys():
             if p not in params:
                 raise PhantomAWSException('MissingParameter', details="paramter %s missing" % (p))
+
+        for pl in self.needed_param_list_keys.keys():
+            found = False
+            for p in params:
+                ndx = p.find(pl)
+                if ndx == 0:
+                    found = True
+            if not found:
+                raise PhantomAWSException('MissingParameter', details="paramter %s missing" % (pl))
 
         for p in params:
             self._do_list_param(params, p, self.needed_param_list_keys)
@@ -67,6 +76,11 @@ class BlockDeviceMappingInput(ObjectFromReqInput):
         ObjectFromReqInput.__init__(self, "BlockDeviceMapping")
         self.optional_param_keys = {"DeviceName": str,  "VirtualName": str}
 
+class TagsInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self, "Tags")
+        self.needed_param_keys = {"Key": str,  "PropagateAtLaunch": bool, "ResourceId": str, "ResourceType": str, "Value": str}
+
 class LaunchConfigurationInput(ObjectFromReqInput):
     def __init__(self):
         ObjectFromReqInput.__init__(self)
@@ -74,24 +88,37 @@ class LaunchConfigurationInput(ObjectFromReqInput):
         self.optional_param_keys = {"InstanceMonitoring": None,  "KernelId": str, "KeyName": str, "RamdiskId": str,  "UserData": str}
         self.needed_param_keys = {"ImageId": str, "InstanceType": str, "LaunchConfigurationName": str,}
 
-class AutoScalingGroupInput(ObjectFromReqInput):
-    def __init__(self):
-        ObjectFromReqInput.__init__(self)
-
-        self.needed_param_list_keys = {'AvailabilityZones': str}
-        self.optional_param_list_keys = {"Tags": str, "LoadBalancerNames": str}
-        self.optional_param_keys = {"DefaultCooldown": None,  "DesiredCapacity": int, "HealthCheckGracePeriod": None, "HealthCheckType": None,  "PlacementGroup": None, "VPCZoneIdentifier": None}
-        self.needed_param_keys = {"AutoScalingGroupName": str, "LaunchConfigurationName": str, "MaxSize": int, "MinSize": int}
-
-class DeleteLaunchConfigurationType(ObjectFromReqInput):
+class DeleteLaunchConfigurationInput(ObjectFromReqInput):
     def __init__(self):
         ObjectFromReqInput.__init__(self)
         self.needed_param_keys = {"LaunchConfigurationName": str}
 
-class DescribeLaunchConfigurationsType(ObjectFromReqInput):
+class DescribeLaunchConfigurationsInput(ObjectFromReqInput):
     def __init__(self):
         ObjectFromReqInput.__init__(self)
         self.optional_param_keys = {"MaxRecords": int, "NextToken": str}
         self.optional_param_list_keys = {"LaunchConfigurationNames": str}
 
 
+class CreateAutoScalingGroupInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+
+        self.needed_param_list_keys = {'AvailabilityZones': str}
+        self.optional_param_list_keys = {"Tags": str, "LoadBalancerNames": str}
+        self.optional_param_keys = {"DefaultCooldown": int,  "DesiredCapacity": int, "HealthCheckGracePeriod": int, "HealthCheckType": str,  "PlacementGroup": str, "VPCZoneIdentifier": str}
+        self.needed_param_keys = {"AutoScalingGroupName": str, "LaunchConfigurationName": str, "MaxSize": int, "MinSize": int}
+
+class DeleteAutoScalingGroupInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+
+        self.needed_param_keys = {"AutoScalingGroupName": str}
+        self.optional_param_keys = {"ForceDelete": bool}
+
+class DescribeAutoScalingGroupInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+
+        self.optional_param_keys = {"MaxRecords": int, 'NextToken': str}
+        self.optional_param_list_keys = {"AutoScalingGroupNames": str}

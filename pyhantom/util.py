@@ -150,6 +150,6 @@ def calc_v1_signature(secret_key, req):
 def calc_v0_signature(secret_key, req):
     return "Y"
 
-def make_arn(name, requestId):
-    arn = "arn:phantom:autoscaling:AZ:000000000000:launchConfiguration:%s:launchConfigurationName/%s" % (requestId, name)
+def make_arn(name, requestId, type):
+    arn = "arn:phantom:autoscaling:AZ:000000000000:launchConfiguration:%s:%s/%s" % (requestId, name, type)
     return arn

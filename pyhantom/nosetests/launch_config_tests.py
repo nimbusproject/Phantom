@@ -157,10 +157,9 @@ class BasicLaunchConfigTests(unittest.TestCase):
         x = self.con.get_all_launch_configurations()
         self.assertEqual(1, len(x))
 
-    def test_create_list_check_params(self):
-        pass
+#    def test_create_list_check_params(self):
+#        pass
 
-    
     def test_bad_login(self):
         region = RegionInfo('localhost')
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id="XXX", aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)

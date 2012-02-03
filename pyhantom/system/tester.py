@@ -2,19 +2,23 @@ from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, Instan
 from pyhantom.phantom_exceptions import PhantomAWSException
 
 g_registry = {}
+g_autoscaling_registry = {}
 
 def _TESTONLY_clear_registry():
     """This function is here just for testing"""
     global g_registry
-    del g_registry
+    global g_autoscaling_registry
+        
     g_registry = {}
+    g_autoscaling_registry = {}
 
 class TestSystem(object):
 
     def __init__(self):
         global g_registry
+        global g_autoscaling_registry
         self._lcs = g_registry
-        self._asgs = {}
+        self._asgs = g_autoscaling_registry
 
     def create_launch_config(self, lc):
         if lc.LaunchConfigurationName in self._lcs:
@@ -22,11 +26,14 @@ class TestSystem(object):
         self._lcs[lc.LaunchConfigurationName] = lc
 
     def get_launch_configs(self, names=None, max=-1, startToken=None):
+        return self._get_a_list(self._lcs, names, max, startToken)
+
+    def _get_a_list(self, d, names=None, max=-1, startToken=None):
         if names == None:
-            sorted_keys = sorted(self._lcs.keys())
+            sorted_keys = sorted(d.keys())
         else:
             for n in names:
-                if n not in self._lcs:
+                if n not in d:
                     raise PhantomAWSException('InvalidParameterValue', details=n)
             sorted_keys = sorted(names)
 
@@ -34,7 +41,7 @@ class TestSystem(object):
         if max is None or max < 0:
             max = len(sorted_keys)
         elif max != len(sorted_keys):
-            next_name = self._lcs[sorted_keys[max]].LaunchConfigurationName
+            next_name = d[sorted_keys[max]].LaunchConfigurationName
 
         activated = False
         if startToken is None:
@@ -43,11 +50,11 @@ class TestSystem(object):
         lc_list_type = AWSListType('LaunchConfigurations')
         for i in range(0, max):
             k = sorted_keys[i]
-            if startToken and self._lcs[k] == startToken:
+            if startToken and d[k] == startToken:
                 activated = True
             if not activated:
                 continue
-            lc_list_type.add_item(self._lcs[k])
+            lc_list_type.add_item(d[k])
             if lc_list_type.get_length() == max:
                 return (lc_list_type, next_name)
         return (lc_list_type, next_name)
@@ -58,34 +65,21 @@ class TestSystem(object):
         del self._lcs[name]
 
     def create_autoscale_group(self, asg):
-        if asg.name in self._asgs :
+        if asg.AutoScalingGroupName in self._asgs :
             raise PhantomAWSException('AlreadyExists', details=asg.name)
-        self._asgs[asg.name] = asg
+        self._asgs[asg.AutoScalingGroupName] = asg
 
     def alter_autoscale_group(self, name, desired_capacity):
         pass
 
     # add instances to it XXX 
-    def get_autoscale_groups(self, names=None, max=-1, start=0):
-        if names == None:
-            sorted_keys = self._asgs.keys().sort()
-        else:
-            for n in names:
-                if n not in self._asgs:
-                    raise PhantomAWSException('InvalidParameterValue', details=n)
-            sorted_keys = names.sort()
+    def get_autoscale_groups(self, names=None, max=-1, startToken=None):
+        return self._get_a_list(self._asgs, names, max, startToken)
 
-        if max < 0:
-            max = len(sorted_keys)
-        asgs = []
-        for i in range(start, start+max):
-            asgs.append(self._asgs[sorted_keys[i]])
-        return asgs
-
-    def delete_autoscale_group(self, name):
+    def delete_autoscale_group(self, name, force):
         if name not in self._asgs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
-        del self._asgs['name']
+        del self._asgs[name]
 
     def get_autoscale_instances(self, instance_id_list=None, max=-1, start=0):
         pass

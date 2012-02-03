@@ -19,6 +19,8 @@ _error_lookup = {
     
     'AlreadyExists' : ('The named Auto Scaling group or launch configuration already exists.', 400),
     'LimitExceeded' : ('The quota for capacity groups or launch configurations for this customer has already been reached.', 400),
+
+    'ResourceInUse' : ('This is returned when you cannot delete a launch configuration or Auto Scaling group because it is being used.', 400),
 }
 
 class PhantomAWSException(WSGIHTTPException):
