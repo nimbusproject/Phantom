@@ -8,23 +8,12 @@ import hmac
 import logging
 import urllib
 import webob.exc
-import pyhantom.db
 import datetime
 from pyhantom.phantom_exceptions import PhantomAWSException
 
-class PhantomConfig(object):
-    def __init__(self):
-        self._log = logging
-
-    def log(self, lvl, msg, trace=None):
-        self._log.log(lvl, msg)
-
-# a mutable global object for logging
-g_logger = logging
 def log(*args, **kw):
-    global  g_logger
-    g_logger.log(*args, **kw)
-
+    logger = logging.getLogger("phantom")
+    logger.log(*args, **kw)
 
 def not_implemented_decorator(func):
     def call(self, *args,**kwargs):
@@ -32,7 +21,6 @@ def not_implemented_decorator(func):
             raise Exception("function %s must be implemented" % (func.func_name))
         return raise_error(func)
     return call
-
 
 # A decorator for trapping errors in our applications
 class LogEntryDecorator(object):
@@ -87,11 +75,10 @@ def _get_time(str_time):
     str_time = str_time.replace("Z", "UTC")
     return datetime.datetime.strptime(str_time, '%Y-%m-%dT%H:%M:%S%Z')
 
-def authenticate_user(req):
+def authenticate_user(req, access_key):
     access_id = req.params['AWSAccessKeyId']
     signature = req.params['Signature']
 
-    access_key = pyhantom.db.get_user_key(access_id)
     if not access_key:
         log(logging.WARN, "The user %s was not found." % (access_id))
         raise PhantomAWSException('InvalidClientTokenId')
@@ -152,3 +139,7 @@ def calc_v1_signature(secret_key, req):
 
 def calc_v0_signature(secret_key, req):
     return "Y"
+
+def make_arn(name, requestId):
+    arn = "arn:phantom:autoscaling:AZ:000000000000:launchConfiguration:%s:launchConfigurationName/%s" % (requestId, name)
+    return arn

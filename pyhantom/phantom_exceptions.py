@@ -21,15 +21,6 @@ _error_lookup = {
     'LimitExceeded' : ('The quota for capacity groups or launch configurations for this customer has already been reached.', 400),
 }
 
-def get_exception_object(name):
-    global _error_lookup
-
-    if name not in _error_lookup:
-        return exc.HTTPBadRequest(name)
-    obj = _error_lookup[name]
-
-        
-
 class PhantomAWSException(WSGIHTTPException):
 
     def __init__(self, name, details=None):

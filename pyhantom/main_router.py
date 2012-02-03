@@ -4,19 +4,20 @@ import webob
 import webob.dec
 import webob.exc
 from wsgiref.simple_server import make_server
+from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator
-from pyhantom.wsgiapps.create_auto_scaling_group import CreateAutoScalingGroup, CreateLaunchConfiguration
-from pyhantom.wsgiapps.describe_auto_scaling_group import DescribeAutoScalingGroups
+from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup
+from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations
 
 _action_to_application_map = {
     'CreateAutoScalingGroup' : CreateAutoScalingGroup,
     'CreateLaunchConfiguration' : CreateLaunchConfiguration,
     'DeleteAutoScalingGroup' : None,
     'DeleteLaunchConfiguration' : None,
-    'DescribeAutoScalingGroups' : DescribeAutoScalingGroups,
+    'DescribeAutoScalingGroups' : None,
     'DescribeAutoScalingInstances' : None,
-    'DescribeLaunchConfigurations' : None,
+    'DescribeLaunchConfigurations' : DescribeLaunchConfigurations,
     'SetDesiredCapacity' : None,
     'TerminateInstanceInAutoScalingGroup' : None,
 }
@@ -28,12 +29,16 @@ class Request(webob.Request):
 class MainRouter(object):
 
     def __init__(self):
-        pass
-    
+        self._cfg = build_cfg()
+
     @webob.dec.wsgify(RequestClass=Request)
     @CatchErrorDecorator(appname="MainRouter")
     @LogEntryDecorator(classname="MainRouter")
     def __call__(self, req):
+
+        authz = self._cfg.get_authz()
+        access_key = authz.get_user_key(req.params['AWSAccessKeyId'])
+        authenticate_user(req, access_key)
         key = 'Action'
         if key not in req.params.keys():
             raise PhantomAWSException('InvalidParameterValue')
@@ -45,8 +50,7 @@ class MainRouter(object):
 
         app_cls = _action_to_application_map[action]
         app = app_cls(action)
-        authenticate_user(req)
-    
+
         return app
 
 if __name__ == '__main__':
