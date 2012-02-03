@@ -1,5 +1,5 @@
 import webob
-from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput
+from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput
 from pyhantom.out_data_types import AutoScalingGroupType
 from pyhantom.util import CatchErrorDecorator, make_arn
 from pyhantom.wsgiapps import PhantomBaseService
@@ -78,3 +78,25 @@ class DescribeAutoScalingGroup(PhantomBaseService):
         res.unicode_body = doc.documentElement.toxml()
         return res
 
+
+class SetDesiredCapacity(PhantomBaseService):
+
+    def __init__(self, name):
+        PhantomBaseService.__init__(self, name)
+
+    @webob.dec.wsgify
+    @CatchErrorDecorator(appname="SetDesiredCapacity")
+    def __call__(self, req):
+        input = SetDesiredCapacityInput()
+        input.set_from_dict(req.params)
+
+        force = False
+        if input.HonorCooldown:
+            force = True
+
+        self._system.alter_autoscale_group(input.AutoScalingGroupName, input.DesiredCapacity, force)
+
+        res = self.get_response()
+        doc = self.get_default_response_body_dom()
+        res.unicode_body = doc.documentElement.toprettyxml()
+        return res

@@ -69,8 +69,11 @@ class TestSystem(object):
             raise PhantomAWSException('AlreadyExists', details=asg.name)
         self._asgs[asg.AutoScalingGroupName] = asg
 
-    def alter_autoscale_group(self, name, desired_capacity):
-        pass
+    def alter_autoscale_group(self, name, desired_capacity, force):
+        if name not in self._asgs:
+            raise PhantomAWSException('InvalidParameterValue', details=name)
+        asg = self._asgs[name]
+        asg.DesiredCapacity = desired_capacity
 
     # add instances to it XXX 
     def get_autoscale_groups(self, names=None, max=-1, startToken=None):

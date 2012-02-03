@@ -159,3 +159,19 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
 
         for n in names:
             self.con.delete_auto_scaling_group(n)
+
+
+    def test_set_desired_capacity(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        l = self.con.get_all_groups(names=[group_name])
+
+        c = 10
+        asg.set_capacity(c)
+
+        l = self.con.get_all_groups(names=[group_name])
+        self.assertEqual(c, l[0].desired_capacity)
+
+        self.assertEqual(l[0].name, group_name)
+        self.con.delete_auto_scaling_group(group_name)

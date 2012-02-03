@@ -5,7 +5,7 @@ from wsgiref.simple_server import make_server
 from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator
-from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup
+from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
 from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
 
 _action_to_application_map = {
@@ -16,7 +16,7 @@ _action_to_application_map = {
     'DescribeAutoScalingGroups' : DescribeAutoScalingGroup,
     'DescribeAutoScalingInstances' : None,
     'DescribeLaunchConfigurations' : DescribeLaunchConfigurations,
-    'SetDesiredCapacity' : None,
+    'SetDesiredCapacity' : SetDesiredCapacity,
     'TerminateInstanceInAutoScalingGroup' : None,
 }
 
