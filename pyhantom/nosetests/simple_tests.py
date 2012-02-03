@@ -150,3 +150,34 @@ class BasicLaunchConfigTests(unittest.TestCase):
         for n in names:
             self.con.delete_launch_configuration(n)
 
+    def test_create_list_more_params(self):
+        name = str(uuid.uuid4()).split('-')[0]
+        lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(self.con, name=name, image_id="ami-2b9b5842", key_name="ooi", security_groups=['default', 'more'], user_data="XXXUSERDATAYYY", instance_type='m1.small', kernel_id='XEN', ramdisk_id='RAMXXX')
+        self.con.create_launch_configuration(lc)
+        x = self.con.get_all_launch_configurations()
+        self.assertEqual(1, len(x))
+
+    def test_create_list_check_params(self):
+        pass
+
+    
+    def test_bad_login(self):
+        region = RegionInfo('localhost')
+        con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id="XXX", aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
+        con.host = 'localhost'
+        try:
+            x = con.get_all_launch_configurations()
+            self.assertTrue(False, "login should have failed")
+        except BotoServerError, ex:
+            pass
+
+
+    def test_bad_pw(self):
+        region = RegionInfo('localhost')
+        con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key="XXX", is_secure=False, port=self.port, debug=3, region=region)
+        con.host = 'localhost'
+        try:
+            x = con.get_all_launch_configurations()
+            self.assertTrue(False, "login should have failed")
+        except BotoServerError, ex:
+            pass
