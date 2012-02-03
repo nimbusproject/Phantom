@@ -1,15 +1,24 @@
 from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, InstanceMonitoringType
 from pyhantom.phantom_exceptions import PhantomAWSException
 
+g_registry = {}
+
+def _TESTONLY_clear_registry():
+    """This function is here just for testing"""
+    global g_registry
+    del g_registry
+    g_registry = {}
+
 class TestSystem(object):
 
     def __init__(self):
-        self._lcs = {}
+        global g_registry
+        self._lcs = g_registry
         self._asgs = {}
 
     def create_launch_config(self, lc):
         if lc.LaunchConfigurationName in self._lcs:
-            raise PhantomAWSException('AlreadyExists', details=in_lc.LaunchConfigurationName)
+            raise PhantomAWSException('AlreadyExists', details=lc.LaunchConfigurationName)
         self._lcs[lc.LaunchConfigurationName] = lc
 
     def get_launch_configs(self, names=None, max=-1, startToken=None):
@@ -31,7 +40,7 @@ class TestSystem(object):
         if startToken is None:
             activated = True
 
-        lc_list_type = AWSListType()
+        lc_list_type = AWSListType('LaunchConfigurations')
         for i in range(0, max):
             k = sorted_keys[i]
             if startToken and self._lcs[k] == startToken:
@@ -40,13 +49,13 @@ class TestSystem(object):
                 continue
             lc_list_type.add_item(self._lcs[k])
             if lc_list_type.get_length() == max:
-                return lc_list_type
+                return (lc_list_type, next_name)
         return (lc_list_type, next_name)
 
     def delete_launch_config(self, name):
         if name not in self._lcs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
-        del self._lcs['name']
+        del self._lcs[name]
 
     def create_autoscale_group(self, asg):
         if asg.name in self._asgs :

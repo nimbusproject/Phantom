@@ -6,14 +6,19 @@ import boto.utils
 import boto.provider
 import hmac
 import logging
+import traceback
 import urllib
 import webob.exc
 import datetime
 from pyhantom.phantom_exceptions import PhantomAWSException
 
-def log(*args, **kw):
+def log(lvl, message, printstack=False):
     logger = logging.getLogger("phantom")
-    logger.log(*args, **kw)
+    logger.log(lvl, message)
+
+    if printstack:
+        str = traceback.format_exc()
+        logger.log(lvl, str)
 
 def not_implemented_decorator(func):
     def call(self, *args,**kwargs):
@@ -32,12 +37,12 @@ class LogEntryDecorator(object):
     def __call__(self, func):
         def wrapped(*args, **kw):
             try:
-                log(logging.ERROR, "Entering %s%s." % (self._classname, func.func_name))
+                log(logging.DEBUG, "Entering %s%s." % (self._classname, func.func_name))
                 return func(*args, **kw)
             except Exception, ex:
                 log(logging.ERROR, "exiting %s%s with error: %s." % (self._classname, func.func_name, str(ex)))
                 raise
-            log(logging.ERROR, "Exiting %s%s." % (self._classname, func.func_name))
+            log(logging.DEBUG, "Exiting %s%s." % (self._classname, func.func_name))
         return wrapped
 
 
@@ -52,10 +57,10 @@ class CatchErrorDecorator(object):
             try:
                 return func(*args, **kw)
             except webob.exc.HTTPException, httpde:
-                log(logging.INFO, "Application %s:%s received HTTP error %s" % (self._app_name, func.func_name, httpde))
+                log(logging.INFO, "Application %s:%s received HTTP error %s" % (self._app_name, func.func_name, httpde), printstack=True)
                 return httpde
             except Exception, ex:
-                log(logging.ERROR, "Application %s:%s received Unknown error %s" % (self._app_name, func.func_name, ex))
+                log(logging.ERROR, "Application %s:%s received Unknown error %s" % (self._app_name, func.func_name, ex), printstack=True)
                 # convert to a http exception
                 raise PhantomAWSException('InternalFailure', details=str(ex))
             finally:
@@ -74,6 +79,11 @@ def get_auth_hash(key, req):
 def _get_time(str_time):
     str_time = str_time.replace("Z", "UTC")
     return datetime.datetime.strptime(str_time, '%Y-%m-%dT%H:%M:%S%Z')
+
+def make_time(datetimeobj):
+    fmt = '%Y-%m-%dT%H:%M:%S.%fZ'
+    dt = datetime.datetime.strftime(datetimeobj, fmt)
+    return dt
 
 def authenticate_user(req, access_key):
     access_id = req.params['AWSAccessKeyId']

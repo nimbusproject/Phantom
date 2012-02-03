@@ -1,7 +1,8 @@
+import logging
 import webob
 from pyhantom.in_data_types import DeleteLaunchConfigurationType, DescribeLaunchConfigurationsType, LaunchConfigurationInput
 from pyhantom.out_data_types import LaunchConfigurationType
-from pyhantom.util import make_arn, CatchErrorDecorator
+from pyhantom.util import make_arn, CatchErrorDecorator, log
 from pyhantom.wsgiapps import PhantomBaseService
 
 
@@ -14,7 +15,7 @@ class CreateLaunchConfiguration(PhantomBaseService):
     def __call__(self, req):
         input = LaunchConfigurationInput()
         input.set_from_dict(req.params)
-        lc = LaunchConfigurationType()
+        lc = LaunchConfigurationType('LaunchConfiguration')
         lc.set_from_intype(input, make_arn(input.LaunchConfigurationName, self.xamznRequestId))
 
         self._system.create_launch_config(lc)
@@ -32,8 +33,10 @@ class DeleteLaunchConfiguration(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteLaunchConfiguration")
     def __call__(self, req):
-        options = DeleteLaunchConfigurationType(req.params)
-        self._system.delete_launch_config(options.LaunchConfigurationName)
+        input = DeleteLaunchConfigurationType()
+        input.set_from_dict(req.params)
+
+        self._system.delete_launch_config(input.LaunchConfigurationName)
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
@@ -67,7 +70,8 @@ class DescribeLaunchConfigurations(PhantomBaseService):
             nt_el.appendChild(text_element)
 
         lc_list.add_xml(doc, lc_el)
-        res.unicode_body = doc.documentElement.toprettyxml()
+        res.unicode_body = doc.documentElement.toxml()
+        log(logging.DEBUG, res.unicode_body)
         return res
 
 

@@ -1,5 +1,3 @@
-import logging
-import urlparse
 import webob
 import webob.dec
 import webob.exc
@@ -8,13 +6,13 @@ from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator
 from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup
-from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations
+from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
 
 _action_to_application_map = {
     'CreateAutoScalingGroup' : CreateAutoScalingGroup,
     'CreateLaunchConfiguration' : CreateLaunchConfiguration,
     'DeleteAutoScalingGroup' : None,
-    'DeleteLaunchConfiguration' : None,
+    'DeleteLaunchConfiguration' : DeleteLaunchConfiguration,
     'DescribeAutoScalingGroups' : None,
     'DescribeAutoScalingInstances' : None,
     'DescribeLaunchConfigurations' : DescribeLaunchConfigurations,
