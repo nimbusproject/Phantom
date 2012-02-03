@@ -10,9 +10,9 @@ class ObjectFromReqInput(object):
         self.needed_param_keys = {}
 
     def _get_value(self, name, in_val, t):
-        if t == type(""):
+        if t == str:
             val= in_val
-        elif t == type(1):
+        elif t == int:
             val = int(in_val)
         elif t == None:
             # means to skip it (not implemented yet)
@@ -61,22 +61,6 @@ class ObjectFromReqInput(object):
                 val = self._get_value(p, params[p], self.optional_param_keys[p])
                 if val:
                     self.__dict__[p] = val
-
-    def _make_list_xml(self, doc, element, d):
-        for k in d:
-            if k in self.__dict__:
-                t = self.__dict__[k]
-                if t == type(""):
-                    pass
-
-
-    def add_to_dom(self, doc, element):
-        for p in self.needed_param_keys + self.optional_param_keys:
-            if p in self.__dict__:
-                tag_el = doc.createElement(p)
-                txt_el = doc.createTextNode(self.__dict__[p])
-                tag_el.appendChild(txt_el)
-                element.appendChild(tag_el)
 
 class BlockDeviceMappingInput(ObjectFromReqInput):
     def __init__(self):
