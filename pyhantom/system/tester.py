@@ -1,16 +1,21 @@
-from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, InstanceMonitoringType
+import uuid
+from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, InstanceMonitoringType, InstanceType
 from pyhantom.phantom_exceptions import PhantomAWSException
 
 g_registry = {}
 g_autoscaling_registry = {}
+g_instance_registry = {}
+
 
 def _TESTONLY_clear_registry():
     """This function is here just for testing"""
     global g_registry
     global g_autoscaling_registry
+    global g_instance_registry
         
     g_registry = {}
     g_autoscaling_registry = {}
+    g_instance_registry = {}
 
 class TestSystem(object):
 
@@ -75,6 +80,21 @@ class TestSystem(object):
         asg = self._asgs[name]
         asg.DesiredCapacity = desired_capacity
 
+        global g_instance_registry
+        # add instance up to that capacity
+        for i in range(0, desired_capacity):
+            inst = InstanceType('AutoScalingInstanceDetails')
+            inst.AutoScalingGroupName = asg.AutoScalingGroupName
+            inst.AvailabilityZone = asg.AvailabilityZones.type_list[0]
+            inst.HealthStatus = "Healthy"
+            inst.InstanceId = str(uuid.uuid4()).split('-')[0]
+            inst.LaunchConfigurationName = asg.LaunchConfigurationName
+            inst.LifecycleState = "running"
+
+            asg.Instances.type_list.append(inst.InstanceId)
+
+            g_instance_registry[inst.InstanceId] = inst
+                        
     # add instances to it XXX 
     def get_autoscale_groups(self, names=None, max=-1, startToken=None):
         return self._get_a_list(self._asgs, names, max, startToken)
@@ -84,8 +104,16 @@ class TestSystem(object):
             raise PhantomAWSException('InvalidParameterValue', details=name)
         del self._asgs[name]
 
-    def get_autoscale_instances(self, instance_id_list=None, max=-1, start=0):
-        pass
+    def get_autoscale_instances(self, instance_id_list=None, max=-1, startToken=None):
+        global g_instance_registry
+        return self._get_a_list(g_instance_registry, instance_id_list, max, startToken)
 
     def terminate_instances(self, instance_id, adjust_policy):
-        pass
+        global g_instance_registry
+        if instance_id not in g_instance_registry:
+            raise PhantomAWSException('InvalidParameterValue', details=instance_id)
+        inst = g_instance_registry[instance_id]
+
+        if adjust_policy:
+            pass
+        del g_instance_registry[instance_id]

@@ -130,4 +130,16 @@ class SetDesiredCapacityInput(ObjectFromReqInput):
         self.optional_param_keys = {"HonorCooldown": bool}
         self.needed_param_keys = {"AutoScalingGroupName": str, "DesiredCapacity": int}
 
+class DescribeAutoScalingInstancesInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+
+        self.optional_param_keys = {"MaxRecords": int, 'NextToken': str}
+        self.optional_param_list_keys = {"InstanceIds": str}
+
+class TerminateInstanceInAutoScalingGroupInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+
+        self.needed_param_keys = {"InstanceId": str, "ShouldDecrementDesiredCapacity": int}
 

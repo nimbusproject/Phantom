@@ -123,7 +123,7 @@ class EnabledMetricType(AWSType):
         AWSType.__init__(self, name)
 
 class InstanceType(AWSType):
-    members_type_dict = {'AvailabilityZone': str, 'HealthStatus': str, 'InstanceId' : str,
+    members_type_dict = {'AutoScalingGroupName': str, 'AvailabilityZone': str, 'HealthStatus': str, 'InstanceId' : str,
                          'LaunchConfigurationName': str, 'LifecycleState': str}
     
     def __init__(self, name):
@@ -148,6 +148,10 @@ class AutoScalingGroupType(AWSType):
     def set_from_intype(self, asg, arn):
         self.AutoScalingGroupARN = arn
         self.AutoScalingGroupName = asg.AutoScalingGroupName
+        self.AvailabilityZones = AWSListType('AvailabilityZones')
+        for az in asg.AvailabilityZones:
+            self.AvailabilityZones.type_list.append(az)
+
         self.CreatedTime = DateTimeType('CreatedTime', datetime.datetime.utcnow())
         self.DefaultCooldown = asg.DefaultCooldown
         self.DesiredCapacity = asg.DesiredCapacity
