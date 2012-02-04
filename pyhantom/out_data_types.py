@@ -1,8 +1,5 @@
 import datetime
-from pyhantom.util import make_time
-
-def _is_primative(t):
-    return t == str or t == int or t == bool or t == float or t == unicode
+from pyhantom.util import make_time, phantom_is_primative
 
 class AWSListType(object):
     def __init__(self, name):
@@ -18,7 +15,7 @@ class AWSListType(object):
             container_element.appendChild(member_el)
             if l is None:
                 continue
-            if _is_primative(type(l)):
+            if phantom_is_primative(type(l)):
                 txt_el = doc.createTextNode(str(l))
                 member_el.appendChild(txt_el)
             else:
@@ -47,7 +44,7 @@ class AWSType(object):
                 if v is None:
                     continue
                 t = self.members_type_dict[m]
-                if _is_primative(t):
+                if phantom_is_primative(t):
                     txt_el = doc.createTextNode(str(v))
                     i_el.appendChild(txt_el)
                 else:
@@ -140,7 +137,7 @@ class AutoScalingGroupType(AWSType):
                          'CreatedTime': DateTimeType, 'DefaultCooldown': int, 'DesiredCapacity': int,
                          'EnabledMetrics': AWSListType, 'HealthCheckGracePeriod': int, 'HealthCheckType': str, 'Instances': AWSListType,
                          'LaunchConfigurationName': str, 'LoadBalancerNames': AWSListType, 'MaxSize': int, 'MinSize': int,
-                         'PlacementGroup': str, 'Status': AWSListType, 'SuspendedProcesses': AWSListType, 'Tags': AWSListType, 'VPCZoneIdentifier': str}
+                         'PlacementGroup': str, 'Status': str, 'SuspendedProcesses': AWSListType, 'Tags': AWSListType, 'VPCZoneIdentifier': str}
 
     def __init__(self, name):
         AWSType.__init__(self, name)
@@ -165,7 +162,7 @@ class AutoScalingGroupType(AWSType):
         self.MaxSize = asg.MaxSize
         self.MinSize = asg.MinSize
         self.PlacementGroup = asg.PlacementGroup
-        self.Status = AWSListType('Status')
+        self.Status = "Healthy"
         self.SuspendedProcesses = AWSListType('SuspendedProcesses')
         self.Tags = AWSListType('Tags')
         self.VPCZoneIdentifier = asg.VPCZoneIdentifier
@@ -177,3 +174,15 @@ class AutoScalingGroupType(AWSType):
             self.HealthCheckGracePeriod = 0
         if self.DefaultCooldown is None:
             self.DefaultCooldown = 0
+
+
+# user for terminate instance, skipped for now
+class ActivityType(AWSType):
+    members_type_dict = {'ActivityId': str, 'AutoScalingGroupName': str, 'Cause': str, 'Description': str,
+                         'Details': str, 'EndTime': DateTimeType, 'Progress': int, 'StartTime': DateTimeType,
+                         'StatusCode': str, 'StatusMessage': str}
+
+    def __init__(self, name):
+        AWSType.__init__(self, name)
+
+        

@@ -74,6 +74,19 @@ class TestSystem(object):
             raise PhantomAWSException('AlreadyExists', details=asg.name)
         self._asgs[asg.AutoScalingGroupName] = asg
 
+    def _make_new_instance(self, asg):
+        inst = InstanceType('AutoScalingInstanceDetails')
+        inst.AutoScalingGroupName = asg.AutoScalingGroupName
+        inst.AvailabilityZone = asg.AvailabilityZones.type_list[0]
+        inst.HealthStatus = "Healthy"
+        inst.InstanceId = str(uuid.uuid4()).split('-')[0]
+        inst.LaunchConfigurationName = asg.LaunchConfigurationName
+        inst.LifecycleState = "running"
+
+        asg.Instances.type_list.append(inst)
+
+        g_instance_registry[inst.InstanceId] = inst
+
     def alter_autoscale_group(self, name, desired_capacity, force):
         if name not in self._asgs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
@@ -83,18 +96,8 @@ class TestSystem(object):
         global g_instance_registry
         # add instance up to that capacity
         for i in range(0, desired_capacity):
-            inst = InstanceType('AutoScalingInstanceDetails')
-            inst.AutoScalingGroupName = asg.AutoScalingGroupName
-            inst.AvailabilityZone = asg.AvailabilityZones.type_list[0]
-            inst.HealthStatus = "Healthy"
-            inst.InstanceId = str(uuid.uuid4()).split('-')[0]
-            inst.LaunchConfigurationName = asg.LaunchConfigurationName
-            inst.LifecycleState = "running"
+            self._make_new_instance(asg)
 
-            asg.Instances.type_list.append(inst.InstanceId)
-
-            g_instance_registry[inst.InstanceId] = inst
-                        
     # add instances to it XXX 
     def get_autoscale_groups(self, names=None, max=-1, startToken=None):
         return self._get_a_list(self._asgs, names, max, startToken)
@@ -114,6 +117,11 @@ class TestSystem(object):
             raise PhantomAWSException('InvalidParameterValue', details=instance_id)
         inst = g_instance_registry[instance_id]
 
+        asg = self._asgs[inst.AutoScalingGroupName]
+        asg.Instances.type_list.remove(inst)
+
         if adjust_policy:
-            pass
+            asg.DesiredCapacity = asg.DesiredCapacity - 1
+        else:
+            self._make_new_instance(asg)
         del g_instance_registry[instance_id]

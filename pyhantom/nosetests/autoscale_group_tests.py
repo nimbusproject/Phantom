@@ -175,3 +175,64 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
 
         self.assertEqual(l[0].name, group_name)
         self.con.delete_auto_scaling_group(group_name)
+
+
+    def test_check_instances(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        l = self.con.get_all_groups(names=[group_name])
+
+        c = 1
+        asg.set_capacity(c)
+
+        l = self.con.get_all_groups(names=[group_name])
+        self.assertEqual(c, l[0].desired_capacity)
+
+        insts = l[0].instances
+        self.assertEquals(insts[0].group_name, group_name)
+
+        self.assertEqual(l[0].name, group_name)
+        self.con.delete_auto_scaling_group(group_name)
+
+    def test_terminate_instance_simple(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        c = 2
+        asg.set_capacity(c)
+        l = self.con.get_all_groups(names=[group_name])
+        insts = l[0].instances
+        self.con.terminate_instance(insts[0].instance_id, decrement_capacity=True)
+
+    def test_terminate_instance_decrement_capacity(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        c = 2
+        asg.set_capacity(c)
+        l = self.con.get_all_groups(names=[group_name])
+        old_insts = l[0].instances
+        self.con.terminate_instance(old_insts[0].instance_id, decrement_capacity=True)
+
+        l = self.con.get_all_groups(names=[group_name])
+        new_insts = l[0].instances
+
+        self.assertEqual(len(old_insts) - 1, len(new_insts))
+        self.assertFalse(old_insts[0].instance_id in [i.instance_id for i in new_insts])
+
+    def test_terminate_instance_no_decrement_capacity(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        c = 2
+        asg.set_capacity(c)
+        l = self.con.get_all_groups(names=[group_name])
+        old_insts = l[0].instances
+        self.con.terminate_instance(old_insts[0].instance_id, decrement_capacity=False)
+
+        l = self.con.get_all_groups(names=[group_name])
+        new_insts = l[0].instances
+
+        self.assertEqual(len(old_insts), len(new_insts))
+        self.assertFalse(old_insts[0].instance_id in [i.instance_id for i in new_insts])

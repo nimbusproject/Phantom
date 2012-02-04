@@ -67,6 +67,9 @@ class CatchErrorDecorator(object):
                 pass
         return wrapped
 
+def phantom_is_primative(t):
+    return t == str or t == int or t == bool or t == float or t == unicode
+
 def get_auth_hash(key, req):
     if req.params['SignatureVersion'] == '2':
         sig = calc_v2_signature(key, req)

@@ -1,7 +1,8 @@
+import logging
 import webob
 from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput
 from pyhantom.out_data_types import AutoScalingGroupType
-from pyhantom.util import CatchErrorDecorator, make_arn
+from pyhantom.util import CatchErrorDecorator, make_arn, log
 from pyhantom.wsgiapps import PhantomBaseService
 
 class CreateAutoScalingGroup(PhantomBaseService):
@@ -76,6 +77,7 @@ class DescribeAutoScalingGroup(PhantomBaseService):
 
         ags_list.add_xml(doc, lc_el)
         res.unicode_body = doc.documentElement.toxml()
+        log(logging.INFO, doc.documentElement.toprettyxml())
         return res
 
 

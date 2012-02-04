@@ -17,6 +17,11 @@ class ObjectFromReqInput(object):
         elif t == None:
             # means to skip it (not implemented yet)
             val = None
+        elif t == bool:
+            if in_val.lower() == 'true':
+                val = True
+            else:
+                val = False
         else:
             o = t(name)
             val = o.set_from_dict(in_val)
@@ -62,13 +67,13 @@ class ObjectFromReqInput(object):
         for p in self.needed_param_keys:
             if p in params:
                 val = self._get_value(p, params[p], self.needed_param_keys[p])
-                if val:
+                if val is not None:
                     self.__dict__[p] = val
         # setup the optional ones
         for p in self.optional_param_keys:
             if p in params:
                 val = self._get_value(p, params[p], self.optional_param_keys[p])
-                if val:
+                if val is not None:
                     self.__dict__[p] = val
 
 class BlockDeviceMappingInput(ObjectFromReqInput):
@@ -141,5 +146,5 @@ class TerminateInstanceInAutoScalingGroupInput(ObjectFromReqInput):
     def __init__(self):
         ObjectFromReqInput.__init__(self)
 
-        self.needed_param_keys = {"InstanceId": str, "ShouldDecrementDesiredCapacity": int}
+        self.needed_param_keys = {"InstanceId": str, "ShouldDecrementDesiredCapacity": bool}
 
