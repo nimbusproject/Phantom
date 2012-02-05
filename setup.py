@@ -23,7 +23,7 @@ setup(name='pyhantom',
       keywords = "Nimbus auto scale",
       long_description="""Some other time""",
       license="Apache2",
-      install_requires = ["simplejson"],
+      install_requires = ["simplejson == 2.1", "boto == 2.1.1", "dashi"],
       entry_points = {
         'console_scripts': [
             'phantom = pyhantom.main_router:main',
