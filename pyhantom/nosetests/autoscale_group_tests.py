@@ -8,14 +8,14 @@ import time
 import uuid
 import pyhantom
 from pyhantom.main_router import MainRouter
-from pyhantom.nosetests import RunTestPwFileServer
 
 # this test has a new server ever time to make sure there is a fresh env
+from pyhantom.nosetests.server import RunPwFileServer
 from pyhantom.system.tester import _TESTONLY_clear_registry
 
 class BasicAutoScaleGroupTests(unittest.TestCase):
 
-    tst_server = RunTestPwFileServer(MainRouter())
+    tst_server = RunPwFileServer(MainRouter())
 
     @classmethod
     def setupClass(cls):
@@ -24,7 +24,7 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
             cls.tst_server.start()
         except Exception, ex:
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
-        time.sleep(0.5)
+        time.sleep(2.0)
 
     @classmethod
     def teardownClass(cls):
@@ -236,3 +236,16 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
 
         self.assertEqual(len(old_insts), len(new_insts))
         self.assertFalse(old_insts[0].instance_id in [i.instance_id for i in new_insts])
+
+    def test_list_instances(self):
+        group_name = str(uuid.uuid4()).split('-')[0]
+        asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=self.con, group_name=group_name, availability_zones=["us-east-1"], min_size=1, max_size=5)
+        self.con.create_auto_scaling_group(asg)
+        l = self.con.get_all_groups(names=[group_name])
+
+        c = 10
+        asg.set_capacity(c)
+
+        l = self.con.get_all_autoscaling_instances()
+
+        self.assertEqual(len(l), c)
