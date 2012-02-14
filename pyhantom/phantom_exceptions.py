@@ -31,3 +31,6 @@ class PhantomAWSException(WSGIHTTPException):
         self.explanation = _error_lookup[name][0]
         self.code = _error_lookup[name][1]
         WSGIHTTPException.__init__(self, detail=details)
+
+class PhantomNotImplementedException(Exception):
+    pass

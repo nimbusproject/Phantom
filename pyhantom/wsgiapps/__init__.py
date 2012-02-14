@@ -12,6 +12,11 @@ class PhantomBaseService(object):
         self.name = name
         self.ns = "http://autoscaling.amazonaws.com/doc/2010-08-01/"
         self.xamznRequestId = str(uuid.uuid4())
+        self._authz = self._cfg.get_authz()
+
+    def get_user_obj(self, req):
+        user_obj = self._authz.get_user_key(req.params['AWSAccessKeyId'])
+        return user_obj
 
     def get_default_response_body_dom(self):
         impl = getDOMImplementation()

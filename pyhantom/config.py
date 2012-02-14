@@ -4,6 +4,7 @@ from pyhantom.authz.simple_file import SimpleFileDataStore
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
 import dashi.bootstrap
+from pyhantom.system.epu_local_launchconfiguration.system import EPUSystemWithLocalLaunchConfiguration
 from pyhantom.system.tester import TestSystem
 
 class PhantomConfig(object):
@@ -20,8 +21,10 @@ class PhantomConfig(object):
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 
-        if self._CFG.phantom.system == "tester":
+        if self._CFG.phantom.system.type == "tester":
             self._system = TestSystem()
+        elif self._CFG.phantom.system.type == "local_launch_config_epu":
+            self._system = EPUSystemWithLocalLaunchConfiguration(self._CFG, log=self._logger)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 

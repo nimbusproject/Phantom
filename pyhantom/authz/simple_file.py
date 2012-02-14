@@ -2,7 +2,8 @@ from pynimbusauthz.db import DB
 from pynimbusauthz.user import User
 
 # The user object for store
-from pyhantom.authz import PHAuthzIface
+from pyhantom.authz import PHAuthzIface, PhantomUserObject
+from pyhantom.phantom_exceptions import PhantomAWSException
 
 class SimpleFileDataStore(PHAuthzIface):
 
@@ -17,6 +18,6 @@ class SimpleFileDataStore(PHAuthzIface):
         fptr.close()
 
         if access_id != user_id:
-            return ""
-        return user_pw
+            raise PhantomAWSException('InvalidClientTokenId')
+        return PhantomUserObject(access_id, user_pw)
 

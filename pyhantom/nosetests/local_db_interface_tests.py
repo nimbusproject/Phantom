@@ -3,36 +3,24 @@ from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
 import logging
 import boto.ec2.autoscale
+import os
+import tempfile
 import unittest
 import time
 import uuid
 import pyhantom
 from pyhantom.main_router import MainRouter
+from pyhantom.nosetests.server import RunPwFileLocalLCServer
 
-# this test has a new server ever time to make sure there is a fresh env
-from pyhantom.nosetests.server import RunPwFileServer
-from pyhantom.system.tester import _TESTONLY_clear_registry
-
-class BasicLaunchConfigTests(unittest.TestCase):
-
-    tst_server = RunPwFileServer(MainRouter())
+class LocalDBLaunchConfigTests(unittest.TestCase):
 
     @classmethod
     def setupClass(cls):
-        print "setUpModule"
-        try:
-            cls.tst_server.start()
-        except Exception, ex:
-            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
-        time.sleep(2.0)
+        pass
 
     @classmethod
     def teardownClass(cls):
-        try:
-            cls.tst_server.end()
-            cls.tst_server.join()
-        except Exception, ex:
-            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
+        pass
 
     def _get_good_con(self):
         region = RegionInfo('localhost')
@@ -41,11 +29,26 @@ class BasicLaunchConfigTests(unittest.TestCase):
         return con
 
     def setUp(self):
-        (self.username, self.password, self.port) = BasicLaunchConfigTests.tst_server.get_boto_values()
+        (osf, self.db_fname) = tempfile.mkstemp(prefix="/tmp/phantom")
+        db_url = "sqlite:///%s" % (self.db_fname)
+        try:
+            self.tst_server = RunPwFileLocalLCServer(MainRouter(), db_url)
+            self.tst_server.start()
+        except Exception, ex:
+            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
+            raise
+        time.sleep(1.5)
+        (self.username, self.password, self.port) = self.tst_server.get_boto_values()
         self.con = self._get_good_con()
 
     def tearDown(self):
-        _TESTONLY_clear_registry()
+        try:
+            self.tst_server.end()
+            self.tst_server.join()
+            os.remove(self.db_fname)
+        except Exception, ex:
+            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
+            raise ex
 
     def tests_list_empty_groups(self):
         x = self.con.get_all_launch_configurations()
@@ -129,7 +132,7 @@ class BasicLaunchConfigTests(unittest.TestCase):
         x = self.con.get_all_launch_configurations()
         self.assertEqual(1, len(x))
         self.assertEqual(x[0].name, name2)
-        
+
     def test_list_no_contig(self):
         element_count = 5
         names = []
@@ -147,33 +150,3 @@ class BasicLaunchConfigTests(unittest.TestCase):
         for n in names:
             self.con.delete_launch_configuration(n)
 
-    def test_create_list_more_params(self):
-        name = str(uuid.uuid4()).split('-')[0]
-        lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(self.con, name=name, image_id="ami-2b9b5842", key_name="ooi", security_groups=['default', 'more'], user_data="XXXUSERDATAYYY", instance_type='m1.small', kernel_id='XEN', ramdisk_id='RAMXXX')
-        self.con.create_launch_configuration(lc)
-        x = self.con.get_all_launch_configurations()
-        self.assertEqual(1, len(x))
-
-#    def test_create_list_check_params(self):
-#        pass
-
-    def test_bad_login(self):
-        region = RegionInfo('localhost')
-        con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id="XXX", aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
-        try:
-            x = con.get_all_launch_configurations()
-            self.assertTrue(False, "login should have failed")
-        except BotoServerError, ex:
-            pass
-
-
-    def test_bad_pw(self):
-        region = RegionInfo('localhost')
-        con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key="XXX", is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
-        try:
-            x = con.get_all_launch_configurations()
-            self.assertTrue(False, "login should have failed")
-        except BotoServerError, ex:
-            pass

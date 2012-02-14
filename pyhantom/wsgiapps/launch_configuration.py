@@ -13,12 +13,14 @@ class CreateLaunchConfiguration(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateLaunchConfiguration")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = LaunchConfigurationInput()
         input.set_from_dict(req.params)
         lc = LaunchConfigurationType('LaunchConfiguration')
         lc.set_from_intype(input, make_arn(input.LaunchConfigurationName, self.xamznRequestId, 'launchConfigurationName'))
 
-        self._system.create_launch_config(lc)
+        self._system.create_launch_config(user_obj, lc)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()
@@ -33,10 +35,12 @@ class DeleteLaunchConfiguration(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteLaunchConfiguration")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = DeleteLaunchConfigurationInput()
         input.set_from_dict(req.params)
 
-        self._system.delete_launch_config(input.LaunchConfigurationName)
+        self._system.delete_launch_config(user_obj, input.LaunchConfigurationName)
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
@@ -50,13 +54,15 @@ class DescribeLaunchConfigurations(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeLaunchConfigurations")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = DescribeLaunchConfigurationsInput()
         input.set_from_dict(req.params)
 
         names = None
         if input.LaunchConfigurationNames:
             names = input.LaunchConfigurationNames
-        (lc_list, next_token) = self._system.get_launch_configs(names=names, max=input.MaxRecords, startToken=input.NextToken)
+        (lc_list, next_token) = self._system.get_launch_configs(user_obj, names=names, max=input.MaxRecords, startToken=input.NextToken)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()
@@ -74,8 +80,5 @@ class DescribeLaunchConfigurations(PhantomBaseService):
         log(logging.DEBUG, res.unicode_body)
         return res
 
-
-
-#(options.LaunchConfigurationName)
 
 

@@ -25,12 +25,12 @@ class TestSystem(object):
         self._lcs = g_registry
         self._asgs = g_autoscaling_registry
 
-    def create_launch_config(self, lc):
+    def create_launch_config(self, user_obj, lc):
         if lc.LaunchConfigurationName in self._lcs:
             raise PhantomAWSException('AlreadyExists', details=lc.LaunchConfigurationName)
         self._lcs[lc.LaunchConfigurationName] = lc
 
-    def get_launch_configs(self, names=None, max=-1, startToken=None):
+    def get_launch_configs(self, user_obj, names=None, max=-1, startToken=None):
         return self._get_a_list(self._lcs, names, max, startToken)
 
     def _get_a_list(self, d, names=None, max=-1, startToken=None):
@@ -39,7 +39,8 @@ class TestSystem(object):
         else:
             for n in names:
                 if n not in d:
-                    raise PhantomAWSException('InvalidParameterValue', details=n)
+                    empty_list = AWSListType('LaunchConfigurations')
+                    return (empty_list, None)
             sorted_keys = sorted(names)
 
         next_name = None
@@ -64,12 +65,12 @@ class TestSystem(object):
                 return (lc_list_type, next_name)
         return (lc_list_type, next_name)
 
-    def delete_launch_config(self, name):
+    def delete_launch_config(self, user_obj, name):
         if name not in self._lcs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
         del self._lcs[name]
 
-    def create_autoscale_group(self, asg):
+    def create_autoscale_group(self, user_obj, asg):
         if asg.AutoScalingGroupName in self._asgs :
             raise PhantomAWSException('AlreadyExists', details=asg.name)
         self._asgs[asg.AutoScalingGroupName] = asg
@@ -87,7 +88,7 @@ class TestSystem(object):
 
         g_instance_registry[inst.InstanceId] = inst
 
-    def alter_autoscale_group(self, name, desired_capacity, force):
+    def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
         if name not in self._asgs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
         asg = self._asgs[name]
@@ -99,19 +100,19 @@ class TestSystem(object):
             self._make_new_instance(asg)
 
     # add instances to it XXX 
-    def get_autoscale_groups(self, names=None, max=-1, startToken=None):
+    def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
         return self._get_a_list(self._asgs, names, max, startToken)
 
-    def delete_autoscale_group(self, name, force):
+    def delete_autoscale_group(self, user_obj, name, force):
         if name not in self._asgs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
         del self._asgs[name]
 
-    def get_autoscale_instances(self, instance_id_list=None, max=-1, startToken=None):
+    def get_autoscale_instances(self, user_obj, instance_id_list=None, max=-1, startToken=None):
         global g_instance_registry
         return self._get_a_list(g_instance_registry, instance_id_list, max, startToken)
 
-    def terminate_instances(self, instance_id, adjust_policy):
+    def terminate_instances(self, user_obj, instance_id, adjust_policy):
         global g_instance_registry
         if instance_id not in g_instance_registry:
             raise PhantomAWSException('InvalidParameterValue', details=instance_id)

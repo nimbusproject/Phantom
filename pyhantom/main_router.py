@@ -25,6 +25,7 @@ _action_to_application_map = {
 class Request(webob.Request):
     pass
 
+
 class MainRouter(object):
 
     def __init__(self):
@@ -36,8 +37,8 @@ class MainRouter(object):
     def __call__(self, req):
 
         authz = self._cfg.get_authz()
-        access_key = authz.get_user_key(req.params['AWSAccessKeyId'])
-        authenticate_user(req, access_key)
+        user_obj = authz.get_user_key(req.params['AWSAccessKeyId'])
+        authenticate_user(req, user_obj.password)
         key = 'Action'
         if key not in req.params.keys():
             raise PhantomAWSException('InvalidParameterValue')

@@ -10,7 +10,7 @@ import traceback
 import urllib
 import webob.exc
 import datetime
-from pyhantom.phantom_exceptions import PhantomAWSException
+from pyhantom.phantom_exceptions import PhantomAWSException, PhantomNotImplementedException
 
 def log(lvl, message, printstack=False):
     logger = logging.getLogger("phantom")
@@ -23,7 +23,7 @@ def log(lvl, message, printstack=False):
 def not_implemented_decorator(func):
     def call(self, *args,**kwargs):
         def raise_error(func):
-            raise Exception("function %s must be implemented" % (func.func_name))
+            raise PhantomNotImplementedException("function %s must be implemented" % (func.func_name))
         return raise_error(func)
     return call
 
@@ -42,7 +42,8 @@ class LogEntryDecorator(object):
             except Exception, ex:
                 log(logging.ERROR, "exiting %s%s with error: %s." % (self._classname, func.func_name, str(ex)))
                 raise
-            log(logging.DEBUG, "Exiting %s%s." % (self._classname, func.func_name))
+            finally:
+                log(logging.DEBUG, "Exiting %s%s." % (self._classname, func.func_name))
         return wrapped
 
 

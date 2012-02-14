@@ -13,6 +13,9 @@ class CreateAutoScalingGroup(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateAutoScalingGroup")
     def __call__(self, req):
+
+        user_obj = self.get_user_obj(req)
+
         input = CreateAutoScalingGroupInput()
         input.set_from_dict(req.params)
 
@@ -20,7 +23,7 @@ class CreateAutoScalingGroup(PhantomBaseService):
         asg = AutoScalingGroupType('AutoScalingGroup')
         asg.set_from_intype(input, arn)
 
-        self._system.create_autoscale_group(asg)
+        self._system.create_autoscale_group(user_obj, asg)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()
@@ -35,13 +38,15 @@ class DeleteAutoScalingGroup(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteAutoScalingGroup")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = DeleteAutoScalingGroupInput()
         input.set_from_dict(req.params)
 
         forceit = False
         if input.ForceDelete:
             forceit = True
-        self._system.delete_autoscale_group(input.AutoScalingGroupName, forceit)
+        self._system.delete_autoscale_group(user_obj, input.AutoScalingGroupName, forceit)
         
         res = self.get_response()
         doc = self.get_default_response_body_dom()
@@ -56,13 +61,15 @@ class DescribeAutoScalingGroup(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeAutoScalingGroup")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = DescribeAutoScalingGroupInput()
         input.set_from_dict(req.params)
 
         names = None
         if input.AutoScalingGroupNames:
             names = input.AutoScalingGroupNames
-        (ags_list, next_token) = self._system.get_autoscale_groups(names=names, max=input.MaxRecords, startToken=input.NextToken)
+        (ags_list, next_token) = self._system.get_autoscale_groups(user_obj, names=names, max=input.MaxRecords, startToken=input.NextToken)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()
@@ -89,6 +96,8 @@ class SetDesiredCapacity(PhantomBaseService):
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="SetDesiredCapacity")
     def __call__(self, req):
+        user_obj = self.get_user_obj(req)
+
         input = SetDesiredCapacityInput()
         input.set_from_dict(req.params)
 
@@ -96,7 +105,7 @@ class SetDesiredCapacity(PhantomBaseService):
         if input.HonorCooldown:
             force = True
 
-        self._system.alter_autoscale_group(input.AutoScalingGroupName, input.DesiredCapacity, force)
+        self._system.alter_autoscale_group(user_obj, input.AutoScalingGroupName, input.DesiredCapacity, force)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()
