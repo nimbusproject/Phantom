@@ -6,11 +6,11 @@ except ImportError:
     from distutils.core import setup
 
 import sys
-Version = "0.1"
+Version = "0.2"
 
-if float("%d.%d" % sys.version_info[:2]) < 2.5:
+if float("%d.%d" % sys.version_info[:2]) < 2.6:
     sys.stderr.write("Your Python version %d.%d.%d is not supported.\n" % sys.version_info[:3])
-    sys.stderr.write("eeagent requires Python 2.5 or newer.\n")
+    sys.stderr.write("eeagent requires Python 2.6 or newer.\n")
     sys.exit(1)
 
 setup(name='pyhantom',
@@ -23,10 +23,10 @@ setup(name='pyhantom',
       keywords = "Nimbus auto scale",
       long_description="""Some other time""",
       license="Apache2",
-      install_requires = ["simplejson == 2.1", "boto == 2.1.1", "dashi", "ceiclient", "sqlalchemy == 0.7.5"],
+      install_requires = ["simplejson == 2.3.2", "boto == 2.0", "dashi", "ceiclient", "sqlalchemy == 0.7.5", "wsgiref"],
       entry_points = {
         'console_scripts': [
-            'phantom = pyhantom.main_router:main',
+            'phantomwsgiref = pyhantom.execs.simpleref:main',
         ],},
 
       classifiers=[

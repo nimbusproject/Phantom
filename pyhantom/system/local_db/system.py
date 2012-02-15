@@ -5,31 +5,6 @@ from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.system import SystemAPI
 from pyhantom.system.local_db.persistance import LaunchConfigurationDB, LaunchConfigurationObject, AutoscaleGroupObject
 
-#g_add_template = {'general' :
-#                    {'engine_class': 'epu.decisionengine.impls.phantom.PhantomEngine'},
-#                  'health':
-#                    {'monitor_health': False},
-#                  'engine_conf':
-#                    {'preserve_n': 1,
-#                     'epuworker_type': 'sleeper',
-#                     'epuworker_image_id': 'ami-57e52c3e',
-#                     'iaas_site': 'ec2-east',
-#                     'iaas_allocation': 't1.micro',
-#                     'deployable_type': 'sleeper'}
-#                  }
-#conf = g_add_template.copy()
-#conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
-#conf['engine_conf']['epuworker_image_id'] = lc.ImageId
-#conf['engine_conf']['iaas_site'] = az
-#conf['engine_conf']['iaas_allocation'] = lc.InstanceType
-        #self._broker = cfg.phantom.system.broker
-        #self._rabbitpw = cfg.phantom.system.rabbit_pw
-        #self._rabbituser = cfg.phantom.system.rabbit_user
-        #self._rabbitexchange = cfg.phantom.system.rabbit_exchange
-
-        #self._dashi_conn = DashiCeiConnection(self._broker, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange)
-        #self._epum_client = EPUMClient(self._dashi_conn)
-
 
 def db_launch_config_to_outtype(lcdb):
     lc = LaunchConfigurationType('LaunchConfiguration')
@@ -73,7 +48,7 @@ def db_asg_to_outtype(asg_db):
 
     return asg
 
-class EPUSystemWithLocalLaunchConfiguration(SystemAPI):
+class SystemLocalDB(SystemAPI):
 
     def __init__(self, cfg, log=logging):
         # cfg.phantom.system.db_url
@@ -118,9 +93,7 @@ class EPUSystemWithLocalLaunchConfiguration(SystemAPI):
         self._db.delete_lc(db_lco[0])
         self._db.db_commit()
 
-    def create_autoscale_group(self, user_obj, asg):
-        global g_add_template
-
+    def _create_autoscale_group(self, user_obj, asg):
         db_asg = self._db.get_asg(user_obj, asg.AutoScalingGroupName)
         if db_asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s already exists" % (asg.AutoScalingGroupName))
@@ -134,9 +107,12 @@ class EPUSystemWithLocalLaunchConfiguration(SystemAPI):
 
         db_asg = AutoscaleGroupObject()
         db_asg.set_from_outtype(asg, user_obj)
+        return (db_asg, db_lco[0])
+
+    def create_autoscale_group(self, user_obj, asg):
+        (db_asg, db_lc) = self._create_autoscale_group(user_obj, asg)
         self._db.db_obj_add(db_asg)
         self._db.db_commit()
-
 
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
         asg = self._db.get_asg(user_obj, name)

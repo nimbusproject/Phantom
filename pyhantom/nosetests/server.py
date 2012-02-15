@@ -54,8 +54,7 @@ class RunPwFileServer(BaseServer):
         os.environ['PHANTOM_CONFIG'] = self.conffile
 
 
-
-class RunPwFileLocalLCServer(BaseServer):
+class RunPwFileEPUServer(BaseServer):
 
     def __init__(self, app, db_url):
         BaseServer.__init__(self)
@@ -75,7 +74,7 @@ class RunPwFileLocalLCServer(BaseServer):
         fptr.write('    type: simple_file\n')
         fptr.write('    filename: %s\n' % (self.pwfile))
         fptr.write('  system:\n')
-        fptr.write('    type: local_launch_config_epu\n')
+        fptr.write('    type: localdb\n')
         fptr.write('    db_url: %s\n' % (db_url))
         fptr.close()
         os.environ['PHANTOM_CONFIG'] = self.conffile

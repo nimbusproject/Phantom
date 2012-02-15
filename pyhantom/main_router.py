@@ -1,7 +1,6 @@
 import webob
 import webob.dec
 import webob.exc
-from wsgiref.simple_server import make_server
 from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator
@@ -53,6 +52,3 @@ class MainRouter(object):
 
         return app
 
-if __name__ == '__main__':
-    srv = make_server('localhost', 8080, MainRouter())
-    srv.serve_forever()
