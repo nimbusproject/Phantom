@@ -31,15 +31,15 @@ class TestSystem(object):
         self._lcs[lc.LaunchConfigurationName] = lc
 
     def get_launch_configs(self, user_obj, names=None, max=-1, startToken=None):
-        return self._get_a_list(self._lcs, names, max, startToken)
+        return self._get_a_list(self._lcs, 'LaunchConfigurations', names, max, startToken)
 
-    def _get_a_list(self, d, names=None, max=-1, startToken=None):
+    def _get_a_list(self, d, list_name, names=None, max=-1, startToken=None):
         if names == None:
             sorted_keys = sorted(d.keys())
         else:
             for n in names:
                 if n not in d:
-                    empty_list = AWSListType('LaunchConfigurations')
+                    empty_list = AWSListType(list_name)
                     return (empty_list, None)
             sorted_keys = sorted(names)
 
@@ -53,7 +53,7 @@ class TestSystem(object):
         if startToken is None:
             activated = True
 
-        lc_list_type = AWSListType('LaunchConfigurations')
+        lc_list_type = AWSListType(list_name)
         for i in range(0, max):
             k = sorted_keys[i]
             if startToken and d[k] == startToken:
@@ -101,7 +101,7 @@ class TestSystem(object):
 
     # add instances to it XXX 
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
-        return self._get_a_list(self._asgs, names, max, startToken)
+        return self._get_a_list(self._asgs, 'AutoScalingGroups', names, max, startToken)
 
     def delete_autoscale_group(self, user_obj, name, force):
         if name not in self._asgs:

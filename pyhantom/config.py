@@ -4,7 +4,7 @@ from pyhantom.authz.simple_file import SimpleFileDataStore
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
 import dashi.bootstrap
-from pyhantom.system.epu_local_launchconfiguration.system import EPUSystemWithLocalLaunchConfiguration
+from pyhantom.system.local_db.system import EPUSystemWithLocalLaunchConfiguration
 from pyhantom.system.tester import TestSystem
 
 class PhantomConfig(object):
