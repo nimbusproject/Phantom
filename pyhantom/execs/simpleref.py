@@ -34,10 +34,19 @@ def _make_the_config_file(hostname):
 
 def main(argv=sys.argv):
 
-    hostname = argv[1]
-    _make_the_config_file(hostname)
-
-    srv = make_server('localhost', 8081, MainRouter())
+    epu_hostname = argv[1]
+    try:
+        _make_the_config_file(epu_hostname)
+    except Exception, ex:
+        print ex
+        print "Some needed environment variables may not have been set."
+        return 1
+    try:
+        port = int(argv[2])
+    except Exception, ex:
+        port = 0
+        print "using an ephemeral port"
+    srv = make_server('', port, MainRouter())
     print srv.server_port
     srv.serve_forever()
 
