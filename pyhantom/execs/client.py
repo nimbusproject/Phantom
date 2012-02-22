@@ -66,7 +66,7 @@ def list_lc(commands, argv):
 
 def create_asg(commands, argv):
     "Create a new autoscale group"
-    u = """%s [options] <launch configuration name> <image name>""" % (argv[1])
+    u = """%s [options] <launch configuration name> <group name>""" % (argv[1])
 
     parser = OptionParser(usage=u)
 
@@ -132,9 +132,10 @@ g_commands = {
     'createlc': create_lc,
     'deletelc': delete_lc,
     'listlc': list_lc,
-    'createasg':None,
-    'deleteasg':None,
-    'deleteasg':None,
+    'createasg': create_asg,
+    'deleteasg': delete_asg,
+    'listasg': list_asg,
+    'adjustn': adjust_n,
     'help': help_commands,
     '--help': help_commands,
     '-h': help_commands,

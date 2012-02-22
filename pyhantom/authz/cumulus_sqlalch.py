@@ -11,9 +11,13 @@ class CumulusDataStore(PHAuthzIface):
     def get_user_key(self, access_id):
         """Get a new connection every time this is called to make sure it is cleaned up"""
         db = DB(self._cumulus_db)
-        user_alias = User.find_alias(access_id, db)
+        user_alias = User.find_alias(db, access_id)
         if not user_alias:
             raise PhantomAWSException('InvalidClientTokenId')
+        l = list(user_alias)
         db.close()
-        return PhantomUserObject(access_id, user_alias.get_data())
+        if l < 1:
+            raise PhantomAWSException('InvalidClientTokenId')
+        return PhantomUserObject(access_id, l[0].get_data())
+
 

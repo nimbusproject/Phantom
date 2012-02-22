@@ -110,8 +110,9 @@ class LaunchConfigurationType(AWSType):
         self.RamdiskId = lc.RamdiskId
         self.UserData = lc.UserData
         self.SecurityGroups = AWSListType('SecurityGroups')
-        for sg in lc.SecurityGroups:
-            self.SecurityGroups.add_item(sg)
+        if lc.SecurityGroups:
+            for sg in lc.SecurityGroups:
+                self.SecurityGroups.add_item(sg)
 
 class EnabledMetricType(AWSType):
     members_type_dict = {'Granularity': str, 'Metric': str}
