@@ -4,6 +4,7 @@ from pyhantom.system.local_db.system import SystemLocalDB
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import EPUMClient
+from pyhantom.util import log, LogEntryDecorator
 
 g_add_template = {'general' :
                     {'engine_class': 'epu.decisionengine.impls.phantom.PhantomEngine'},
@@ -29,6 +30,7 @@ def convert_epu_description_to_asg_out(desc, asg):
     asg.Instances = AWSListType('Instances')
 
     for inst in inst_list:
+        log(logging.DEBUG, "Converting instance %s" %(str(inst)))
         out_t = InstanceType('Instance')
 
         out_t.AutoScalingGroupName = name
@@ -92,11 +94,12 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         asg.DesiredCapacity = desired_capacity
         self._db.db_commit()
 
-
+    @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
         try:
             (asg_list_type, next_token) = SystemLocalDB.get_autoscale_groups(self, user_obj, names, max, startToken)
             epu_list = self._epum_client.list_epus()
+            log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
             # verify that the names are in thelist
             my_list = []
