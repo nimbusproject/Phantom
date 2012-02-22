@@ -57,6 +57,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         self._epum_client = EPUMClient(self._dashi_conn)
 
 
+    @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def create_autoscale_group(self, user_obj, asg):
         # call the parent class
         (db_asg, db_lc) = self._create_autoscale_group(user_obj, asg)
@@ -78,6 +79,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         self._db.db_commit()
 
 
+    @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
         asg = self._db.get_asg(user_obj, name)
         if not asg:
@@ -119,6 +121,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         return (asg_list_type, next_token)
 
 
+    @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def delete_autoscale_group(self, user_obj, name, force):
         asg = self._db.get_asg(user_obj, name)
         if not asg:
