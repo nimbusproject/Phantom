@@ -2,7 +2,7 @@ import logging
 import webob
 from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput
 from pyhantom.out_data_types import AutoScalingGroupType
-from pyhantom.util import CatchErrorDecorator, make_arn, log
+from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply
 from pyhantom.wsgiapps import PhantomBaseService
 
 class CreateAutoScalingGroup(PhantomBaseService):
@@ -28,6 +28,7 @@ class CreateAutoScalingGroup(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+        log_reply(doc, user_obj)
         return res
 
 class DeleteAutoScalingGroup(PhantomBaseService):
@@ -51,6 +52,7 @@ class DeleteAutoScalingGroup(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+        log_reply(doc, user_obj)
         return res
 
 class DescribeAutoScalingGroup(PhantomBaseService):
@@ -84,7 +86,7 @@ class DescribeAutoScalingGroup(PhantomBaseService):
 
         ags_list.add_xml(doc, lc_el)
         res.unicode_body = doc.documentElement.toxml()
-        log(logging.INFO, doc.documentElement.toprettyxml())
+        log_reply(doc, user_obj)
         return res
 
 
@@ -110,4 +112,7 @@ class SetDesiredCapacity(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+
+        log(logging.INFO, "User %s change %s capacity to %d" % (user_obj.username, input.AutoScalingGroupName, input.DesiredCapacity))
+        log_reply(doc, user_obj)
         return res

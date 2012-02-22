@@ -2,7 +2,7 @@ import logging
 import webob
 from pyhantom.in_data_types import LaunchConfigurationInput, DeleteLaunchConfigurationInput, DescribeLaunchConfigurationsInput
 from pyhantom.out_data_types import LaunchConfigurationType
-from pyhantom.util import make_arn, CatchErrorDecorator, log
+from pyhantom.util import make_arn, CatchErrorDecorator, log, log_reply
 from pyhantom.wsgiapps import PhantomBaseService
 
 
@@ -25,6 +25,7 @@ class CreateLaunchConfiguration(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+        log_reply(doc, user_obj)
         return res
 
 
@@ -44,6 +45,7 @@ class DeleteLaunchConfiguration(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+        log_reply(doc, user_obj)
         return res
 
 
@@ -77,7 +79,7 @@ class DescribeLaunchConfigurations(PhantomBaseService):
 
         lc_list.add_xml(doc, lc_el)
         res.unicode_body = doc.documentElement.toxml()
-        log(logging.DEBUG, res.unicode_body)
+        log_reply(doc, user_obj)
         return res
 
 

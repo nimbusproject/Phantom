@@ -20,6 +20,10 @@ def log(lvl, message, printstack=False):
         str = traceback.format_exc()
         logger.log(lvl, str)
 
+def log_reply(doc, user_obj):
+    log(logging.INFO, "Sending reply %s to user %s" % (doc.documentElement.toprettyxml(), user_obj.username))
+
+
 def not_implemented_decorator(func):
     def call(self, *args,**kwargs):
         def raise_error(func):

@@ -1,6 +1,6 @@
 import webob
 from pyhantom.in_data_types import DescribeAutoScalingInstancesInput, TerminateInstanceInAutoScalingGroupInput
-from pyhantom.util import CatchErrorDecorator
+from pyhantom.util import CatchErrorDecorator, log_reply
 from pyhantom.wsgiapps import PhantomBaseService
 
 class DescribeAutoScalingInstances(PhantomBaseService):
@@ -34,6 +34,7 @@ class DescribeAutoScalingInstances(PhantomBaseService):
 
         inst_list.add_xml(doc, lc_el)
         res.unicode_body = doc.documentElement.toxml()
+        log_reply(doc, user_obj)
         return res
 
 class TerminateInstanceInAutoScalingGroup(PhantomBaseService):
@@ -56,4 +57,5 @@ class TerminateInstanceInAutoScalingGroup(PhantomBaseService):
         res = self.get_response()
         doc = self.get_default_response_body_dom()
         res.unicode_body = doc.documentElement.toprettyxml()
+        log_reply(doc, user_obj)
         return res
