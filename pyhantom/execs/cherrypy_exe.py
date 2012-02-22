@@ -1,6 +1,7 @@
 import os
 import sys
 from cherrypy import wsgiserver
+import signal
 from pyhantom.main_router import MainRouter
 
 def usage():
@@ -26,6 +27,12 @@ def main(argv=sys.argv):
     server = wsgiserver.CherryPyWSGIServer(
             ('0.0.0.0', port), MainRouter,
             server_name='phantom')
+
+    def term_handler(signum, frame):
+        server.stop()
+
+    signal.signal(signal.SIGINT, term_handler)
+
     server.start()
 
 
