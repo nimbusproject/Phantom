@@ -66,7 +66,7 @@ def list_lc(commands, argv):
 
 def create_asg(commands, argv):
     "Create a new autoscale group"
-    u = """%s [options] <launch configuration name> <group name>""" % (argv[1])
+    u = """%s [options] <launch configuration name> <group name> <initial size>""" % (argv[1])
 
     parser = OptionParser(usage=u)
 
@@ -80,6 +80,7 @@ def create_asg(commands, argv):
         raise Exception('You must specify a launch configuration name and a group name')
     lcname = args[0]
     group_name = args[1]
+    ds = int(args[2])
 
     con = get_phantom_con()
 
@@ -87,7 +88,7 @@ def create_asg(commands, argv):
     if not lcs and len(lcs) != 1:
         raise Exception('The launch configuration name %s is unknown' % (lcname))
     lc = lcs[0]
-    asg = boto.ec2.autoscale.group.AutoScalingGroup(launch_config=lc, connection=con, group_name=group_name, availability_zones=[options.availabilityzone], min_size=0, max_size=512)
+    asg = boto.ec2.autoscale.group.AutoScalingGroup(launch_config=lc, connection=con, group_name=group_name, availability_zones=[options.availabilityzone], min_size=0, max_size=512, desired_capacity=ds)
     con.create_auto_scaling_group(asg)
 
 def list_asg(commands, argv):
@@ -108,6 +109,7 @@ def delete_asg(commands, argv):
     con.delete_launch_configuration(argv[2])
 
 def adjust_n(commands, argv):
+    "Change the number of VMs preserved in the given group name"
     if len(argv) < 4:
         raise Exception('A EPU name and a new size is required')
     group_name = argv[2]
