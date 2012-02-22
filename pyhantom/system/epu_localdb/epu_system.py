@@ -20,8 +20,21 @@ g_add_template = {'general' :
                   }
 
 
+def _is_healthy(state):
+
+    a = state.split('-')
+    try:
+        code = int(a[0])
+        if code > 600:
+            return "Unhealthy"
+        else:
+            return "Healthy"
+    except:
+        log(logging.WARN, "A weird state was found %s" % (state))
+        return "Unhealthy"
 
 def convert_epu_description_to_asg_out(desc, asg):
+
     inst_list = desc['instances']
     name = desc['name']
     config = desc['config']
@@ -34,11 +47,15 @@ def convert_epu_description_to_asg_out(desc, asg):
         out_t = InstanceType('Instance')
 
         out_t.AutoScalingGroupName = name
-        out_t.InstanceId = inst['iaas_id']
-        out_t.HealthStatus = inst['state']
+        out_t.HealthStatus = _is_healthy(inst['state'])
         out_t.LifecycleState = inst['state']
         out_t.AvailabilityZone = inst['site']
         out_t.LaunchConfigurationName = asg.LaunchConfigurationName
+
+        if out_t.HealthStatus == "Healthy":
+            out_t.InstanceId = inst['iaas_id']
+        else:
+            out_t.InstanceId = ""
 
         asg.Instances.type_list.append(out_t)
         
