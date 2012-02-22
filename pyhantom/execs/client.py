@@ -115,6 +115,7 @@ def adjust_n(commands, argv):
     group_name = argv[2]
     c = int(argv[3])
 
+
     con = get_phantom_con()
     asg_a = con.get_all_groups(names=[group_name,])
     if not asg_a:

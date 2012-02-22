@@ -1,9 +1,10 @@
+import logging
 import webob
 import webob.dec
 import webob.exc
 from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
-from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator
+from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log
 from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
 from pyhantom.wsgiapps.instances import DescribeAutoScalingInstances, TerminateInstanceInAutoScalingGroup
 from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
@@ -35,6 +36,7 @@ class MainRouter(object):
     @LogEntryDecorator(classname="MainRouter")
     def __call__(self, req):
 
+        log(logging.INFO, "A call to the main router occurred | %s" % (str(req.params)))
         authz = self._cfg.get_authz()
         user_obj = authz.get_user_key(req.params['AWSAccessKeyId'])
         authenticate_user(req, user_obj.password)
