@@ -34,15 +34,19 @@ def _make_the_config_file(hostname):
 
 def main(argv=sys.argv):
 
-    epu_hostname = argv[1]
+    argv_cnt = 1
+    if 'PHANTOM_CONFIG' not in os.environ:
+        epu_hostname = argv[argv_cnt]
+        try:
+            _make_the_config_file(epu_hostname)
+        except Exception, ex:
+            print ex
+            print "Some needed environment variables may not have been set."
+            return 1
+        argv_cnt = argv_cnt + 1
+
     try:
-        _make_the_config_file(epu_hostname)
-    except Exception, ex:
-        print ex
-        print "Some needed environment variables may not have been set."
-        return 1
-    try:
-        port = int(argv[2])
+        port = int(argv[argv_cnt])
     except Exception, ex:
         port = 0
         print "using an ephemeral port"

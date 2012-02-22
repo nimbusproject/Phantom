@@ -27,6 +27,9 @@ setup(name='pyhantom',
       entry_points = {
         'console_scripts': [
             'phantomwsgiref = pyhantom.execs.simpleref:main',
+            'phantomparse = pyhantom.execs.parse_launch_plan:main',
+            'phantomclient = pyhantom.execs.client:main'
+
         ],},
 
       classifiers=[
