@@ -25,7 +25,7 @@ def main(argv=sys.argv):
         usage()
 
     server = wsgiserver.CherryPyWSGIServer(
-            ('0.0.0.0', port), MainRouter,
+            ('0.0.0.0', port), MainRouter(),
             server_name='phantom')
 
     def term_handler(signum, frame):
