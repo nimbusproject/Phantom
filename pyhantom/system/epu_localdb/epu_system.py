@@ -165,5 +165,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
             for asg in asgs:
                 if asg.AutoScalingGroupName not in epu_list:
                     log(logging.ERROR, "Cleaning up an ASG that is in the database and not in the epu list: %s" % (asg.AutoScalingGroupName))
+                    self._db.delete_asg(asg)
+                    self._db.db_commit()
         except Exception, ex:
             log(logging.ERROR, "An error occurred while attempting to clean up the DB : %s" % (str(ex)))
