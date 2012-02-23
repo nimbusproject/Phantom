@@ -25,16 +25,15 @@
                 "secret":"${ec2_secret}"
               }
             },
-            "nimbus-alamo" : {
-                "driver_class" : "libcloud.compute.drivers.ec2.NimbusNodeDriver",
-                "driver_kwargs" : {
+            "nimbus-alamo":{
+              "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
+              "driver_kwargs":{
                   "key":"${nimbus_key}",
                   "secret":"${nimbus_secret}",
                   "host":"master1.futuregrid.tacc.utexas.edu",
-                  "port": "8444",
+                  "port":"8444"
                 }
               }
-
           },
           "context": {
             "uri":"https://svc.uc.futuregrid.org:8446/ContextBroker/ctx/",
