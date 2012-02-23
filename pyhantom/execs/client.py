@@ -99,7 +99,10 @@ def list_asg(commands, argv):
     else:
         lcs = con.get_all_groups()
     for lc in lcs:
+        print dir(lc)
         print lc
+        for i in lc.instances:
+            print "\t%s" % (str(i))
 
 def delete_asg(commands, argv):
     "delete an EPU"
@@ -114,7 +117,6 @@ def adjust_n(commands, argv):
         raise Exception('A EPU name and a new size is required')
     group_name = argv[2]
     c = int(argv[3])
-
 
     con = get_phantom_con()
     asg_a = con.get_all_groups(names=[group_name,])

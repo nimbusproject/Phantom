@@ -83,7 +83,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         conf = g_add_template.copy()
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
         conf['engine_conf']['epuworker_image_id'] = db_lc.ImageId
-        conf['engine_conf']['iaas_site'] = 'ec2-east' # db_asg.AvailabilityZones
+        conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones
         conf['engine_conf']['iaas_allocation'] = db_lc.InstanceType
 
         try:
