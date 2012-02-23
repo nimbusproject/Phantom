@@ -58,7 +58,7 @@ def list_lc(commands, argv):
     "list all of your launch configurations"
     con = get_phantom_con()
     if len(argv) > 2:
-        lcs = con.get_all_launch_configurations(names=argv[3:])
+        lcs = con.get_all_launch_configurations(names=argv[2:])
     else:
         lcs = con.get_all_launch_configurations()
     for lc in lcs:
@@ -95,7 +95,7 @@ def list_asg(commands, argv):
     "list all of your epus"
     con = get_phantom_con()
     if len(argv) > 2:
-        lcs = con.get_all_groups(names=argv[3:])
+        lcs = con.get_all_groups(names=argv[2:])
     else:
         lcs = con.get_all_groups()
     for lc in lcs:
