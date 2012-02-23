@@ -87,6 +87,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones
         conf['engine_conf']['iaas_allocation'] = db_lc.InstanceType
 
+        log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
             self._epum_client.add_epu(asg.AutoScalingGroupName, conf)
         except Exception, ex:

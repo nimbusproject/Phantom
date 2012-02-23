@@ -1,6 +1,7 @@
 import boto
 from boto.regioninfo import RegionInfo
 import boto.ec2.autoscale
+import logging
 from optparse import OptionParser
 import os
 import sys
