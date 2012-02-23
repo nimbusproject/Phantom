@@ -84,7 +84,7 @@ def create_asg(commands, argv):
 
     con = get_phantom_con()
 
-    lcs = con.get_all_launch_configurations([lcname,])
+    lcs = con.get_all_launch_configurations(names=[lcname,])
     if not lcs and len(lcs) != 1:
         raise Exception('The launch configuration name %s is unknown' % (lcname))
     lc = lcs[0]
@@ -109,7 +109,7 @@ def delete_asg(commands, argv):
     if len(argv) < 3:
         raise Exception('A EPU name is required')
     con = get_phantom_con()
-    con.delete_launch_configuration(argv[2])
+    con.delete_auto_scaling_group(argv[2])
 
 def adjust_n(commands, argv):
     "Change the number of VMs preserved in the given group name"

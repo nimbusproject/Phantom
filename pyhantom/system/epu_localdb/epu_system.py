@@ -12,11 +12,11 @@ g_add_template = {'general' :
                     {'monitor_health': False},
                   'engine_conf':
                     {'preserve_n': None,
-                     'epuworker_type': 'sleeper',
+                     'epuworker_type': 'phantom',
                      'epuworker_image_id': None,
                      'iaas_site': None,
                      'iaas_allocation': None,
-                     'deployable_type': 'sleeper'}
+                     'deployable_type': 'phantom'}
                   }
 
 
@@ -76,6 +76,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def create_autoscale_group(self, user_obj, asg):
+        self._clean_up_db()
         # call the parent class
         (db_asg, db_lc) = self._create_autoscale_group(user_obj, asg)
 
@@ -98,6 +99,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
+        self._clean_up_db()
         asg = self._db.get_asg(user_obj, name)
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (asg.AutoScalingGroupName))
@@ -115,6 +117,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
+        self._clean_up_db()
         try:
             (asg_list_type, next_token) = SystemLocalDB.get_autoscale_groups(self, user_obj, names, max, startToken)
             epu_list = self._epum_client.list_epus()
@@ -140,6 +143,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def delete_autoscale_group(self, user_obj, name, force):
+        self._clean_up_db()
         asg = self._db.get_asg(user_obj, name)
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (name))
@@ -152,3 +156,14 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         self._db.delete_asg(asg)
         self._db.db_commit()
 
+    @LogEntryDecorator(classname="EPUSystemWithLocalDB")
+    def _clean_up_db(self):
+        try:
+            epu_list = self._epum_client.list_epus()
+            asgs = self._db.get_asgs()
+
+            for asg in asgs:
+                if asg.AutoScalingGroupName not in epu_list:
+                    log(logging.ERROR, "Cleaning up an ASG that is in the database and not in the epu list: %s" % (asg.AutoScalingGroupName))
+        except Exception, ex:
+            log(logging.ERROR, "An error occurred while attempting to clean up the DB : %s" % (str(ex)))

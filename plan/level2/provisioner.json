@@ -25,12 +25,21 @@
                 "secret":"${ec2_secret}"
               }
             },
-            "nimbus-alamo":{
+            "fg-alamo":{
               "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
               "driver_kwargs":{
                   "key":"${nimbus_key}",
                   "secret":"${nimbus_secret}",
                   "host":"master1.futuregrid.tacc.utexas.edu",
+                  "port":"8444"
+                }
+              },
+            "fg-hotel":{
+              "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
+              "driver_kwargs":{
+                  "key":"${nimbus_key}",
+                  "secret":"${nimbus_secret}",
+                  "host":"svc.uc.futuregrid.org",
                   "port":"8444"
                 }
               }

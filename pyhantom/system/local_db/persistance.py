@@ -181,7 +181,10 @@ class LaunchConfigurationDB(object):
         return a[0]
 
     def get_asgs(self, user_object, names=None, max=-1, startToken=None, log=logging):
-        q = self._Session.query(AutoscaleGroupObject).filter(AutoscaleGroupObject.user_name==user_object.username)
+        q = self._Session.query(AutoscaleGroupObject)
+
+        if user_object:
+            q = q.filter(AutoscaleGroupObject.user_name==user_object.username)
 
         if names:
             q = q.filter(AutoscaleGroupObject.AutoScalingGroupName.in_(names))
