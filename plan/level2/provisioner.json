@@ -12,6 +12,7 @@
               "password": "${rabbitmq_password}"
             }
           },
+          "ssl_no_host_check": "True",
           "provisioner": {
             "dtrs": "epu.localdtrs.LocalDTRS",
             "dt_path": "/opt/dt-data/dt",
