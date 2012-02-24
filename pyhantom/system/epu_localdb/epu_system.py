@@ -168,5 +168,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
                     log(logging.ERROR, "Cleaning up an ASG that is in the database and not in the epu list: %s" % (asg.AutoScalingGroupName))
                     self._db.delete_asg(asg)
                     self._db.db_commit()
+                    log(logging.INFO, "Object %s has ben deleted" % (str(asg)))
+
         except Exception, ex:
             log(logging.ERROR, "An error occurred while attempting to clean up the DB : %s" % (str(ex)))
