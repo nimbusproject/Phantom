@@ -107,7 +107,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (asg.AutoScalingGroupName))
 
         conf = {'engine_conf':
-                    {'preserve_n': None},
+                    {'preserve_n': desired_capacity},
                   }
         try:
             self._epum_client.reconfigure_epu(name, conf)
