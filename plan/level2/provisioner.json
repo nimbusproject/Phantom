@@ -13,6 +13,7 @@
             }
           },
           "ssl_no_host_check": "True",
+          "contextualization_disabled": "True",
           "provisioner": {
             "dtrs": "epu.localdtrs.LocalDTRS",
             "dt_path": "/opt/dt-data/dt",

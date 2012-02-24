@@ -57,13 +57,30 @@ def delete_lc(commands, argv):
 
 def list_lc(commands, argv):
     "list all of your launch configurations"
+
+    list_fields = ['name', 'image_id', 'instance_type', ]
     con = get_phantom_con()
     if len(argv) > 2:
         lcs = con.get_all_launch_configurations(names=argv[2:])
     else:
         lcs = con.get_all_launch_configurations()
+    delim = ""
+    for f in list_fields:
+        msg = "%s%s" % (delim, f)
+        sys.stdout.write(msg)
+        delim = "\t|\t"
+    print ""
+
     for lc in lcs:
-        print lc
+        delim = ""
+        for f in list_fields:
+            msg = "%s%s" % (delim, lc.__getattribute__(f))
+            sys.stdout.write(msg)
+            delim = "\t|\t"
+        print ""
+
+
+
 
 def create_asg(commands, argv):
     "Create a new autoscale group"
@@ -94,16 +111,30 @@ def create_asg(commands, argv):
 
 def list_asg(commands, argv):
     "list all of your epus"
+
+    list_fields = ['availability_zones', 'desired_capacity', 'launch_config_name', 'name',]
+
     con = get_phantom_con()
     if len(argv) > 2:
         lcs = con.get_all_groups(names=argv[2:])
     else:
         lcs = con.get_all_groups()
+
+    delim = ""
+    for f in list_fields:
+        msg = "%s%s" % (delim, f)
+        sys.stdout.write(msg)
+        delim = "  |  "
+    print ""
     for lc in lcs:
-        print dir(lc)
-        print lc
+        delim = ""
+        for f in list_fields:
+            msg = "%s%s" % (delim, lc.__getattribute__(f))
+            sys.stdout.write(msg)
+            delim = "  |  "
+        print ""
         for i in lc.instances:
-            print "\t%s" % (str(i))
+            print "\t%s %s %s" % (i.health_status, i.lifecycle_state,i.instance_id)
 
 def delete_asg(commands, argv):
     "delete an EPU"
@@ -114,7 +145,7 @@ def delete_asg(commands, argv):
 
 def adjust_n(commands, argv):
     "Change the number of VMs preserved in the given group name"
-    if len(argv) < 4:
+    if len(argv) < 3:
         raise Exception('A EPU name and a new size is required')
     group_name = argv[2]
     c = int(argv[3])
