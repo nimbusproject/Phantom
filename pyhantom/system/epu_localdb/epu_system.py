@@ -40,7 +40,7 @@ def convert_epu_description_to_asg_out(desc, asg):
     config = desc['config']
 
     log(logging.DEBUG, "Changing the config: %s" %(str(config)))
-    asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
+    #asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
     asg.Instances = AWSListType('Instances')
 
     for inst in inst_list:
