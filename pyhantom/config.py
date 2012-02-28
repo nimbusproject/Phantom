@@ -27,7 +27,7 @@ class PhantomConfig(object):
         elif self._CFG.phantom.system.type == "localdb":
             self._system = SystemLocalDB(self._CFG, log=self._logger)
         elif self._CFG.phantom.system.type == "epu_localdb":
-            self._system = EPUSystemWithLocalDB(self._CFG, log=self._logger)
+            self._system = EPUSystemWithLocalDB(self._CFG)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 
