@@ -66,8 +66,8 @@ def convert_epu_description_to_asg_out(desc, asg):
 
 class EPUSystemWithLocalDB(SystemLocalDB):
 
-    def __init__(self, cfg, log=logging):
-        SystemLocalDB.__init__(self, cfg, log)
+    def __init__(self, cfg):
+        SystemLocalDB.__init__(self, cfg)
 
         ssl = cfg.phantom.system.broker_ssl
         self._broker = cfg.phantom.system.broker
