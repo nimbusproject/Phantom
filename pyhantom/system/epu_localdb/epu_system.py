@@ -69,8 +69,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
     def __init__(self, cfg, log=logging):
         SystemLocalDB.__init__(self, cfg, log)
 
-        x = cfg.phantom.system.broker_ssl
-        ssl = x.lower() == "true"
+        ssl = cfg.phantom.system.broker_ssl
         self._broker = cfg.phantom.system.broker
         self._broker_port = cfg.phantom.system.broker_port
         self._rabbitpw = cfg.phantom.system.rabbit_pw
