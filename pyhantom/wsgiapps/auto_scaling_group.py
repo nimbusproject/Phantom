@@ -2,7 +2,7 @@ import logging
 import webob
 from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput
 from pyhantom.out_data_types import AutoScalingGroupType
-from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply
+from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply, log_request
 from pyhantom.wsgiapps import PhantomBaseService
 
 class CreateAutoScalingGroup(PhantomBaseService):
@@ -15,6 +15,7 @@ class CreateAutoScalingGroup(PhantomBaseService):
     def __call__(self, req):
 
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = CreateAutoScalingGroupInput()
         input.set_from_dict(req.params)
@@ -40,6 +41,7 @@ class DeleteAutoScalingGroup(PhantomBaseService):
     @CatchErrorDecorator(appname="DeleteAutoScalingGroup")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = DeleteAutoScalingGroupInput()
         input.set_from_dict(req.params)
@@ -64,6 +66,7 @@ class DescribeAutoScalingGroup(PhantomBaseService):
     @CatchErrorDecorator(appname="DescribeAutoScalingGroup")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = DescribeAutoScalingGroupInput()
         input.set_from_dict(req.params)
@@ -99,6 +102,7 @@ class SetDesiredCapacity(PhantomBaseService):
     @CatchErrorDecorator(appname="SetDesiredCapacity")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = SetDesiredCapacityInput()
         input.set_from_dict(req.params)

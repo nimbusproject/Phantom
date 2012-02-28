@@ -1,6 +1,6 @@
 import webob
 from pyhantom.in_data_types import DescribeAutoScalingInstancesInput, TerminateInstanceInAutoScalingGroupInput
-from pyhantom.util import CatchErrorDecorator, log_reply
+from pyhantom.util import CatchErrorDecorator, log_reply, log_request
 from pyhantom.wsgiapps import PhantomBaseService
 
 class DescribeAutoScalingInstances(PhantomBaseService):
@@ -12,6 +12,7 @@ class DescribeAutoScalingInstances(PhantomBaseService):
     @CatchErrorDecorator(appname="DescribeAutoScalingInstances")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = DescribeAutoScalingInstancesInput()
         input.set_from_dict(req.params)
@@ -46,13 +47,14 @@ class TerminateInstanceInAutoScalingGroup(PhantomBaseService):
     @CatchErrorDecorator(appname="TerminateInstanceInAutoScalingGroup")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = TerminateInstanceInAutoScalingGroupInput()
         input.set_from_dict(req.params)
 
         self._system.terminate_instances(user_obj, input.InstanceId, input.ShouldDecrementDesiredCapacity)
 
-        ############ MUST return an activity type.:w
+        ############ MUST return an activity type.
 
         res = self.get_response()
         doc = self.get_default_response_body_dom()

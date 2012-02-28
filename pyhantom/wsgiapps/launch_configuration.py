@@ -2,7 +2,7 @@ import logging
 import webob
 from pyhantom.in_data_types import LaunchConfigurationInput, DeleteLaunchConfigurationInput, DescribeLaunchConfigurationsInput
 from pyhantom.out_data_types import LaunchConfigurationType
-from pyhantom.util import make_arn, CatchErrorDecorator, log, log_reply
+from pyhantom.util import make_arn, CatchErrorDecorator, log, log_reply, log_request
 from pyhantom.wsgiapps import PhantomBaseService
 
 
@@ -14,6 +14,7 @@ class CreateLaunchConfiguration(PhantomBaseService):
     @CatchErrorDecorator(appname="CreateLaunchConfiguration")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = LaunchConfigurationInput()
         input.set_from_dict(req.params)
@@ -37,6 +38,7 @@ class DeleteLaunchConfiguration(PhantomBaseService):
     @CatchErrorDecorator(appname="DeleteLaunchConfiguration")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = DeleteLaunchConfigurationInput()
         input.set_from_dict(req.params)
@@ -57,6 +59,7 @@ class DescribeLaunchConfigurations(PhantomBaseService):
     @CatchErrorDecorator(appname="DescribeLaunchConfigurations")
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
 
         input = DescribeLaunchConfigurationsInput()
         input.set_from_dict(req.params)

@@ -14,6 +14,8 @@ g_add_template = {'general' :
                     {'preserve_n': None,
                      'epuworker_type': 'phantom',
                      'epuworker_image_id': None,
+                     'iaas_key': None,
+                     'iaas_secret': None,
                      'iaas_site': None,
                      'iaas_allocation': None,
                      'deployable_type': 'phantom'}
@@ -85,6 +87,8 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         conf = g_add_template.copy()
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
         conf['engine_conf']['epuworker_image_id'] = db_lc.ImageId
+        conf['engine_conf']['iaas_key'] = user_obj.username
+        conf['engine_conf']['iaas_secret'] = user_obj.password
         conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones
         conf['engine_conf']['iaas_allocation'] = db_lc.InstanceType
 

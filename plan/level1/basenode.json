@@ -1,5 +1,6 @@
 {
   "rabbitmq":{
+    "ssl":"True",
     "vhosts":["/"],
     "users":{
       "${rabbitmq_username}":{
@@ -18,5 +19,5 @@
   },
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
-  "recipes":["rabbitmq","user"]
+  "recipes":["rabbitmq","user", "rabbitmqcerts"]
 }

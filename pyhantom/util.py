@@ -20,6 +20,9 @@ def log(lvl, message, printstack=False):
         str = traceback.format_exc()
         logger.log(lvl, str)
 
+def log_request(req, user_obj):
+    log(logging.INFO, "Received request %s from user %s" % (str(req.params), user_obj.username))
+
 def log_reply(doc, user_obj):
     log(logging.INFO, "Sending reply %s to user %s" % (doc.documentElement.toprettyxml(), user_obj.username))
 

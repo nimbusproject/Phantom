@@ -58,7 +58,7 @@ def delete_lc(commands, argv):
 def list_lc(commands, argv):
     "list all of your launch configurations"
 
-    list_fields = ['name', 'image_id', 'instance_type', ]
+    list_fields = ['name', 'image_id', 'instance_type', "key_name"]
     con = get_phantom_con()
     if len(argv) > 2:
         lcs = con.get_all_launch_configurations(names=argv[2:])
@@ -72,14 +72,13 @@ def list_lc(commands, argv):
     print ""
 
     for lc in lcs:
+        print dir(lc)
         delim = ""
         for f in list_fields:
             msg = "%s%s" % (delim, lc.__getattribute__(f))
             sys.stdout.write(msg)
             delim = "\t|\t"
         print ""
-
-
 
 
 def create_asg(commands, argv):
