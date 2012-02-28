@@ -70,10 +70,11 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         SystemLocalDB.__init__(self, cfg, log)
 
         self._broker = cfg.phantom.system.broker
+        self._broker_port = cfg.phantom.system.broker_port
         self._rabbitpw = cfg.phantom.system.rabbit_pw
         self._rabbituser = cfg.phantom.system.rabbit_user
         self._rabbitexchange = cfg.phantom.system.rabbit_exchange
-        self._dashi_conn = DashiCeiConnection(self._broker, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange, timeout=60)
+        self._dashi_conn = DashiCeiConnection(self._broker, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange, timeout=60, port=self._broker_port)
         self._epum_client = EPUMClient(self._dashi_conn)
 
 
