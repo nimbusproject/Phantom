@@ -72,7 +72,6 @@ def list_lc(commands, argv):
     print ""
 
     for lc in lcs:
-        print dir(lc)
         delim = ""
         for f in list_fields:
             msg = "%s%s" % (delim, lc.__getattribute__(f))
