@@ -50,7 +50,7 @@ def convert_epu_description_to_asg_out(desc, asg):
         out_t = InstanceType('Instance')
 
         out_t.AutoScalingGroupName = name
-        out_t.HealthStatus = _is_healthy(inst['state'])
+        out_t.HealthStatus = _is_healthy(inst['state'])  + " " + inst['state_desc']
         out_t.LifecycleState = inst['state']
         out_t.AvailabilityZone = inst['site']
         out_t.LaunchConfigurationName = asg.LaunchConfigurationName
