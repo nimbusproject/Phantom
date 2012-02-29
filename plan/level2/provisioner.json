@@ -8,7 +8,7 @@
           "server": {
             "amqp": {
               "ssl": "True",
-              "port": 5761,
+              "port": 5671,
               "host": "${broker_ip_address}",
               "username": "${rabbitmq_username}",
               "password": "${rabbitmq_password}"
@@ -22,14 +22,7 @@
             "query_period": 10
           },
           "sites":{
-            "ec2-east":{
-              "driver_class":"libcloud.compute.drivers.ec2.EC2NodeDriver",
-              "driver_kwargs":{
-                "key":"${ec2_key}",
-                "secret":"${ec2_secret}"
-              }
-            },
-            "fg-alamo":{
+            "alamo-${nimbus_key}":{
               "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
               "driver_kwargs":{
                   "key":"${nimbus_key}",
@@ -38,7 +31,7 @@
                   "port":"8444"
                 }
               },
-            "fg-hotel":{
+            "hotel-${nimbus_key}":{
               "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
               "driver_kwargs":{
                   "key":"${nimbus_key}",

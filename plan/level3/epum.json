@@ -8,7 +8,7 @@
           "server": {
             "amqp": {
               "ssl": "True",
-              "port": 5761,
+              "port": 5671,
               "host": "${broker_ip_address}",
               "username": "${rabbitmq_username}",
               "password": "${rabbitmq_password}"
