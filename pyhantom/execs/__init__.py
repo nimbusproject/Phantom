@@ -4,7 +4,7 @@ import os
 import urlparse
 
 def check_env():
-    es = ['EC2_ACCESS_KEY', 'EC2_SECRET_KEY', 'EC2_URL']
+    es = ['EC2_ACCESS_KEY', 'EC2_SECRET_KEY', 'PHANTOM_URL']
 
     for e in es:
         if e not in os.environ:
@@ -13,7 +13,7 @@ def check_env():
 def get_phantom_con():
     u = os.environ['EC2_ACCESS_KEY']
     p = os.environ['EC2_SECRET_KEY']
-    url = os.environ['EC2_URL']
+    url = os.environ['PHANTOM_URL']
     uparts = urlparse.urlparse(url)
     is_secure = uparts.scheme == 'https'
     region = RegionInfo(uparts.hostname)
