@@ -11,14 +11,11 @@
   },
   "appinstall":{
     "install_method":"py_venv_setup",
-    "package_repo":"${package_repo}"
+    "package_repo":"XX"
   },
-  "apprun":{
-    "run_method":"supervised",
-    "autorestart":true
-  },
+  "appname":"phantom",
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
-  "appname":"phantom",
-  "recipes":["r2app"],
+  "recipes":["r2app"]
 }
+

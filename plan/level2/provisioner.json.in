@@ -21,26 +21,7 @@
             "dt_path": "/opt/dt-data/dt",
             "query_period": 10
           },
-          "sites":{
-            "alamo-${nimbus_key}":{
-              "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
-              "driver_kwargs":{
-                  "key":"${nimbus_key}",
-                  "secret":"${nimbus_secret}",
-                  "host":"master1.futuregrid.tacc.utexas.edu",
-                  "port":"8444"
-                }
-              },
-            "hotel-${nimbus_key}":{
-              "driver_class":"libcloud.compute.drivers.ec2.NimbusNodeDriver",
-              "driver_kwargs":{
-                  "key":"${nimbus_key}",
-                  "secret":"${nimbus_secret}",
-                  "host":"svc.uc.futuregrid.org",
-                  "port":"8444"
-                }
-              }
-          },
+          "sites":{},
           "context": {
             "uri":"https://svc.uc.futuregrid.org:8446/ContextBroker/ctx/",
             "key":"${ctxbroker_key}",
