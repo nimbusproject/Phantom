@@ -11,7 +11,7 @@
   },
   "appinstall":{
     "install_method":"py_venv_setup",
-    "package_repo":"XX"
+    "package_repo":"${package_repo}"
   },
   "appname":"phantom",
   "username":"${epu_username}",
