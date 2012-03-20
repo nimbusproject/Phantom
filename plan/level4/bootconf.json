@@ -1,0 +1,70 @@
+{
+  "phantom": {
+    "authz":  {
+        "type": "localdb",
+        "db_url": "/home/${epu_username}/phantom_pwfile"
+      },
+  "system": {
+    "type": "epu_localdb",
+    "db_url": "sqlite://///home/${epu_username}/phantom.db",
+    "broker": "${broker_ip_address}",
+    "broker_port": 5672,
+    "broker_ssl": "False",
+    "rabbit_user": "${rabbitmq_username}",
+    "rabbit_pw": "${rabbitmq_password}",
+    "rabbit_exchange": "default_dashi_exchange"
+    }
+ },
+ "logging": {
+  "version": 1,
+  "formatters": {
+    "brief": {
+      "format": "%(levelname)-8s %(message)s"
+    },
+    "default": {
+      "format": "%(asctime)s %(levelname)-8s %(name)-15s %(message)s'",
+      "datefmt": "'%Y-%m-%d %H:%M:%S'"
+    },
+    "detailed": {
+      "format": "%(asctime)s.%(msecs)03d [%(module)-15s:%(lineno)3d] %(levelname)-5s:%(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    },
+    "detailednostamp": {
+      "format": "[%(module)-15s:%(lineno)3d] %(levelname)-5s:%(message)s"
+    }
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "formatter": "brief",
+      "level": "DEBUG",
+      "stream": "ext://sys.stdout"
+    },
+    "file": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "formatter": "detailed",
+      "level": "DEBUG",
+      "filename": "/home/${epu_username}/phantomlogfile.txt",
+      "maxBytes": 1048576,
+      "backupCount": 3
+    },
+    "syslog": {
+      "class": "logging.handlers.SysLogHandler",
+      "address": ["localhost", 514],
+      "formatter": "detailednostamp",
+      "level": "DEBUG",
+      "facility": "local0"
+    },
+  "loggers": {
+    "phantom": {
+      "level": "INFO"
+     }
+    },
+  "root": {
+    "handlers": ["file"],
+    "level": "DEBUG"
+    }
+  }
+ }
+}
+
