@@ -5,11 +5,11 @@ import boto.ec2.autoscale
 import os
 import sys
 
-def get_con(port=8081):
+def get_con(port=9999):
     u = os.environ['RABBITMQ_USERNAME']
     p = os.environ['RABBITMQ_PASSWORD']
     region = RegionInfo('localhost')
-    con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=u, aws_secret_access_key=p, is_secure=False, port=port, debug=3, region=region)
+    con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=u, aws_secret_access_key=p, is_secure=True, port=port, debug=3, region=region)
     con.host = 'localhost'
     return con
 
