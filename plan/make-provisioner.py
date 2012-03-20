@@ -4,6 +4,29 @@
 import simplejson as json
 import sys
 
+
+def _make_bools(t):
+    if type(t) == dict:
+        for k in t:
+            t[k] = _make_bools(t[k])
+        return t
+    elif type(t) == list:
+        new_list = []
+        for k in t:
+            v = _make_bools(k)
+            new_list.append(v)
+        return new_list
+    elif type(t) == str:
+        if t.lower() == "false":
+            return False
+        elif t.lower() == "true":
+            return True
+        else:
+            return t
+    else:
+        return t
+
+
 print "configure the provisioner"
 
 provisoner_in_file = "level2/provisioner.json.in"
@@ -47,6 +70,7 @@ for cloud in clouds:
 
 d['epuservices']['epu-provisioner-service'][0]['config']['sites'] = sites
 
+d = _make_bools(d)
 pout = open(provisoner_out_file, "w")
 json.dump(d, pout, indent='    ')
 
@@ -56,6 +80,7 @@ phantom_out_filename = "level4/phantom_conf.json"
 f = open(phantom_in_filename, "r")
 d  = json.load(f)
 d['cloudinitdonly']['users'] = user_list
+d = _make_bools(d)
 pout = open(phantom_out_filename, "w")
 json.dump(d, pout, indent='    ')
 
