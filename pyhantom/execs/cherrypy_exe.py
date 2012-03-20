@@ -18,6 +18,7 @@ def main(argv=sys.argv):
     if not os.path.exists(conf_file):
         print "The file %s does not exist" % (conf_file)
         usage()
+    os.environ['PHANTOM_CONFIG'] = conf_file
 
     try:
         port = int(argv[2])

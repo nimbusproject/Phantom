@@ -1,11 +1,18 @@
+#!/usr/bin/env python
+
+
 import simplejson as json
 import sys
 
-fname = sys.argv[1]
-f = open(fname, "r")
+print "configure the provisioner"
+
+provisoner_in_file = "level2/provisioner.json.in"
+provisoner_out_file = "level2/provisioner.json"
+
+f = open(provisoner_in_file, "r")
 d  = json.load(f)
 
-user_file = sys.argv[2]
+user_file = "users.txt"
 f = open(user_file)
 user_list = {}
 for l in f:
@@ -39,6 +46,17 @@ for cloud in clouds:
 
 
 d['epuservices']['epu-provisioner-service'][0]['config']['sites'] = sites
-out = json.dumps(d, indent='    ')
 
-print out
+pout = open(provisoner_out_file, "w")
+json.dump(d, pout, indent='    ')
+
+print "configure the phantom"
+phantom_in_filename = "level4/phantom_conf.json.in"
+phantom_out_filename = "level4/phantom_conf.json"
+f = open(phantom_in_filename, "r")
+d  = json.load(f)
+d['cloudinitdonly']['users'] = user_list
+pout = open(phantom_out_filename, "w")
+json.dump(d, pout, indent='    ')
+
+

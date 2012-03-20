@@ -1,6 +1,3 @@
-from pynimbusauthz.db import DB
-from pynimbusauthz.user import User
-
 # The user object for store
 from pyhantom.authz import PHAuthzIface, PhantomUserObject
 from pyhantom.phantom_exceptions import PhantomAWSException

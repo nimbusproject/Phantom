@@ -1,5 +1,4 @@
 import os
-from pyhantom.authz.cumulus_sqlalch import CumulusDataStore
 from pyhantom.authz.simple_file import SimpleFileDataStore
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
@@ -17,6 +16,7 @@ class PhantomConfig(object):
             fname = self._CFG.phantom.authz.filename
             self._authz = SimpleFileDataStore(fname)
         elif self._CFG.phantom.authz.type == "cumulus":
+            from pyhantom.authz.cumulus_sqlalch import CumulusDataStore
             dburl = self._CFG.phantom.authz.dburl
             self._authz = CumulusDataStore(dburl)
         else:
