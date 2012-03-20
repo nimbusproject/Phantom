@@ -1,0 +1,17 @@
+{
+  "virtualenv": {
+    "path" : "/home/${epu_username}/app-venv"
+  },
+  "appretrieve":{
+    "retrieve_method":"git",
+    "archive_url":"https://github.com/nimbusproject/PhantomWeb/tarball/master",
+    "git_repo":"git://github.com/nimbusproject/PhantomWeb.git",
+    "git_branch":"master",
+    "git_commit":"HEAD"
+  },
+  "appname":"phantomweb",
+  "username":"${epu_username}",
+  "groupname":"${epu_groupname}",
+  "recipes":["r2app"]
+}
+
