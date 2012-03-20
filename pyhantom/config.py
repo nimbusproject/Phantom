@@ -2,6 +2,11 @@ import os
 from pyhantom.authz.simple_file import SimpleFileDataStore
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
+from amqplib.client_0_8 import transport
+XXX = transport.SSLTransport
+import kombu.transport.amqplib
+setattr(transport, 'SSLTransport', XXX)
+
 import dashi.bootstrap
 from pyhantom.system.epu_localdb.epu_system import EPUSystemWithLocalDB
 from pyhantom.system.local_db.system import SystemLocalDB
