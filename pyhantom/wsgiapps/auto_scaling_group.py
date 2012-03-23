@@ -27,7 +27,7 @@ class CreateAutoScalingGroup(PhantomBaseService):
         self._system.create_autoscale_group(user_obj, asg)
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="CreateAutoScalingGroupResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
         log_reply(doc, user_obj)
         return res
@@ -52,7 +52,7 @@ class DeleteAutoScalingGroup(PhantomBaseService):
         self._system.delete_autoscale_group(user_obj, input.AutoScalingGroupName, forceit)
         
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="DeleteAutoScalingGroupResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
         log_reply(doc, user_obj)
         return res
@@ -77,10 +77,14 @@ class DescribeAutoScalingGroup(PhantomBaseService):
         (ags_list, next_token) = self._system.get_autoscale_groups(user_obj, names=names, max=input.MaxRecords, startToken=input.NextToken)
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
-        
+        doc = self.get_default_response_body_dom(doc_name="DescribeAutoScalingGroupsResponse")
+
+        dlcr_el = doc.createElement('DescribeAutoScalingGroupsResult')
+        doc.documentElement.appendChild(dlcr_el)
+
         lc_el = doc.createElement('AutoScalingGroups')
-        doc.documentElement.appendChild(lc_el)
+        dlcr_el.appendChild(lc_el)
+
         if next_token:
             nt_el = doc.createElement('NextToken')
             doc.documentElement.appendChild(nt_el)

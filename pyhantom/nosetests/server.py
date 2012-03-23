@@ -61,8 +61,7 @@ class RunPwFileEPUServer(BaseServer):
         (osf, self.pwfile) = tempfile.mkstemp(prefix="/tmp/phantom")
         os.close(osf)
         fptr = open(self.pwfile, "w")
-        fptr.write(self.username + '\n')
-        fptr.write(self.password + '\n')
+        fptr.write(self.username + ' ' + self.password + '\n')
         fptr.close()
 
         (osf, self.conffile) = tempfile.mkstemp(prefix="/tmp/phantom")

@@ -10,7 +10,7 @@ import time
 import uuid
 import pyhantom
 from pyhantom.main_router import MainRouter
-from pyhantom.nosetests.server import RunPwFileLocalLCServer
+from pyhantom.nosetests.server import RunPwFileEPUServer
 
 class LocalDBLaunchConfigTests(unittest.TestCase):
 
@@ -32,7 +32,7 @@ class LocalDBLaunchConfigTests(unittest.TestCase):
         (osf, self.db_fname) = tempfile.mkstemp(prefix="/tmp/phantom")
         db_url = "sqlite:///%s" % (self.db_fname)
         try:
-            self.tst_server = RunPwFileLocalLCServer(MainRouter(), db_url)
+            self.tst_server = RunPwFileEPUServer(MainRouter(), db_url)
             self.tst_server.start()
         except Exception, ex:
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
@@ -84,6 +84,18 @@ class LocalDBLaunchConfigTests(unittest.TestCase):
         self.con.delete_launch_configuration(name)
         x = self.con.get_all_launch_configurations()
         self.assertEqual(0, len(x))
+
+    def test_bd_set_security_groups(self):
+        sec_groups = ['default', 'more']
+        name = str(uuid.uuid4()).split('-')[0]
+        lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(self.con, name=name, image_id="ami-2b9b5842", key_name="ooi", security_groups=sec_groups, user_data="XXXUSERDATAYYY", instance_type='m1.small', kernel_id='XEN', ramdisk_id='RAMXXX')
+        self.con.create_launch_configuration(lc)
+        x = self.con.get_all_launch_configurations(names=[name,])
+        self.assertEqual(1, len(x))
+        for s in sec_groups:
+            self.assertTrue(s in x[0].security_groups)
+        self.assertEqual(len(sec_groups), len(x[0].security_groups))
+
 
     def test_delete_failure(self):
         name = str(uuid.uuid4()).split('-')[0]

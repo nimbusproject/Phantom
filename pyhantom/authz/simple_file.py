@@ -12,7 +12,11 @@ class SimpleFileDataStore(PHAuthzIface):
         fptr = open(self._filepath, "r")
         try:
             for line in fptr:
-                (user_id, user_pw) = line.split()
+                la = line.split()
+                if len(la) != 2:
+                    raise PhantomAWSException("InternalFailure", details="Invalid security file %s" % (self._filepath))
+                user_id = la[0]
+                user_pw = la[1]
                 if user_id == access_id:
                     return PhantomUserObject(access_id, user_pw)
             raise PhantomAWSException('InvalidClientTokenId')

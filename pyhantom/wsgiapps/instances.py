@@ -57,7 +57,7 @@ class TerminateInstanceInAutoScalingGroup(PhantomBaseService):
         ############ MUST return an activity type.
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="TerminateInstanceInAutoScalingGroupResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
         log_reply(doc, user_obj)
         return res
