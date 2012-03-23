@@ -118,7 +118,7 @@ class SetDesiredCapacity(PhantomBaseService):
         self._system.alter_autoscale_group(user_obj, input.AutoScalingGroupName, input.DesiredCapacity, force)
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="SetDesiredCapacityResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
 
         log(logging.INFO, "User %s change %s capacity to %d" % (user_obj.username, input.AutoScalingGroupName, input.DesiredCapacity))
