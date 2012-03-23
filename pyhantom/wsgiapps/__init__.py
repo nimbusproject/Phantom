@@ -1,7 +1,6 @@
 import uuid
 from webob.response import Response
 from pyhantom.config import build_cfg
-from pyhantom.phantom_exceptions import PhantomAWSException
 from xml.dom.minidom import getDOMImplementation
 
 class PhantomBaseService(object):
@@ -18,9 +17,11 @@ class PhantomBaseService(object):
         user_obj = self._authz.get_user_key(req.params['AWSAccessKeyId'])
         return user_obj
 
-    def get_default_response_body_dom(self):
+    def get_default_response_body_dom(self, doc_name=None):
+        if doc_name is None:
+            doc_name = self.name
         impl = getDOMImplementation()
-        doc = impl.createDocument(self.ns, self.name, None)
+        doc = impl.createDocument(self.ns, doc_name, None)
         top_element = doc.documentElement
         resp_el = doc.createElement('ResponseMetadata')
         top_element.appendChild(resp_el)

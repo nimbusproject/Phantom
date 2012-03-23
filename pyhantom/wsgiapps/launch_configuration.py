@@ -70,10 +70,14 @@ class DescribeLaunchConfigurations(PhantomBaseService):
         (lc_list, next_token) = self._system.get_launch_configs(user_obj, names=names, max=input.MaxRecords, startToken=input.NextToken)
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name='DescribeLaunchConfigurationsResponse')
+
+        dlcr_el = doc.createElement('DescribeLaunchConfigurationsResult')
+        doc.documentElement.appendChild(dlcr_el)
 
         lc_el = doc.createElement('LaunchConfigurations')
-        doc.documentElement.appendChild(lc_el)
+        dlcr_el.appendChild(lc_el)
+
         if next_token:
             nt_el = doc.createElement('NextToken')
             doc.documentElement.appendChild(nt_el)
