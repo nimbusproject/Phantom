@@ -24,7 +24,7 @@ class CreateLaunchConfiguration(PhantomBaseService):
         self._system.create_launch_config(user_obj, lc)
 
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="CreateLaunchConfigurationResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
         log_reply(doc, user_obj)
         return res
@@ -45,7 +45,7 @@ class DeleteLaunchConfiguration(PhantomBaseService):
 
         self._system.delete_launch_config(user_obj, input.LaunchConfigurationName)
         res = self.get_response()
-        doc = self.get_default_response_body_dom()
+        doc = self.get_default_response_body_dom(doc_name="DeleteLaunchConfigurationResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
         log_reply(doc, user_obj)
         return res

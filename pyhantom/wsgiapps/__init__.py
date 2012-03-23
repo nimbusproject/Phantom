@@ -9,7 +9,7 @@ class PhantomBaseService(object):
         self._cfg = build_cfg()
         self._system = self._cfg.get_system()
         self.name = name
-        self.ns = "http://autoscaling.amazonaws.com/doc/2010-08-01/"
+        self.ns = u"http://autoscaling.amazonaws.com/doc/2009-05-15/"
         self.xamznRequestId = str(uuid.uuid4())
         self._authz = self._cfg.get_authz()
 
