@@ -1,7 +1,7 @@
 import uuid
 from webob.response import Response
 from pyhantom.config import build_cfg
-from xml.dom.minidom import getDOMImplementation
+import xml.dom.minidom
 
 class PhantomBaseService(object):
 
@@ -20,8 +20,12 @@ class PhantomBaseService(object):
     def get_default_response_body_dom(self, doc_name=None):
         if doc_name is None:
             doc_name = self.name
-        impl = getDOMImplementation()
-        doc = impl.createDocument(self.ns, doc_name, None)
+
+        doc = xml.dom.minidom.Document()
+        el = doc.createElementNS(self.ns, doc_name)
+        el.setAttribute("xmlns", self.ns)
+        doc.appendChild(el)
+
         top_element = doc.documentElement
         resp_el = doc.createElement('ResponseMetadata')
         top_element.appendChild(resp_el)
