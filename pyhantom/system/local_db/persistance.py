@@ -118,7 +118,7 @@ class AutoscaleGroupObject(object):
         self.DesiredCapacity = out_t.DesiredCapacity
         self.MaxSize = out_t.MaxSize
         self.MinSize = out_t.MinSize
-        self.DefaultCooldown = out_t.DefaultCooldown
+        self.DefaultCooldown = out_t.Cooldown
         self.HealthCheckGracePeriod = out_t.HealthCheckGracePeriod
         self.CreatedTime = out_t.CreatedTime.date_time
 

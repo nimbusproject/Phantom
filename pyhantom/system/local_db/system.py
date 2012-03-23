@@ -38,7 +38,7 @@ def db_asg_to_outtype(asg_db):
     asg.DesiredCapacity = asg_db.DesiredCapacity
     asg.MaxSize = asg_db.MaxSize
     asg.MinSize = asg_db.MinSize
-    asg.DefaultCooldown = asg_db.DefaultCooldown
+    asg.Cooldown = asg_db.DefaultCooldown
     asg.HealthCheckGracePeriod = asg_db.HealthCheckGracePeriod
 
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
