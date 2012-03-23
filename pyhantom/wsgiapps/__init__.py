@@ -22,7 +22,7 @@ class PhantomBaseService(object):
             doc_name = self.name
 
         doc = xml.dom.minidom.Document()
-        el = doc.createElementNS(self.ns, doc_name)
+        el = doc.createElementNS(self.ns, unicode(doc_name))
         el.setAttribute("xmlns", self.ns)
         doc.appendChild(el)
 
