@@ -136,7 +136,7 @@ class SuspendedProcessType(AWSType):
 
 class AutoScalingGroupType(AWSType):
     members_type_dict = {'AutoScalingGroupARN': str, 'AutoScalingGroupName': str, 'AvailabilityZones' : AWSListType,
-                         'CreatedTime': DateTimeType, 'DefaultCooldown': int, 'DesiredCapacity': int,
+                         'CreatedTime': DateTimeType, 'Cooldown': int, 'DesiredCapacity': int,
                          'EnabledMetrics': AWSListType, 'HealthCheckGracePeriod': int, 'HealthCheckType': str, 'Instances': AWSListType,
                          'LaunchConfigurationName': str, 'LoadBalancerNames': AWSListType, 'MaxSize': int, 'MinSize': int,
                          'PlacementGroup': str, 'Status': str, 'SuspendedProcesses': AWSListType, 'Tags': AWSListType, 'VPCZoneIdentifier': str}
@@ -152,7 +152,7 @@ class AutoScalingGroupType(AWSType):
             self.AvailabilityZones.type_list.append(az)
 
         self.CreatedTime = DateTimeType('CreatedTime', datetime.datetime.utcnow())
-        self.DefaultCooldown = asg.DefaultCooldown
+        self.Cooldown = asg.DefaultCooldown
         self.DesiredCapacity = asg.DesiredCapacity
 
         self.EnabledMetrics = AWSListType('EnabledMetrics')
@@ -174,8 +174,8 @@ class AutoScalingGroupType(AWSType):
         # XXX work around for boto
         if self.HealthCheckGracePeriod is None:
             self.HealthCheckGracePeriod = 0
-        if self.DefaultCooldown is None:
-            self.DefaultCooldown = 0
+        if self.Cooldown is None:
+            self.Cooldown = 0
 
 
 # user for terminate instance, skipped for now
