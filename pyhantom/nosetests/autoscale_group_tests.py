@@ -103,7 +103,8 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
         name = str(uuid.uuid4()).split('-')[0]
         try:
             x = self.con.get_all_groups(names=[name])
-            self.assertTrue(False, "Should have thrown an exception")
+            self.assertEqual(len(x), 0)
+            #self.assertTrue(False, "Should have thrown an exception")
         except BotoServerError, ex:
             pass
 

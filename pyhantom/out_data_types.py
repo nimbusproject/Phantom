@@ -19,9 +19,10 @@ class AWSListType(object):
                 txt_el = doc.createTextNode(str(l))
                 member_el.appendChild(txt_el)
             else:
-                l_el = doc.createElement(l.name)
-                member_el.appendChild(l_el)
-                l.add_xml(doc, l_el)
+                #l_el = doc.createElement(l.name)
+                #member_el.appendChild(l_el)
+                #l.add_xml(doc, l_el)
+                l.add_xml(doc, member_el)
 
     def get_length(self):
         return len(self.type_list)
