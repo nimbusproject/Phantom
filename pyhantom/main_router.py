@@ -2,6 +2,7 @@ import logging
 import webob
 import webob.dec
 import webob.exc
+import uuid
 from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log
@@ -36,21 +37,31 @@ class MainRouter(object):
     @LogEntryDecorator(classname="MainRouter")
     def __call__(self, req):
 
-        log(logging.INFO, "A call to the main router occurred | %s" % (str(req.params)))
-        authz = self._cfg.get_authz()
-        user_obj = authz.get_user_key(req.params['AWSAccessKeyId'])
-        authenticate_user(req, user_obj.password)
-        key = 'Action'
-        if key not in req.params.keys():
-            raise PhantomAWSException('InvalidParameterValue')
-        action = req.params['Action']
+        request_id = str(uuid.uuid4())
+        try:
+            log(logging.INFO, "%s Enter main router | %s" % (request_id, str(req.params)))
+            authz = self._cfg.get_authz()
+            user_obj = authz.get_user_key(req.params['AWSAccessKeyId'])
+            authenticate_user(req, user_obj.password)
+            key = 'Action'
+            if key not in req.params.keys():
+                raise PhantomAWSException('InvalidParameterValue')
+            action = req.params['Action']
 
-        global _action_to_application_map
-        if action not in _action_to_application_map:
-            raise webob.exc.HTTPNotFound("No action %s" % action)
+            global _action_to_application_map
+            if action not in _action_to_application_map:
+                raise webob.exc.HTTPNotFound("No action %s" % action)
 
-        app_cls = _action_to_application_map[action]
-        app = app_cls(action)
+            app_cls = _action_to_application_map[action]
+
+            log(logging.INFO, "%s Getting phantom action %s" % (request_id, action))
+            
+            app = app_cls(action)
+        except Exception, ex:
+            log(logging.ERROR, "%s Exiting main router with error %s" % (request_id, str(ex)))
+            raise
+        
+        log(logging.INFO, "%s Exiting main router" % (request_id))
 
         return app
 

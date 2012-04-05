@@ -14,6 +14,7 @@ g_add_template = {'general' :
                     {'preserve_n': None,
                      'epuworker_type': 'phantom',
                      'epuworker_image_id': None,
+                     'epuworker_allocation': None,
                      'iaas_key': None,
                      'iaas_secret': None,
                      'iaas_site': None,
@@ -92,6 +93,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         conf = g_add_template.copy()
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
         conf['engine_conf']['epuworker_image_id'] = db_lc.ImageId
+        conf['engine_conf']['epuworker_allocation'] = db_lc.InstanceType
         conf['engine_conf']['iaas_key'] = user_obj.username
         conf['engine_conf']['iaas_secret'] = user_obj.password
         conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones + "-" + user_obj.username
@@ -160,6 +162,14 @@ class EPUSystemWithLocalDB(SystemLocalDB):
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (name))
 
         try:
+#            clean up instances
+#            epu_desc = self._epum_client.describe_epu(name)
+#            inst_list = epu_desc['instances']
+#            for inst in inst_list:
+#                if 'iaas_id' in inst['iaas_id']:
+#                    instance_id = inst['iaas_id']
+#
+                    
             self._epum_client.remove_epu(name)
         except Exception, ex:
             raise
