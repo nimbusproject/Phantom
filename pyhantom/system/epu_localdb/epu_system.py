@@ -58,7 +58,7 @@ def convert_epu_description_to_asg_out(desc, asg):
         out_t.AvailabilityZone = inst['site']
         out_t.LaunchConfigurationName = asg.LaunchConfigurationName
 
-        if out_t.HealthStatus == "Healthy":
+        if 'iaas_id' in  inst:
             out_t.InstanceId = inst['iaas_id']
         else:
             out_t.InstanceId = ""
