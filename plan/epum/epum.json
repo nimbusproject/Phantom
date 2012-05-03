@@ -7,11 +7,19 @@
         "config": {
           "server": {
             "amqp": {
-              "ssl": "True",
-              "port": 5671,
-              "host": "${broker_ip_address}",
+              "host": "${rabbitmq_host}",
               "username": "${rabbitmq_username}",
               "password": "${rabbitmq_password}"
+            }
+          },
+          "logging":{
+            "handlers":{
+              "syslog":{
+                "address": ["${syslog_host}", 514]
+              }
+            },
+            "root":{
+              "handlers": ["console", "file", "syslog"]
             }
           },
           "epumanagement": {
@@ -20,7 +28,7 @@
             "provisioner_vars" : {
               "epuworker_image_id":"${worker_id}",
               "queue_name_work":"${queue1_name_work}",
-              "broker_ip_address":"${broker_ip_address}",
+              "broker_ip_address":"${rabbitmq_host}",
               "broker_username":"${rabbitmq_username}",
               "broker_password":"${rabbitmq_password}",
               "retrieve_method":"${epu_retrieve_method}",
@@ -29,9 +37,26 @@
               "git_repo":"${epu_git_repo}",
               "git_branch":"${epu_git_branch}",
               "git_commit":"${epu_git_commit}",
-              "dtdata_archive_url":"${dtdata_archive_url}"
+              "dtdata_archive_url":"${dtdata_archive_url}",
+              "epuagent_retrieve_method":"${epuagent_retrieve_method}",
+              "epuagent_git_repo":"${epuagent_git_repo}",
+              "epuagent_git_branch":"${epuagent_git_branch}",
+              "epuagent_git_commit":"${epuagent_git_commit}",
+              "heartbeat_period_seconds":"${heartbeat_period_seconds}"
             },
             "initial_epus": {
+              "epu1": {
+                "general": {
+                  "engine_class": "epu.decisionengine.impls.simplest.SimplestEngine"
+                },
+                "health": {
+                  "monitor_health": true
+                },
+                "engine_conf": {
+                  "preserve_n": "${preserve_n}",
+                  "epuworker_type": "${worker_deployable_type}"
+                }
+              }
             }
           }
         }
@@ -39,6 +64,8 @@
     ]
   },
   "virtualenv": {
+    "python" : "/usr/bin/python2.7",
+    "virtualenv" : "/usr/bin/virtualenv2.7",
     "path" : "/home/${epu_username}/app-venv"
   },
   "appretrieve":{

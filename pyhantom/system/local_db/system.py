@@ -77,7 +77,7 @@ class SystemLocalDB(SystemAPI):
             nxt = db_lco.pop(-1)
             next_token = nxt.LaunchConfigurationName
 
-        # if weeverexpect people to have more than a few launch configs we should change this to itertools
+        # if we ever expect people to have more than a few launch configs we should change this to itertools
         lc_list_type = AWSListType('LaunchConfigurations')
         for lcdb in db_lco:
             lc = db_launch_config_to_outtype(lcdb)
