@@ -101,7 +101,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
-            self._epum_client.add_epu(asg.AutoScalingGroupName, conf)
+            self._epum_client.add_domain(asg.AutoScalingGroupName, conf)
         except Exception, ex:
             raise
 
@@ -121,7 +121,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
                     {'preserve_n': desired_capacity},
                   }
         try:
-            self._epum_client.reconfigure_epu(name, conf)
+            self._epum_client.reconfigure_domain(name, conf)
         except Exception, ex:
             raise
 
@@ -133,7 +133,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         self._clean_up_db()
         try:
             (asg_list_type, next_token) = SystemLocalDB.get_autoscale_groups(self, user_obj, names, max, startToken)
-            epu_list = self._epum_client.list_epus()
+            epu_list = self._epum_client.list_domains()
             log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
             # verify that the names are in thelist
@@ -144,7 +144,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
                     # for now make it very obvious that this happened
                     raise PhantomAWSException('InternalFailure', "%s is in the DB but the epu does not know about it" % (grp.AutoScalingGroupName))
 
-                epu_desc = self._epum_client.describe_epu(grp.AutoScalingGroupName)
+                epu_desc = self._epum_client.describe_domain(grp.AutoScalingGroupName)
                 convert_epu_description_to_asg_out(epu_desc, grp)
         except Exception, ex:
             raise
@@ -163,14 +163,14 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
         try:
 #            clean up instances
-#            epu_desc = self._epum_client.describe_epu(name)
+#            epu_desc = self._epum_client.describe_domain(name)
 #            inst_list = epu_desc['instances']
 #            for inst in inst_list:
 #                if 'iaas_id' in inst['iaas_id']:
 #                    instance_id = inst['iaas_id']
 #
                     
-            self._epum_client.remove_epu(name)
+            self._epum_client.remove_domain(name)
         except Exception, ex:
             raise
 
@@ -180,7 +180,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
     def _clean_up_db(self):
         try:
-            epu_list = self._epum_client.list_epus()
+            epu_list = self._epum_client.list_domains()
             asgs = self._db.get_asgs(None)
 
             for asg in asgs:
