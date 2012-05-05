@@ -9,6 +9,7 @@ from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecora
 from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
 from pyhantom.wsgiapps.instances import DescribeAutoScalingInstances, TerminateInstanceInAutoScalingGroup
 from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
+from wsgiref.simple_server import make_server
 
 _action_to_application_map = {
     'CreateAutoScalingGroup' : CreateAutoScalingGroup,
@@ -65,3 +66,6 @@ class MainRouter(object):
 
         return app
 
+if __name__ == '__main__':
+    httpd = make_server('127.0.0.1', 8445, MainRouter())
+    httpd.serve_forever()

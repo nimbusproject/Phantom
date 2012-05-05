@@ -1,8 +1,10 @@
 import os
 from pyhantom.authz.simple_file import SimpleFileDataStore
+from pyhantom.authz.simple_sql_db import SimpleSQL
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
 import dashi.bootstrap
+from pyhantom.system.epu.epu_client import EPUSystem
 from pyhantom.system.epu_localdb.epu_system import EPUSystemWithLocalDB
 from pyhantom.system.local_db.system import SystemLocalDB
 from pyhantom.system.tester import TestSystem
@@ -19,6 +21,8 @@ class PhantomConfig(object):
             from pyhantom.authz.cumulus_sqlalch import CumulusDataStore
             dburl = self._CFG.phantom.authz.dburl
             self._authz = CumulusDataStore(dburl)
+        elif self._CFG.phantom.authz.type == "sqldb":
+            self._authz = SimpleSQL(CFG)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 
@@ -28,6 +32,8 @@ class PhantomConfig(object):
             self._system = SystemLocalDB(self._CFG, log=self._logger)
         elif self._CFG.phantom.system.type == "epu_localdb":
             self._system = EPUSystemWithLocalDB(self._CFG)
+        elif self._CFG.phantom.system.type == "epu":
+            self._system = EPUSystem(self._CFG)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 
