@@ -8,6 +8,7 @@ import hmac
 import logging
 import traceback
 import urllib
+import re
 import webob.exc
 import datetime
 from pyhantom.phantom_exceptions import PhantomAWSException, PhantomNotImplementedException
@@ -89,6 +90,8 @@ def get_auth_hash(key, req):
 
 def _get_time(str_time):
     str_time = str_time.replace("Z", "UTC")
+    # in case the seconds are over provisioned
+    str_time = re.sub('\..*', "UTC", str_time)
     return datetime.datetime.strptime(str_time, '%Y-%m-%dT%H:%M:%S%Z')
 
 def make_time(datetimeobj):

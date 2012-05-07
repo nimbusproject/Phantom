@@ -1,12 +1,12 @@
 import logging
-from pyhantom.out_data_types import InstanceType, AWSListType
+from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurationType, InstanceMonitoringType, DateTimeType
 from pyhantom.system import SystemAPI
 from pyhantom.system.local_db.persistance import LaunchConfigurationObject
 from pyhantom.system.local_db.system import SystemLocalDB
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import EPUMClient, DTRSDTClient
-from pyhantom.util import log, LogEntryDecorator
+from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
 from dashi import DashiError
 
 g_add_template = {'general' :
@@ -127,7 +127,7 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['image'] = lc.ImageId
 
         # user defined values
-        dt_def['mappings'][site_name]['CreatedTime'] = str(lc.CreatedTime.date_time)
+        dt_def['mappings'][site_name]['CreatedTime'] = make_time(lc.CreatedTime.date_time)
         #dt_def['mappings'][site_name]['BlockDeviceMappings'] = lc.BlockDeviceMappings
         dt_def['mappings'][site_name]['InstanceMonitoring'] = lc.InstanceMonitoring.Enabled
         dt_def['mappings'][site_name]['KernelId'] = lc.KernelId
@@ -162,27 +162,43 @@ class EPUSystem(SystemAPI):
         dts = self._dtrs_client.list_dts(user_obj.username)
         dts.sort()
 
-        start_ndx = 0
-        if startToken:
-            start_ndx = dts.index(startToken)
-        if max > -1:
-            end_ndx = start_ndx + max
-            if len(dts) > end_ndx:
-                next_token = dts[end_ndx]
-        else:
-            end_ndx = len(dts)
-
-        dts = dts[start_ndx:end_ndx]
-
         # now that we have the final list, look up each description
         lc_list_type = AWSListType('LaunchConfigurations')
         for lc_name in dts:
-            dt_descr = self._dtrs_client.describe_dt(user_obj.username, lc_name)
-            for site in dt_descr['mappings']:
+            if lc_list_type.get_length() >= max and max > -1:
+                break
+
+            dt_descr = self._get_dt_details(lc_name, user_obj.username)
+            for site in sorted(dt_descr['mappings'].keys()):
+                mapped_def = dt_descr['mappings'][site]
                 out_name = '%s@%s' % (lc_name, site)
-            pass
-            # convert to xml out type
-        
+                if lc_list_type.get_length() >= max and max > -1:
+                    break
+
+                if out_name == startToken:
+                    startToken = None
+
+                if startToken is None:
+                    ot_lc = LaunchConfigurationType('LaunchConfiguration')
+                    ot_lc.BlockDeviceMappings = AWSListType('BlockDeviceMappings')
+
+                    tm = _get_time(mapped_def['CreatedTime'])
+                    ot_lc.CreatedTime = DateTimeType('CreatedTime', tm)
+
+                    ot_lc.ImageId = mapped_def['image']
+                    ot_lc.InstanceMonitoring = InstanceMonitoringType('InstanceMonitoring')
+                    ot_lc.InstanceMonitoring.Enabled = False
+                    ot_lc.InstanceType = mapped_def['allocation']
+                    ot_lc.KernelId = None
+                    ot_lc.KeyName = mapped_def['KeyName']
+                    ot_lc.LaunchConfigurationARN = mapped_def['LaunchConfigurationARN']
+                    ot_lc.LaunchConfigurationName = out_name
+                    ot_lc.RamdiskId = None
+                    ot_lc.SecurityGroups = AWSListType('SecurityGroups')
+                    ot_lc.UserData = None
+
+                    lc_list_type.add_item(ot_lc)
+
         return (lc_list_type, next_token)
 
     @LogEntryDecorator(classname="EPUSystem")

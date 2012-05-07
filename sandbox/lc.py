@@ -11,7 +11,7 @@ password="TVxbAUQWcm4zPHIOqrdyflLZR8Oo0PN7wIocFxvu2E"
 region = RegionInfo('localhost')
 con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=False, port=8445, debug=3, region=region)
 con.host = 'localhost'
-name = "helloXXthere@hotel"
+name = "hterX@hotel"
 lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(con, name=name, image_id="ami-deadbeaf", key_name="ooi", security_groups=['default'], user_data="XXXUSERDATAYYY", instance_type='m1.small')
 
 
