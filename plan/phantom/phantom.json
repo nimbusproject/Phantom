@@ -1,0 +1,33 @@
+{
+  "gitfetch": {
+    "git_repo":"git://github.com/nimbusproject/Phantom.git",
+    "git_branch":"master",
+    "git_commit":"HEAD"
+  },
+  "virtualenv": {
+    "python" : "/usr/bin/python2.7",
+    "virtualenv" : "/usr/bin/virtualenv",
+    "path" : "/home/bresnaha/tmp/app-venv"
+  },
+  "supervisord": {
+     "command": "/home/bresnaha/tmp/phantom/phantom/start-phantom.sh",
+     "name": "phantom"
+  },
+  "autoscale" : {
+      "rabbit_host": "${rabbitmq_host}",
+      "rabbit_port": "${rabbitmq_port}",
+      "rabbit_username": "${rabbitmq_username}",
+      "rabbit_password": "${rabbitmq_password}",
+      "rabbit_exchange": "${rabbitmq_exchange}",
+      "syslog_server": "localhost",
+      "syslog_port": 514,
+      "port": 8445
+  },
+
+  "appdir": "/home/bresnaha/tmp/phantom",
+  "username":"${epu_username}",
+  "groupname":"${epu_groupname}",
+  "appname":"phantom",
+  "recipes":["virtualenv", "gitfetch", "virtualenvinstall", "nimbusautoscale", "supervisord"]
+}
+
