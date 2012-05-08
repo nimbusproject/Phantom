@@ -21,8 +21,8 @@ x = con.get_all_launch_configurations()
 
 print x
 
-con.delete_launch_configuration(name)
-x = con.get_all_launch_configurations()
+#con.delete_launch_configuration(name)
+#x = con.get_all_launch_configurations()
 
 print x
 

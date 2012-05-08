@@ -6,8 +6,9 @@ from pyhantom.system.local_db.system import SystemLocalDB
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import EPUMClient, DTRSDTClient
-from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
+from pyhantom.util import log, LogEntryDecorator, _get_time, make_time, get_default_keyname
 from dashi import DashiError
+
 
 g_add_template = {'general' :
                     {'engine_class': 'epu.decisionengine.impls.phantom.PhantomEngine'},
@@ -15,14 +16,8 @@ g_add_template = {'general' :
                     {'monitor_health': False},
                   'engine_conf':
                     {'preserve_n': None,
-                     'epuworker_type': 'phantom',
-                     'epuworker_image_id': None,
-                     'epuworker_allocation': None,
-                     'iaas_key': None,
-                     'iaas_secret': None,
-                     'iaas_site': None,
-                     'iaas_allocation': None,
-                     'deployable_type': 'phantom'}
+                     'epuworker_type': None,
+                     'force_site': None}
                   }
 
 
@@ -123,8 +118,9 @@ class EPUSystem(SystemAPI):
 
         dt_def['mappings'][site_name] = {}
         # values needed by the system
-        dt_def['mappings'][site_name]['allocation'] = lc.InstanceType
-        dt_def['mappings'][site_name]['image'] = lc.ImageId
+        dt_def['mappings'][site_name]['iaas_allocation'] = lc.InstanceType
+        dt_def['mappings'][site_name]['iaas_image'] = lc.ImageId
+        dt_def['mappings'][site_name]['key_name'] = get_default_keyname()
 
         # user defined values
         dt_def['mappings'][site_name]['CreatedTime'] = make_time(lc.CreatedTime.date_time)
@@ -133,7 +129,7 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['KernelId'] = lc.KernelId
         dt_def['mappings'][site_name]['RamdiskId'] = lc.RamdiskId
         dt_def['mappings'][site_name]['UserData'] = lc.UserData
-        dt_def['mappings'][site_name]['KeyName'] = lc.KeyName
+        dt_def['mappings'][site_name]['RequestedKeyName'] = lc.KeyName
         dt_def['mappings'][site_name]['LaunchConfigurationARN'] = lc.LaunchConfigurationARN
 
         self._dtrs_client.add_dt(user_obj.username, dt_name, dt_def)
@@ -185,12 +181,12 @@ class EPUSystem(SystemAPI):
                     tm = _get_time(mapped_def['CreatedTime'])
                     ot_lc.CreatedTime = DateTimeType('CreatedTime', tm)
 
-                    ot_lc.ImageId = mapped_def['image']
+                    ot_lc.ImageId = mapped_def['iaas_image']
                     ot_lc.InstanceMonitoring = InstanceMonitoringType('InstanceMonitoring')
                     ot_lc.InstanceMonitoring.Enabled = False
-                    ot_lc.InstanceType = mapped_def['allocation']
+                    ot_lc.InstanceType = mapped_def['iaas_allocation']
                     ot_lc.KernelId = None
-                    ot_lc.KeyName = mapped_def['KeyName']
+                    ot_lc.KeyName = get_default_keyname()
                     ot_lc.LaunchConfigurationARN = mapped_def['LaunchConfigurationARN']
                     ot_lc.LaunchConfigurationName = out_name
                     ot_lc.RamdiskId = None
@@ -204,21 +200,17 @@ class EPUSystem(SystemAPI):
     @LogEntryDecorator(classname="EPUSystem")
     def create_autoscale_group(self, user_obj, asg):
         global g_add_template
+
+        if len(asg.AvailabilityZones.type_list) < 1:
+            raise PhantomAWSException('InvalidParameterValue', 'An AZ must be specified')
+    
         conf = g_add_template.copy()
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
-        conf['engine_conf']['epuworker_image_id'] = db_lc.ImageId
-        conf['engine_conf']['epuworker_allocation'] = db_lc.InstanceType
-        conf['engine_conf']['iaas_key'] = user_obj.username
-        conf['engine_conf']['iaas_secret'] = user_obj.password
-        conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones + "-" + user_obj.username
-        conf['engine_conf']['iaas_allocation'] = db_lc.InstanceType
+        conf['engine_conf']['epuworker_type'] = asg.LaunchConfigurationName
+        conf['engine_conf']['force_site'] = asg.AvailabilityZones.type_list[0]
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
-        try:
-            self._epum_client.add_epu(asg.AutoScalingGroupName, conf)
-        except Exception, ex:
-            raise
-
+        self._epum_client.add_epu(asg.AutoScalingGroupName, conf)
 
     @LogEntryDecorator(classname="EPUSystem")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
@@ -230,36 +222,37 @@ class EPUSystem(SystemAPI):
         conf = {'engine_conf':
                     {'preserve_n': desired_capacity},
                   }
-        try:
-            self._epum_client.reconfigure_epu(name, conf)
-        except Exception, ex:
-            raise
+        self._epum_client.reconfigure_epu(name, conf)
 
         asg.DesiredCapacity = desired_capacity
         self._db.db_commit()
 
     @LogEntryDecorator(classname="EPUSystem")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
-        self._clean_up_db()
-        try:
-            (asg_list_type, next_token) = SystemLocalDB.get_autoscale_groups(self, user_obj, names, max, startToken)
-            epu_list = self._epum_client.list_epus()
-            log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
+        epu_list = self._epum_client.list_epus()
+        log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
-            # verify that the names are in thelist
-            my_list = []
-            for grp in asg_list_type.type_list:
-                if grp.AutoScalingGroupName not in epu_list:
-                    # perhaps all we should do here is log the error and remove the item from the DB
-                    # for now make it very obvious that this happened
-                    raise PhantomAWSException('InternalFailure', "%s is in the DB but the epu does not know about it" % (grp.AutoScalingGroupName))
+        epu_list.sort()
+        start_ndx = 0
+        if startToken:
+            try:
+                start_ndx = epu_list.index(startToken)
+            except ValueError:
+                raise PhantomAWSException('InvalidParameterValue', details="%s was not found in the epu list" % (startToken))
 
-                epu_desc = self._epum_client.describe_epu(grp.AutoScalingGroupName)
-                convert_epu_description_to_asg_out(epu_desc, grp)
-        except Exception, ex:
-            raise
-        except:
-            raise
+        next_token = None
+        end_ndx = len(epu_list)
+        if max > -1:
+            end_ndx = start_ndx + max
+            if end_ndx > len(epu_list):
+                end_ndx = len(epu_list)
+            if end_ndx < len(epu_list):
+                next_token = epu_list[end_ndx]
+
+        epu_list = epu_list[start_ndx:end_ndx]
+
+        for epu in epu_list:
+            epu_desc = self._epum_client.describe_epu(epu)
 
         return (asg_list_type, next_token)
 
@@ -270,18 +263,4 @@ class EPUSystem(SystemAPI):
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (name))
 
-        try:
-            self._epum_client.remove_epu(name)
-        except Exception, ex:
-            raise
-
-        self._db.delete_asg(asg)
-        self._db.db_commit()
-
-    @LogEntryDecorator(classname="EPUSystem")
-    def get_autoscale_instances(self, user_obj, instance_id_list=None, max=-1, start=0):
-        pass
-
-    @LogEntryDecorator(classname="EPUSystem")
-    def terminate_instances(self, user_obj, instance_id, adjust_policy):
-        pass
+        self._epum_client.remove_epu(name)
