@@ -15,7 +15,7 @@
   },
   "autoscale" : {
       "rabbit_host": "${rabbitmq_host}",
-      "rabbit_port": "${rabbitmq_port}",
+      "rabbit_port": "5672",
       "rabbit_username": "${rabbitmq_username}",
       "rabbit_password": "${rabbitmq_password}",
       "rabbit_exchange": "${rabbitmq_exchange}",
