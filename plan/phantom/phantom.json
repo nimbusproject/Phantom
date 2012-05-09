@@ -6,11 +6,11 @@
   },
   "virtualenv": {
     "python" : "/usr/bin/python2.7",
-    "virtualenv" : "/usr/bin/virtualenv",
-    "path" : "/home/bresnaha/tmp/app-venv"
+    "virtualenv" : "/usr/bin/virtualenv2.7",
+    "path" : "/home/${epu_username}/app-venv"
   },
   "supervisord": {
-     "command": "/home/bresnaha/tmp/phantom/phantom/start-phantom.sh",
+     "command": "/home/${epu_username}/phantom/start-phantom.sh",
      "name": "phantom"
   },
   "autoscale" : {
@@ -19,12 +19,12 @@
       "rabbit_username": "${rabbitmq_username}",
       "rabbit_password": "${rabbitmq_password}",
       "rabbit_exchange": "${rabbitmq_exchange}",
-      "syslog_server": "localhost",
+      "syslog_server": "${syslog_host}",
       "syslog_port": 514,
       "port": 8445
   },
 
-  "appdir": "/home/bresnaha/tmp/phantom",
+  "appdir": "/home/${epu_username}/phantom",
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
   "appname":"phantom",
