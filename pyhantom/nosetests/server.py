@@ -24,7 +24,7 @@ class BaseServer(Thread):
             raise
 
     def get_boto_values(self):
-        return (self.username, self.password, self._srv.server_port)
+        return (self.username, self.password, self._srv.server_address[0], self._srv.server_address[1])
 
     def end(self):
         self._srv.shutdown()

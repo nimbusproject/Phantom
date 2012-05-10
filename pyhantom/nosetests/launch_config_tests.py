@@ -16,16 +16,16 @@ from pyhantom.system.tester import _TESTONLY_clear_registry
 class BasicLaunchConfigTests(unittest.TestCase):
 
     def _get_good_con(self):
-        region = RegionInfo('localhost')
+        region = RegionInfo(self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
+        con.host = self.hostname
         return con
 
     def setUp(self):
         self.tst_server = RunPwFileServer()
         self.tst_server.start()
         time.sleep(2.0)
-        (self.username, self.password, self.port) = self.tst_server.get_boto_values()
+        (self.username, self.password, self.hostname, self.port) = self.tst_server.get_boto_values()
         self.con = self._get_good_con()
 
     def tearDown(self):
@@ -155,9 +155,9 @@ class BasicLaunchConfigTests(unittest.TestCase):
         self.assertEqual(len(sec_groups), len(x[0].security_groups))
 
     def test_bad_login(self):
-        region = RegionInfo('localhost')
+        region = RegionInfo(self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id="XXX", aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
+        con.host = self.hostname
         try:
             x = con.get_all_launch_configurations()
             self.assertTrue(False, "login should have failed")
@@ -166,9 +166,9 @@ class BasicLaunchConfigTests(unittest.TestCase):
 
 
     def test_bad_pw(self):
-        region = RegionInfo('localhost')
+        region = RegionInfo(self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key="XXX", is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
+        con.host = self.hostname
         try:
             x = con.get_all_launch_configurations()
             self.assertTrue(False, "login should have failed")

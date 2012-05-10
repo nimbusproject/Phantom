@@ -23,9 +23,9 @@ class LocalDBLaunchConfigTests(unittest.TestCase):
         pass
 
     def _get_good_con(self):
-        region = RegionInfo('localhost')
+        region = RegionInfo(self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = 'localhost'
+        con.host = self.hostname
         return con
 
     def setUp(self):
@@ -38,7 +38,7 @@ class LocalDBLaunchConfigTests(unittest.TestCase):
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
             raise
         time.sleep(1.5)
-        (self.username, self.password, self.port) = self.tst_server.get_boto_values()
+        (self.username, self.password, self.hostname, self.port) = self.tst_server.get_boto_values()
         self.con = self._get_good_con()
 
     def tearDown(self):
