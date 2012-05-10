@@ -8,6 +8,10 @@ from pyhantom.main_router import MainRouter
 
 class BaseServer(Thread):
 
+    test_server_env = "PHANTOM_TEST_SERVER"
+    test_user_env = "PHANTOM_TEST_USER"
+    test_pw_env = "PHANTOM_TEST_PW"
+
     def __init__(self):
         Thread.__init__(self)
         self.username = str(uuid.uuid4()).split('-')[0]
@@ -15,6 +19,9 @@ class BaseServer(Thread):
         self.is_ready = False
 
     def run(self):
+        if self.test_server_env in os.environ:
+            return
+
         try:
             self._srv = make_server('localhost', 0, MainRouter())
             self._srv.serve_forever()
@@ -24,6 +31,10 @@ class BaseServer(Thread):
             raise
 
     def get_boto_values(self):
+        if self.test_server_env in os.environ:
+            (server, port) = self.test_server_env.split(':')
+            return (os.environ[self.test_user_env], os.environ[self.test_pw_env], server, port)
+
         return (self.username, self.password, self._srv.server_address[0], self._srv.server_address[1])
 
     def end(self):

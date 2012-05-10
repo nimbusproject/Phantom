@@ -5,8 +5,6 @@ import boto.ec2.autoscale
 import uuid
 import sys
 
-username = "USHVV3EE6IR7YaVrzf2Kp"
-password="TVxbAUQWcm4zPHIOqrdyflLZR8Oo0PN7wIocFxvu2E"
 
 region = RegionInfo('localhost')
 con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=False, port=8445, debug=3, region=region)

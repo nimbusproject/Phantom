@@ -71,4 +71,8 @@ class SimpleSQL(PHAuthzIface):
     def commit(self):
         self._Session.commit()
 
+    def add_user(self, access_id, access_secret):
+        self.add_alter_user(access_id, access_secret)
+        self.commit()
+
 
