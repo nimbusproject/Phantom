@@ -32,7 +32,7 @@ class LocalDBLaunchConfigTests(unittest.TestCase):
         (osf, self.db_fname) = tempfile.mkstemp(prefix="/tmp/phantom")
         db_url = "sqlite:///%s" % (self.db_fname)
         try:
-            self.tst_server = RunPwFileEPUServer(MainRouter(), db_url)
+            self.tst_server = RunPwFileEPUServer(db_url)
             self.tst_server.start()
         except Exception, ex:
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)

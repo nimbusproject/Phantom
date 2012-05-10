@@ -1,3 +1,4 @@
+import os
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -7,7 +8,6 @@ import unittest
 import time
 import uuid
 import pyhantom
-from pyhantom.main_router import MainRouter
 
 # this test has a new server ever time to make sure there is a fresh env
 from pyhantom.nosetests.server import RunPwFileServer
@@ -15,22 +15,12 @@ from pyhantom.system.tester import _TESTONLY_clear_registry
 
 class BasicAutoScaleGroupTests(unittest.TestCase):
 
-    tst_server = RunPwFileServer(MainRouter())
+    tst_server = None
 
-    @classmethod
-    def setupClass(cls):
-        print "setUpModule"
+    def tearDown(self):
         try:
-            cls.tst_server.start()
-        except Exception, ex:
-            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
-        time.sleep(2.0)
-
-    @classmethod
-    def teardownClass(cls):
-        try:
-            cls.tst_server.end()
-            cls.tst_server.join()
+            self.tst_server.end()
+            self.tst_server.join()
         except Exception, ex:
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
 
@@ -41,11 +31,15 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
         return con
 
     def setUp(self):
-        (self.username, self.password, self.port) = BasicAutoScaleGroupTests.tst_server.get_boto_values()
+        self.tst_server = RunPwFileServer()
+        self.tst_server.start()
+        time.sleep(2.0)
+        (self.username, self.password, self.port) = self.tst_server.get_boto_values()
         self.con = self._get_good_con()
 
     def tearDown(self):
         _TESTONLY_clear_registry()
+        self.tst_server.end()
 
     def test_create_group(self):
         group_name = str(uuid.uuid4()).split('-')[0]

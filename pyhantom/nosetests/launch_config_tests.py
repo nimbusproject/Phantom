@@ -15,25 +15,6 @@ from pyhantom.system.tester import _TESTONLY_clear_registry
 
 class BasicLaunchConfigTests(unittest.TestCase):
 
-    tst_server = RunPwFileServer(MainRouter())
-
-    @classmethod
-    def setupClass(cls):
-        print "setUpModule"
-        try:
-            cls.tst_server.start()
-        except Exception, ex:
-            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
-        time.sleep(2.0)
-
-    @classmethod
-    def teardownClass(cls):
-        try:
-            cls.tst_server.end()
-            cls.tst_server.join()
-        except Exception, ex:
-            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
-
     def _get_good_con(self):
         region = RegionInfo('localhost')
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
@@ -41,11 +22,19 @@ class BasicLaunchConfigTests(unittest.TestCase):
         return con
 
     def setUp(self):
-        (self.username, self.password, self.port) = BasicLaunchConfigTests.tst_server.get_boto_values()
+        self.tst_server = RunPwFileServer()
+        self.tst_server.start()
+        time.sleep(2.0)
+        (self.username, self.password, self.port) = self.tst_server.get_boto_values()
         self.con = self._get_good_con()
 
     def tearDown(self):
         _TESTONLY_clear_registry()
+        try:
+            self.tst_server.end()
+        except Exception, ex:
+            pyhantom.util.log(logging.ERROR, str(ex), printstack=True)
+
 
     def tests_list_empty_groups(self):
         x = self.con.get_all_launch_configurations()

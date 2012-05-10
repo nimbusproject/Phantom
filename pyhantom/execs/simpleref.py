@@ -25,7 +25,7 @@ def _make_the_config_file(hostname):
     fptr.write('  system:\n')
     fptr.write('    type: epu_localdb\n')
     fptr.write('    db_url: sqlite:///%s\n' % (dbfile))
-    fptr.write('    broker: %s\n' % (hostname))
+    fptr.write('    rabbit_hostname: %s\n' % (hostname))
     fptr.write('    rabbit_user: %s\n' % (os.environ['RABBITMQ_USERNAME']))
     fptr.write('    rabbit_pw: %s\n' % (os.environ['RABBITMQ_PASSWORD']))
     fptr.write('    rabbit_exchange: %s\n' % (os.environ['EXCHANGE_SCOPE']))

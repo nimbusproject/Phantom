@@ -23,7 +23,7 @@ def make_conf(cid_out_filename, conffile, localdb_fname, pwfile,  pwfile_type="s
     fptr.write('  system:\n')
     fptr.write('    type: epu_localdb\n')
     fptr.write('    db_url: sqlite:///%s\n' % (localdb_fname))
-    fptr.write('    broker: %s\n' % (hostname))
+    fptr.write('    rabbit_hostname: %s\n' % (hostname))
     fptr.write('    rabbit_user: %s\n' % (username))
     fptr.write('    rabbit_pw: %s\n' % (pw))
     fptr.write('    rabbit_exchange: %s\n' % (xchg))

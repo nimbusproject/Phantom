@@ -9,11 +9,9 @@ import unittest
 import time
 import uuid
 import pyhantom
-from pyhantom.main_router import MainRouter
 from pyhantom.nosetests.server import RunPwFileEPUServer
 
 class BasicAutoScaleGroupTests(unittest.TestCase):
-
 
     def _get_good_con(self):
         region = RegionInfo('localhost')
@@ -25,7 +23,7 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
         (osf, self.db_fname) = tempfile.mkstemp(prefix="/tmp/phantom")
         db_url = "sqlite:///%s" % (self.db_fname)
         try:
-            self.tst_server = RunPwFileEPUServer(MainRouter(), db_url)
+            self.tst_server = RunPwFileEPUServer(db_url)
             self.tst_server.start()
         except Exception, ex:
             pyhantom.util.log(logging.ERROR, str(ex), printstack=True)

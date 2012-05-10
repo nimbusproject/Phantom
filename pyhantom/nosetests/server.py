@@ -3,6 +3,7 @@ from wsgiref.simple_server import make_server
 import tempfile
 import os
 import uuid
+import time
 from pyhantom.main_router import MainRouter
 
 class BaseServer(Thread):
@@ -11,11 +12,13 @@ class BaseServer(Thread):
         Thread.__init__(self)
         self.username = str(uuid.uuid4()).split('-')[0]
         self.password = str(uuid.uuid4()).split('-')[0]
+        self.is_ready = False
 
     def run(self):
         try:
             self._srv = make_server('localhost', 0, MainRouter())
             self._srv.serve_forever()
+            self.is_ready = True
         except Exception, ex:
             print "failed to start the server %s" % (str(ex))
             raise
@@ -31,9 +34,8 @@ class BaseServer(Thread):
 
 class RunPwFileServer(BaseServer):
 
-    def __init__(self, app):
+    def __init__(self):
         BaseServer.__init__(self)
-        self._app = app
         (osf, self.pwfile) = tempfile.mkstemp(prefix="/tmp/phantom")
         os.close(osf)
         fptr = open(self.pwfile, "w")
@@ -53,11 +55,11 @@ class RunPwFileServer(BaseServer):
         os.environ['PHANTOM_CONFIG'] = self.conffile
 
 
+
 class RunPwFileEPUServer(BaseServer):
 
-    def __init__(self, app, db_url):
+    def __init__(self, db_url):
         BaseServer.__init__(self)
-        self._app = app
         (osf, self.pwfile) = tempfile.mkstemp(prefix="/tmp/phantom")
         os.close(osf)
         fptr = open(self.pwfile, "w")
@@ -76,4 +78,3 @@ class RunPwFileEPUServer(BaseServer):
         fptr.write('    db_url: %s\n' % (db_url))
         fptr.close()
         os.environ['PHANTOM_CONFIG'] = self.conffile
-
