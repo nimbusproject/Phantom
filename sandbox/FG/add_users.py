@@ -3,8 +3,6 @@
 import sys
 import os
 import subprocess
-import tempfile
-from pyhantom.execs.add_user import add_user
 from ceiclient.client import DTRSCredentialsClient
 from pyhantom.config import build_cfg
 from pyhantom.util import get_default_keyname
@@ -37,6 +35,7 @@ def main():
 
     user_pw_list = get_fg_users(userpattern, nh)
     cfg = build_cfg()
+    authz = cfg.get_authz()
 
     dashi_con = get_dashi_client(cfg)
     cred_client = DTRSCredentialsClient(dashi_con)
@@ -50,7 +49,8 @@ def main():
         hosts = ["hotel", "sierra", "alamo", "foxtrot"]
         for host in hosts:
             cred_client.add_credentials(access_key, host, creds)
-        add_user(access_key, access_secret)
+
+        authz.add_user(access_key, access_secret)
 
 if __name__ == '__main__':
     rc = main()
