@@ -30,14 +30,6 @@ def get_fg_users(userpattern, nh):
         l_a = line.strip().split(',')        
         user_pw_list.append(l_a)
 
-def get_fg_users(userpattern, nh):
-    cmd = ["%s/bin/nimbus-list-users" % (nh),  "-b", "-r", "display_name,access_id,access_secret",  "%s" % (userpattern)]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    user_pw_list = []
-    for line in p.stdout.readlines():
-        l_a = line.strip().split(',')
-        user_pw_list.append(l_a)
-
 def get_user_public_key(username):
     ldapbasedn = "dc=futuregrid,dc=org"
     ldapfilter = "(&(objectclass=ldapPublicKey)(cn=%s))" % (sys.argv[1])
