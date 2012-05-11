@@ -67,7 +67,7 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
 
 def main():
 
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print "usage: add_users <user pattern> <nimbus home> <phantom conf file>"
         sys.exit(1)
     userpattern=sys.argv[1]

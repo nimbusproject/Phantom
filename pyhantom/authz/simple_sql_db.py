@@ -32,7 +32,7 @@ class SimpleSQL(PHAuthzIface):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self._engine = sqlalchemy.create_engine(cfg.phantom.authz.dburl, connect_args={'check_same_thread':False})
+        self._engine = sqlalchemy.create_engine(cfg.phantom.authz.dburl)
         metadata.create_all(self._engine)
         self._SessionX = sessionmaker(bind=self._engine)
         self._Session = self._SessionX()
