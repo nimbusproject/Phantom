@@ -3,7 +3,8 @@
 import sys
 import os
 import subprocess
-from ceiclient.client import DTRSCredentialsClient, DashiCeiConnection
+from ceiclient.client import DTRSCredentialsClient
+from ceiclient.connection import DashiCeiConnection
 import boto
 import urlparse
 from pyhantom.config import build_cfg
