@@ -40,7 +40,7 @@ class SimpleSQL(PHAuthzIface):
     def _lookup_user(self, username):
         try:
             q = self._Session.query(PhantomUserDBObject)
-            q = q.filter(PhantomUserObject.access_key==username)
+            q = q.filter(PhantomUserDBObject.access_key==username)
             db_obj = q.first()
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
