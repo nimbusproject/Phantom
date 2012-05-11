@@ -66,8 +66,13 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
 
 
 def main():
+
+    if len(sys.argv) != 3:
+        print "usage: add_users <user pattern> <nimbus home> <phantom conf file>"
+        sys.exit(1)
     userpattern=sys.argv[1]
-    nh=os.environ['NIMBUS_HOME']
+    nh=sys.argv[2]
+    os.environ['PHANTOM_CONFIG'] = sys.argv[3]
 
     user_pw_list = get_fg_users(userpattern, nh)
     cfg = build_cfg()
