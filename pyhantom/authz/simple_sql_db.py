@@ -22,11 +22,11 @@ phantom_user_pass_table = Table('phantom_user_pass', metadata,
     )
 
 
-class PhantomUserObject(object):
+class PhantomUserDBObject(object):
     def __init__(self):
         pass
 
-mapper(PhantomUserObject, phantom_user_pass_table)
+mapper(PhantomUserDBObject, phantom_user_pass_table)
 
 class SimpleSQL(PHAuthzIface):
 
@@ -39,7 +39,7 @@ class SimpleSQL(PHAuthzIface):
 
     def _lookup_user(self, username):
         try:
-            q = self._Session.query(PhantomUserObject)
+            q = self._Session.query(PhantomUserDBObject)
             q = q.filter(PhantomUserObject.access_key==username)
             db_obj = q.first()
         except sqlalchemy.exc.SQLAlchemyError, ex:
@@ -58,7 +58,7 @@ class SimpleSQL(PHAuthzIface):
     def add_alter_user(self, username, password):
         db_obj = self._lookup_user(username)
         if not db_obj:
-            db_obj = PhantomUserObject()
+            db_obj = PhantomUserDBObject()
             db_obj.access_key = username
         db_obj.access_secret = password
         self._Session.add(db_obj)
