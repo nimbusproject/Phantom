@@ -11,7 +11,7 @@ from pyhantom.config import build_cfg
 from pyhantom.util import get_default_keyname
 import boto
 from boto.ec2.regioninfo import RegionInfo
-import urllib2
+import ldap
 
 def get_dashi_client(cfg):
     ssl = cfg.phantom.system.rabbit_ssl
@@ -30,6 +30,7 @@ def get_fg_users(userpattern, nh):
     for line in p.stdout.readlines():
         l_a = line.strip().split(',')        
         user_pw_list.append(l_a)
+    return user_pw_list
 
 def get_user_public_key(username):
     ldapbasedn = "dc=futuregrid,dc=org"

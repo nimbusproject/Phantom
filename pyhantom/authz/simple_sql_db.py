@@ -46,12 +46,13 @@ class SimpleSQL(PHAuthzIface):
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure')
         
-        if not db_obj:
-            raise PhantomAWSException('InvalidClientTokenId')
         return db_obj
 
     def get_user_key(self, access_id):
         db_obj = self._lookup_user(access_id)
+        if not db_obj:
+            raise PhantomAWSException('InvalidClientTokenId')
+
         return PhantomUserObject(access_id, db_obj.access_secret)
 
     def add_alter_user(self, username, password):
@@ -65,7 +66,7 @@ class SimpleSQL(PHAuthzIface):
     def remove_user(self, username):
         db_obj = self._lookup_user(username)
         if not db_obj:
-            raise PhantomException('User not found')
+            raise PhantomAWSException('InvalidClientTokenId')
         self._Session.delete(db_obj)
 
     def commit(self):
