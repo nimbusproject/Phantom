@@ -14,7 +14,8 @@
      "name": "phantom"
   },
   "autoscale" : {
-      "dburl": "sqlite:////home/${epu_username}/phantom/authz.db",
+      "logfile": "/home/${epu_username}/phantom/phantom.log",
+      "dburl": "mysql://${mysql_username}:${mysql_password}@${mysql_host}/${mysql_dbname}",
       "rabbit_host": "${rabbitmq_host}",
       "rabbit_port": "5672",
       "rabbit_username": "${rabbitmq_username}",
