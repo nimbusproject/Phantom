@@ -40,17 +40,19 @@ def convert_epu_description_to_asg_out(desc, name):
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = desc['name']
     asg.DesiredCapacity = config['preserve_n']
-    #asg.CreatedTime = DateTimeType
-    #asg.AutoScalingGroupARN =
+    tm = _get_time(config['CreatedTime'])
+    asg.CreatedTime = DateTimeType('CreatedTime', tm)
+
+    asg.AutoScalingGroupARN = config['AutoScalingGroupARN']
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
     asg.AvailabilityZones.add_item(config['force_site'])
-    #asg.HealthCheckType
+    asg.HealthCheckType = config['HealthCheckType']
     asg.LaunchConfigurationName = config['epuworker_type']
     asg.MaxSize = config['preserve_n']
     asg.MinSize = config['preserve_n']
-    #asg.PlacementGroup =
+    asg.PlacementGroup = config['PlacementGroup']
     #asg.Status
-    #asg.VPCZoneIdentifier
+    asg.VPCZoneIdentifier = config['VPCZoneIdentifier']
     asg.EnabledMetrics = AWSListType('EnabledMetrics')
     asg.HealthCheckGracePeriod = 0
     asg.LoadBalancerNames = AWSListType('LoadBalancerNames')
@@ -59,9 +61,7 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.Cooldown = 0
 
     inst_list = desc['instances']
-    config = desc['config']
 
-    #asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
     asg.Instances = AWSListType('Instances')
 
     for inst in inst_list:
@@ -229,6 +229,10 @@ class EPUSystem(SystemAPI):
         conf['engine_conf']['epuworker_type'] = dt_name
         conf['engine_conf']['force_site'] = site_name
         conf['engine_conf']['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
+        conf['engine_conf']['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
+        conf['engine_conf']['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier
+        conf['engine_conf']['HealthCheckType'] =  asg.HealthCheckType
+        conf['engine_conf']['PlacementGroup'] =  asg.PlacementGroup
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
