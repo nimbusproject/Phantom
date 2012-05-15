@@ -31,8 +31,9 @@ def _is_healthy(state):
         log(logging.WARN, "A weird state was found %s" % (state))
         return "Unhealthy"
 
-def convert_epu_description_to_asg_out(desc, asg):
+def convert_epu_description_to_asg_out(desc):
 
+    asg = AutoScalingGroupType('AutoScalingGroup')
     inst_list = desc['instances']
     name = desc['name']
     config = desc['config']
@@ -51,7 +52,7 @@ def convert_epu_description_to_asg_out(desc, asg):
             out_t.HealthStatus = out_t.HealthStatus + " " + str(inst['state_desc'])
         out_t.LifecycleState = inst['state']
         out_t.AvailabilityZone = inst['site']
-        out_t.LaunchConfigurationName = asg.LaunchConfigurationName
+        out_t.LaunchConfigurationName = inst['deployable_type']
 
         if 'iaas_id' in  inst:
             out_t.InstanceId = inst['iaas_id']
@@ -244,8 +245,7 @@ class EPUSystem(SystemAPI):
 
             if startToken is None and (names is None or asg_name in names):
                 asg_description = self._epum_client.describe_domain(asg_name, caller=user_obj.username)
-                asg = AutoScalingGroupType('AutoScalingGroup')
-                convert_epu_description_to_asg_out(asg_description, asg)
+                asg = convert_epu_description_to_asg_out(asg_description)
                 asg_list_type.add_item(asg)
 
         # XXX need to set next_token
