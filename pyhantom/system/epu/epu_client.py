@@ -33,6 +33,8 @@ def _is_healthy(state):
 
 def convert_epu_description_to_asg_out(desc, name):
 
+    log(logging.DEBUG, "Changing the config: %s" %(str(config)))
+
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = name
     #asg.DesiredCapacity =
@@ -57,7 +59,6 @@ def convert_epu_description_to_asg_out(desc, name):
     inst_list = desc['instances']
     config = desc['config']
 
-    log(logging.DEBUG, "Changing the config: %s" %(str(config)))
     #asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
     asg.Instances = AWSListType('Instances')
 
