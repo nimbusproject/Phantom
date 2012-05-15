@@ -228,6 +228,7 @@ class EPUSystem(SystemAPI):
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
         conf['engine_conf']['epuworker_type'] = dt_name
         conf['engine_conf']['force_site'] = site_name
+        conf['engine_conf']['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
