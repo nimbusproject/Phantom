@@ -35,17 +35,19 @@ def convert_epu_description_to_asg_out(desc, name):
 
     log(logging.DEBUG, "conversion description: %s" %(str(desc)))
 
+    config = desc['config']['engine_conf']
+    
     asg = AutoScalingGroupType('AutoScalingGroup')
-    asg.AutoScalingGroupName = name
-    #asg.DesiredCapacity =
+    asg.AutoScalingGroupName = desc['name']
+    asg.DesiredCapacity = confg['preserve_n']
     #asg.CreatedTime = DateTimeType
     #asg.AutoScalingGroupARN =
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
-    asg.AvailabilityZones.add_item(desc['site'])
+    asg.AvailabilityZones.add_item(config['force_site'])
     #asg.HealthCheckType
-    #asg.LaunchConfigurationName
-    #asg.MaxSize =
-    #asg.MinSize =
+    asg.LaunchConfigurationName = config['epuworker_type']
+    asg.MaxSize = confg['preserve_n']
+    asg.MinSize = confg['preserve_n']
     #asg.PlacementGroup =
     #asg.Status
     #asg.VPCZoneIdentifier
