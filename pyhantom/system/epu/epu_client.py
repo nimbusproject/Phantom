@@ -31,11 +31,30 @@ def _is_healthy(state):
         log(logging.WARN, "A weird state was found %s" % (state))
         return "Unhealthy"
 
-def convert_epu_description_to_asg_out(desc):
+def convert_epu_description_to_asg_out(desc, name):
 
     asg = AutoScalingGroupType('AutoScalingGroup')
+    asg.AutoScalingGroupName = name
+    #asg.DesiredCapacity =
+    #asg.CreatedTime = DateTimeType
+    #asg.AutoScalingGroupARN =
+    asg.AvailabilityZones = AWSListType('AvailabilityZones')
+    asg.AvailabilityZones.add_item(desc['site'])
+    #asg.HealthCheckType
+    #asg.LaunchConfigurationName
+    #asg.MaxSize =
+    #asg.MinSize =
+    #asg.PlacementGroup =
+    #asg.Status
+    #asg.VPCZoneIdentifier
+    asg.EnabledMetrics = AWSListType('EnabledMetrics')
+    asg.HealthCheckGracePeriod = 0
+    asg.LoadBalancerNames = AWSListType('LoadBalancerNames')
+    asg.SuspendedProcesses = AWSListType('SuspendedProcesses')
+    asg.Tags = AWSListType('Tags')
+    asg.Cooldown = 0
+
     inst_list = desc['instances']
-    name = desc['name']
     config = desc['config']
 
     log(logging.DEBUG, "Changing the config: %s" %(str(config)))
@@ -245,7 +264,7 @@ class EPUSystem(SystemAPI):
 
             if startToken is None and (names is None or asg_name in names):
                 asg_description = self._epum_client.describe_domain(asg_name, caller=user_obj.username)
-                asg = convert_epu_description_to_asg_out(asg_description)
+                asg = convert_epu_description_to_asg_out(asg_description, asg_name)
                 asg_list_type.add_item(asg)
 
         # XXX need to set next_token
