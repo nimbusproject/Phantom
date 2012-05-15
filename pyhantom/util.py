@@ -11,6 +11,7 @@ import urllib
 import re
 import webob.exc
 import datetime
+from pyhantom.out_data_types import AWSListType, InstanceType
 from pyhantom.phantom_exceptions import PhantomAWSException, PhantomNotImplementedException
 
 def log(lvl, message, printstack=False):
@@ -37,6 +38,51 @@ def not_implemented_decorator(func):
             raise PhantomNotImplementedException("function %s must be implemented" % (func.func_name))
         return raise_error(func)
     return call
+
+def _is_healthy(state):
+
+    a = state.split('-')
+    try:
+        code = int(a[0])
+        if code > 600:
+            return "Unhealthy"
+        else:
+            return "Healthy"
+    except:
+        log(logging.WARN, "A weird state was found %s" % (state))
+        return "Unhealthy"
+
+def convert_epu_description_to_asg_out(desc, asg):
+
+    inst_list = desc['instances']
+    name = desc['name']
+    config = desc['config']
+
+    log(logging.DEBUG, "Changing the config: %s" %(str(config)))
+    #asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
+    asg.Instances = AWSListType('Instances')
+
+    for inst in inst_list:
+        log(logging.DEBUG, "Converting instance %s" %(str(inst)))
+        out_t = InstanceType('Instance')
+
+        out_t.AutoScalingGroupName = name
+        out_t.HealthStatus = _is_healthy(inst['state'])
+        if 'state_desc' in inst and inst['state_desc'] is not None:
+            out_t.HealthStatus = out_t.HealthStatus + " " + str(inst['state_desc'])
+        out_t.LifecycleState = inst['state']
+        out_t.AvailabilityZone = inst['site']
+        out_t.LaunchConfigurationName = asg.LaunchConfigurationName
+
+        if 'iaas_id' in  inst:
+            out_t.InstanceId = inst['iaas_id']
+        else:
+            out_t.InstanceId = ""
+
+        asg.Instances.type_list.append(out_t)
+
+    return asg
+
 
 # A decorator for trapping errors in our applications
 class LogEntryDecorator(object):

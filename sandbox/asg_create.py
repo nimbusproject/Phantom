@@ -1,5 +1,4 @@
 import boto
-from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
 import boto.ec2.autoscale
 import urlparse

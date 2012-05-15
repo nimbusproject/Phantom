@@ -1,5 +1,5 @@
 import logging
-from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurationType, InstanceMonitoringType, DateTimeType
+from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurationType, InstanceMonitoringType, DateTimeType, AutoScalingGroupType
 from pyhantom.system import SystemAPI
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
@@ -18,50 +18,6 @@ g_add_template = {'general' :
                      'force_site': None}
                   }
 
-
-def _is_healthy(state):
-
-    a = state.split('-')
-    try:
-        code = int(a[0])
-        if code > 600:
-            return "Unhealthy"
-        else:
-            return "Healthy"
-    except:
-        log(logging.WARN, "A weird state was found %s" % (state))
-        return "Unhealthy"
-
-def convert_epu_description_to_asg_out(desc, asg):
-
-    inst_list = desc['instances']
-    name = desc['name']
-    config = desc['config']
-
-    log(logging.DEBUG, "Changing the config: %s" %(str(config)))
-    #asg.DesiredCapacity = int(config['engine_conf']['preserve_n'])
-    asg.Instances = AWSListType('Instances')
-
-    for inst in inst_list:
-        log(logging.DEBUG, "Converting instance %s" %(str(inst)))
-        out_t = InstanceType('Instance')
-
-        out_t.AutoScalingGroupName = name
-        out_t.HealthStatus = _is_healthy(inst['state'])
-        if 'state_desc' in inst and inst['state_desc'] is not None:
-            out_t.HealthStatus = out_t.HealthStatus + " " + str(inst['state_desc'])
-        out_t.LifecycleState = inst['state']
-        out_t.AvailabilityZone = inst['site']
-        out_t.LaunchConfigurationName = asg.LaunchConfigurationName
-
-        if 'iaas_id' in  inst:
-            out_t.InstanceId = inst['iaas_id']
-        else:
-            out_t.InstanceId = ""
-
-        asg.Instances.type_list.append(out_t)
-
-    return asg
 
 class EPUSystem(SystemAPI):
 
@@ -83,7 +39,6 @@ class EPUSystem(SystemAPI):
     def _check_dt_name_exists(self, name, caller):
         name_list = self._dtrs_client.list_dts(caller)
         return name in name_list
-
 
     def _breakup_name(self, name):
         s_a = name.split("@", 1)
@@ -172,7 +127,7 @@ class EPUSystem(SystemAPI):
                 if out_name == startToken:
                     startToken = None
 
-                if startToken is None:
+                if startToken is None and (names is None or lc_name in names):
                     ot_lc = LaunchConfigurationType('LaunchConfiguration')
                     ot_lc.BlockDeviceMappings = AWSListType('BlockDeviceMappings')
 
@@ -193,6 +148,7 @@ class EPUSystem(SystemAPI):
 
                     lc_list_type.add_item(ot_lc)
 
+        # XXX need to set next_token
         return (lc_list_type, next_token)
 
     @LogEntryDecorator(classname="EPUSystem")
@@ -231,30 +187,25 @@ class EPUSystem(SystemAPI):
         epu_list = self._epum_client.list_domains(caller=user_obj.username)
         log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
-        epu_list.sort()
-        start_ndx = 0
-        if startToken:
-            try:
-                start_ndx = epu_list.index(startToken)
-            except ValueError:
-                raise PhantomAWSException('InvalidParameterValue', details="%s was not found in the epu list" % (startToken))
-
         next_token = None
-        end_ndx = len(epu_list)
-        if max > -1:
-            end_ndx = start_ndx + max
-            if end_ndx > len(epu_list):
-                end_ndx = len(epu_list)
-            if end_ndx < len(epu_list):
-                next_token = epu_list[end_ndx]
+        epu_list.sort()
 
-        epu_list = epu_list[start_ndx:end_ndx]
+        asg_list_type = AWSListType('AutoScalingGroups')
+        for asg_name in epu_list:
+            if asg_list_type.get_length() >= max and max > -1:
+                break
 
-        for epu in epu_list:
-            epu_desc = self._epum_client.describe_domain(epu, caller=user_obj.username)
+            if asg_name == startToken:
+                startToken = None
 
+            if startToken is None and (names is None or asg_name in names):
+                asg_description = self._epum_client.describe_domain(asg_name, caller=user_obj.username)
+                asg = AutoScalingGroupType('AutoScalingGroup')
+                convert_epu_description_to_asg_out(asg_description, asg)
+                asg_list_type.add_item(asg)
+
+        # XXX need to set next_token
         return (asg_list_type, next_token)
-
 
     @LogEntryDecorator(classname="EPUSystem")
     def delete_autoscale_group(self, user_obj, name, force):
