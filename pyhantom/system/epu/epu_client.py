@@ -199,16 +199,21 @@ class EPUSystem(SystemAPI):
     def create_autoscale_group(self, user_obj, asg):
         global g_add_template
 
-        if len(asg.AvailabilityZones.type_list) < 1:
-            raise PhantomAWSException('InvalidParameterValue', 'An AZ must be specified')
-    
+        (dt_name, site_name) = self._breakup_name(asg.LaunchConfigurationName)
+
         conf = g_add_template.copy()
         conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
-        conf['engine_conf']['epuworker_type'] = asg.LaunchConfigurationName
-        conf['engine_conf']['force_site'] = asg.AvailabilityZones.type_list[0]
+        conf['engine_conf']['epuworker_type'] = dt_name
+        conf['engine_conf']['force_site'] = site_name
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
-        self._epum_client.add_domain(asg.AutoScalingGroupName, conf, caller=user_obj.username)
+        try:
+            self._epum_client.add_domain(asg.AutoScalingGroupName, conf, caller=user_obj.username)
+        except DashiError, de:
+            if de.exc_type == u'WriteConflictError':
+                raise PhantomAWSException('InvalidParameterValue', details="auto scale name already exists")
+            log(logging.ERROR, "An error creating ASG: %s" % (str(de)))
+            raise
 
     @LogEntryDecorator(classname="EPUSystem")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
