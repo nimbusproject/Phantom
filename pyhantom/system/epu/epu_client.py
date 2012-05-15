@@ -39,7 +39,7 @@ def convert_epu_description_to_asg_out(desc, name):
     
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = desc['name']
-    asg.DesiredCapacity = confg['preserve_n']
+    asg.DesiredCapacity = config['preserve_n']
     #asg.CreatedTime = DateTimeType
     #asg.AutoScalingGroupARN =
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
