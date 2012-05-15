@@ -258,8 +258,8 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def delete_autoscale_group(self, user_obj, name, force):
-        asg = self._db.get_asg(user_obj, name)
-        if not asg:
-            raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (name))
-
-        self._epum_client.remove_domain(name, caller=user_obj.username)
+        try:
+            self._epum_client.remove_domain(name, caller=user_obj.username)
+        except DashiError, de:
+            log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
+            raise
