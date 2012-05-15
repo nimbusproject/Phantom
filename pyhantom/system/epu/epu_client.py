@@ -195,7 +195,7 @@ class EPUSystem(SystemAPI):
                 if out_name == startToken:
                     startToken = None
 
-                if startToken is None and (names is None or lc_name in names):
+                if startToken is None and (names is None or out_name in names):
                     ot_lc = LaunchConfigurationType('LaunchConfiguration')
                     ot_lc.BlockDeviceMappings = AWSListType('BlockDeviceMappings')
 

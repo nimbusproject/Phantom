@@ -16,7 +16,7 @@ host = up.hostname
 port = up.port
 
 region = RegionInfo(name="nimbus", endpoint=host)
-con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=ssl, port=port, debug=2, region=region)
+con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=ssl, port=port, debug=0, region=region)
 con.host = host
 
 name=sys.argv[1]
@@ -28,6 +28,7 @@ if not lc_a:
     print "No such launch configuration"
     sys.exit(1)
 lc = lc_a[0]
+print 'using %s' % (str(lc))
 asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=con, group_name=name, availability_zones=["us-east-1"], min_size=size, max_size=size, launch_config=lc)
 con.create_auto_scaling_group(asg)
 
