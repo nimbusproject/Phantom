@@ -46,8 +46,8 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AvailabilityZones.add_item(config['force_site'])
     #asg.HealthCheckType
     asg.LaunchConfigurationName = config['epuworker_type']
-    asg.MaxSize = confg['preserve_n']
-    asg.MinSize = confg['preserve_n']
+    asg.MaxSize = config['preserve_n']
+    asg.MinSize = config['preserve_n']
     #asg.PlacementGroup =
     #asg.Status
     #asg.VPCZoneIdentifier
