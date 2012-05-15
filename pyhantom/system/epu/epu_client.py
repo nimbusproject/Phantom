@@ -223,6 +223,7 @@ class EPUSystem(SystemAPI):
     def create_autoscale_group(self, user_obj, asg):
         global g_add_template
 
+        log(logging.DEBUG, "entering create_autoscale_group with %s" % (asg.LaunchConfigurationName))
         (dt_name, site_name) = self._breakup_name(asg.LaunchConfigurationName)
 
         conf = g_add_template.copy()
