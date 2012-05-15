@@ -54,7 +54,7 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
     asg.AvailabilityZones.add_item(config['force_site'])
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
-    asg.LaunchConfigurationName = config['epuworker_type']
+    asg.LaunchConfigurationName = "%s@%s" % (config['epuworker_type'], config['force_site'])
     asg.MaxSize = config['preserve_n']
     asg.MinSize = config['preserve_n']
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
@@ -123,12 +123,6 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def create_launch_config(self, user_obj, lc):
-
-        # parse out sitename and dt name from the name
-        s_a = lc.LaunchConfigurationName.split("@", 1)
-        if len(s_a) != 2:
-            raise PhantomAWSException('InvalidParameterValue', details="The name %s is not in the proper format.  It must be <dt name>@<site name>" % (lc.LaunchConfigurationName))
-
         (dt_name, site_name) = self._breakup_name(lc.LaunchConfigurationName)
 
         # see if that name already exists
