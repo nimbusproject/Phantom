@@ -31,6 +31,11 @@ def _is_healthy(state):
         log(logging.WARN, "A weird state was found %s" % (state))
         return "Unhealthy"
 
+def _get_key_or_none(config, k):
+    if k not in config:
+        return None
+    return config[k]
+
 def convert_epu_description_to_asg_out(desc, name):
 
     log(logging.DEBUG, "conversion description: %s" %(str(desc)))
@@ -40,19 +45,21 @@ def convert_epu_description_to_asg_out(desc, name):
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = desc['name']
     asg.DesiredCapacity = config['preserve_n']
-    tm = _get_time(config['CreatedTime'])
-    asg.CreatedTime = DateTimeType('CreatedTime', tm)
+    tm = _get_key_or_none(config, 'CreatedTime')
+    if tm:
+        tm = _get_time(config['CreatedTime'])
+        asg.CreatedTime = DateTimeType('CreatedTime', tm)
 
-    asg.AutoScalingGroupARN = config['AutoScalingGroupARN']
+    asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
     asg.AvailabilityZones.add_item(config['force_site'])
-    asg.HealthCheckType = config['HealthCheckType']
+    asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
     asg.LaunchConfigurationName = config['epuworker_type']
     asg.MaxSize = config['preserve_n']
     asg.MinSize = config['preserve_n']
-    asg.PlacementGroup = config['PlacementGroup']
+    asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
     #asg.Status
-    asg.VPCZoneIdentifier = config['VPCZoneIdentifier']
+    asg.VPCZoneIdentifier = _get_key_or_none(config,'VPCZoneIdentifier')
     asg.EnabledMetrics = AWSListType('EnabledMetrics')
     asg.HealthCheckGracePeriod = 0
     asg.LoadBalancerNames = AWSListType('LoadBalancerNames')
