@@ -1,8 +1,6 @@
 import logging
 from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurationType, InstanceMonitoringType, DateTimeType
 from pyhantom.system import SystemAPI
-from pyhantom.system.local_db.persistance import LaunchConfigurationObject
-from pyhantom.system.local_db.system import SystemLocalDB
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import EPUMClient, DTRSDTClient
@@ -210,7 +208,7 @@ class EPUSystem(SystemAPI):
         conf['engine_conf']['force_site'] = asg.AvailabilityZones.type_list[0]
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
-        self._epum_client.add_epu(asg.AutoScalingGroupName, conf)
+        self._epum_client.add_domain(asg.AutoScalingGroupName, conf, caller=user_obj.username)
 
     @LogEntryDecorator(classname="EPUSystem")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
@@ -222,14 +220,14 @@ class EPUSystem(SystemAPI):
         conf = {'engine_conf':
                     {'preserve_n': desired_capacity},
                   }
-        self._epum_client.reconfigure_epu(name, conf)
+        self._epum_client.reconfigure_domain(name, conf, caller=user_obj.username)
 
         asg.DesiredCapacity = desired_capacity
         self._db.db_commit()
 
     @LogEntryDecorator(classname="EPUSystem")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
-        epu_list = self._epum_client.list_epus()
+        epu_list = self._epum_client.list_domains(caller=user_obj.username)
         log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
         epu_list.sort()
@@ -252,7 +250,7 @@ class EPUSystem(SystemAPI):
         epu_list = epu_list[start_ndx:end_ndx]
 
         for epu in epu_list:
-            epu_desc = self._epum_client.describe_epu(epu)
+            epu_desc = self._epum_client.describe_domain(epu, caller=user_obj.username)
 
         return (asg_list_type, next_token)
 
@@ -263,4 +261,4 @@ class EPUSystem(SystemAPI):
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (name))
 
-        self._epum_client.remove_epu(name)
+        self._epum_client.remove_domain(name, caller=user_obj.username)
