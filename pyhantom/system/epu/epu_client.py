@@ -217,18 +217,14 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
-        self._clean_up_db()
-        asg = self._db.get_asg(user_obj, name)
-        if not asg:
-            raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (asg.AutoScalingGroupName))
-
         conf = {'engine_conf':
                     {'preserve_n': desired_capacity},
                   }
-        self._epum_client.reconfigure_domain(name, conf, caller=user_obj.username)
-
-        asg.DesiredCapacity = desired_capacity
-        self._db.db_commit()
+        try:
+            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.username)
+        except DashiError, de:
+            log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
+            raise
 
     @LogEntryDecorator(classname="EPUSystem")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
