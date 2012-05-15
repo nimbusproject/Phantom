@@ -33,7 +33,7 @@ def _is_healthy(state):
 
 def convert_epu_description_to_asg_out(desc, name):
 
-    log(logging.DEBUG, "Changing the config: %s" %(str(config)))
+    log(logging.DEBUG, "conversion description: %s" %(str(desc)))
 
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = name
