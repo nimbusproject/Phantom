@@ -23,5 +23,7 @@ con.host = host
 name=sys.argv[1]
 
 x = con.get_all_groups(names=[name,])
+
+print "deleting %s" % (str(x[0]))
 x[0].delete()
 

@@ -22,3 +22,5 @@ x = con.get_all_groups()
 
 for asg in x:
     print asg
+    for i in asg.instances:
+        print "\t%s" % (str(i))

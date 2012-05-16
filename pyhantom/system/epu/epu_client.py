@@ -283,6 +283,7 @@ class EPUSystem(SystemAPI):
     @LogEntryDecorator(classname="EPUSystem")
     def delete_autoscale_group(self, user_obj, name, force):
         try:
+            log(logging.INFO, "deleting %s for user %s" % (str(name), user_obj.access_id))
             self._epum_client.remove_domain(name, caller=user_obj.access_id)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
