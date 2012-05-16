@@ -88,7 +88,7 @@ def main():
             cred_client.add_credentials(access_key, host, creds)
             register_key_with_iaas(hosts[host], ssh_key, phantomkey_name, access_key, access_secret)
 
-        authz.add_user(access_key, access_secret)
+        authz.add_user(name, access_key, access_secret)
 
 if __name__ == '__main__':
     rc = main()

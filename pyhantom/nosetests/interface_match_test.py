@@ -9,7 +9,7 @@ class TestInterfaceAuthz(unittest.TestCase):
     def test_interface_errors(self):
         iface = PHAuthzIface()
         try:
-            x = iface.get_user_object()
+            x = iface.get_user_object_by_access_id()
             self.fail("should have thrown an exception")
         except PhantomNotImplementedException:
             pass

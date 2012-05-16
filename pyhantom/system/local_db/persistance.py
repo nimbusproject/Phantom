@@ -73,7 +73,7 @@ class LaunchConfigurationObject(object):
         pass
 
     def set_from_outtype(self, out_t, user_obj):
-        self.user_name = user_obj.username
+        self.user_name = user_obj.access_id
         self.ImageId = out_t.ImageId
         self.InstanceType = out_t.InstanceType
         self.KernelId = out_t.KernelId
@@ -106,7 +106,7 @@ class AutoscaleGroupObject(object):
         pass
 
     def set_from_outtype(self, out_t, user_obj):
-        self.user_name = user_obj.username
+        self.user_name = user_obj.access_id
         self.AutoScalingGroupName = out_t.AutoScalingGroupName
         self.AutoScalingGroupARN = out_t.AutoScalingGroupARN
         self.LaunchConfigurationName = out_t.LaunchConfigurationName
@@ -162,7 +162,7 @@ class LaunchConfigurationDB(object):
 
     def get_lcs(self, user_object, names=None, max=-1, startToken=None, log=logging):
 
-        q = self._Session.query(LaunchConfigurationObject).filter(LaunchConfigurationObject.user_name==user_object.username)
+        q = self._Session.query(LaunchConfigurationObject).filter(LaunchConfigurationObject.user_name==user_object.access_id)
 
         if names:
             q = q.filter(LaunchConfigurationObject.LaunchConfigurationName.in_(names))
@@ -184,7 +184,7 @@ class LaunchConfigurationDB(object):
         q = self._Session.query(AutoscaleGroupObject)
 
         if user_object:
-            q = q.filter(AutoscaleGroupObject.user_name==user_object.username)
+            q = q.filter(AutoscaleGroupObject.user_name==user_object.access_id)
 
         if names:
             q = q.filter(AutoscaleGroupObject.AutoScalingGroupName.in_(names))

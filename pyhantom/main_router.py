@@ -42,7 +42,7 @@ class MainRouter(object):
         try:
             log(logging.INFO, "%s Enter main router | %s" % (request_id, str(req.params)))
             authz = self._cfg.get_authz()
-            user_obj = authz.get_user_key(req.params['AWSAccessKeyId'])
+            user_obj = authz.get_user_object_by_access_id(req.params['AWSAccessKeyId'])
             authenticate_user(req, user_obj.password)
             key = 'Action'
             if key not in req.params.keys():

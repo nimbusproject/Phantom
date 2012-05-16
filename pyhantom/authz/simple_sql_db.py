@@ -16,6 +16,7 @@ metadata = MetaData()
 
 phantom_user_pass_table = Table('phantom_user_pass', metadata,
     Column('column_id', Integer, Sequence('launch_configuration_id_seq'), primary_key=True),
+    Column('displayname', String(512), nullable=False, unique=True),
     Column('access_key', String(512), nullable=False, unique=True),
     Column('access_secret', String(512), nullable=False),
     Column('CreatedTime', types.TIMESTAMP(), default=datetime.now()),
@@ -37,10 +38,10 @@ class SimpleSQL(PHAuthzIface):
         self._SessionX = sessionmaker(bind=self._engine)
         self._Session = self._SessionX()
 
-    def _lookup_user(self, username):
+    def _lookup_user(self, access_key):
         try:
             q = self._Session.query(PhantomUserDBObject)
-            q = q.filter(PhantomUserDBObject.access_key==username)
+            q = q.filter(PhantomUserDBObject.access_key==access_key)
             db_obj = q.first()
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
@@ -48,23 +49,33 @@ class SimpleSQL(PHAuthzIface):
         
         return db_obj
 
-    def get_user_key(self, access_id):
+    def get_user_object_by_access_id(self, access_id):
         db_obj = self._lookup_user(access_id)
         if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
 
         return PhantomUserObject(access_id, db_obj.access_secret)
 
-    def add_alter_user(self, username, password):
-        db_obj = self._lookup_user(username)
+    def get_user_object_by_display_name(self, display_name):
+        try:
+            q = self._Session.query(PhantomUserDBObject)
+            q = q.filter(PhantomUserDBObject.display_name==display_name)
+            db_obj = q.first()
+            return PhantomUserObject(access_id, db_obj.access_secret)
+        except sqlalchemy.exc.SQLAlchemyError, ex:
+            log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
+            raise PhantomAWSException('InternalFailure')
+
+    def add_alter_user(self, access_key, access_secret):
+        db_obj = self._lookup_user(access_key)
         if not db_obj:
             db_obj = PhantomUserDBObject()
-            db_obj.access_key = username
-        db_obj.access_secret = password
+            db_obj.access_key = access_key
+        db_obj.access_secret = access_secret
         self._Session.add(db_obj)
 
-    def remove_user(self, username):
-        db_obj = self._lookup_user(username)
+    def remove_user(self, access_key):
+        db_obj = self._lookup_user(access_key)
         if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
         self._Session.delete(db_obj)
@@ -72,7 +83,7 @@ class SimpleSQL(PHAuthzIface):
     def commit(self):
         self._Session.commit()
 
-    def add_user(self, access_id, access_secret):
+    def add_user(self, displayname, access_id, access_secret):
         self.add_alter_user(access_id, access_secret)
         self.commit()
 

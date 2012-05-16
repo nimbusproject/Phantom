@@ -14,7 +14,7 @@ class PhantomBaseService(object):
         self._authz = self._cfg.get_authz()
 
     def get_user_obj(self, req):
-        user_obj = self._authz.get_user_key(req.params['AWSAccessKeyId'])
+        user_obj = self._authz.get_user_object_by_access_id(req.params['AWSAccessKeyId'])
         return user_obj
 
     def get_default_response_body_dom(self, doc_name=None):
