@@ -54,14 +54,14 @@ class SimpleSQL(PHAuthzIface):
         if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
 
-        return PhantomUserObject(access_id, db_obj.access_secret)
+        return PhantomUserObject(access_id, db_obj.access_secret, db_obj.displayname)
 
     def get_user_object_by_display_name(self, display_name):
         try:
             q = self._Session.query(PhantomUserDBObject)
             q = q.filter(PhantomUserDBObject.display_name==display_name)
             db_obj = q.first()
-            return PhantomUserObject(access_id, db_obj.access_secret)
+            return PhantomUserObject(access_id, db_obj.access_secret, db_obj.displayname)
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure')
