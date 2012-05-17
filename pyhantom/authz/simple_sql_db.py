@@ -16,9 +16,9 @@ metadata = MetaData()
 
 phantom_user_pass_table = Table('phantom_user_pass', metadata,
     Column('column_id', Integer, Sequence('launch_configuration_id_seq'), primary_key=True),
-    Column('displayname', String(512), nullable=False, unique=True),
-    Column('access_key', String(512), nullable=False, unique=True),
-    Column('access_secret', String(512), nullable=False),
+    Column('displayname', String(128), nullable=False, unique=True),
+    Column('access_key', String(128), nullable=False, unique=True),
+    Column('access_secret', String(128), nullable=False),
     Column('CreatedTime', types.TIMESTAMP(), default=datetime.now()),
     )
 

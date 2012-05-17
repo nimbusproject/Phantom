@@ -111,7 +111,7 @@ class EPUSystem(SystemAPI):
         return self._dtrs_client.describe_dt(caller, name)
 
     def _check_dt_name_exists(self, name, caller):
-        name_list = self._dtrs_client.list_dts(caller)
+        name_list = self._dtrs_client.list_dts(caller=caller)
         return name in name_list
 
     def _breakup_name(self, name):
