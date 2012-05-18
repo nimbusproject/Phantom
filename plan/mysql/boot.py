@@ -16,18 +16,23 @@ dbname=vals_dict['dbname']
 dbuser=vals_dict['dbuser']
 
 commands = []
+commands.append('sudo -E apt-get -y update')
 commands.append('sudo -E apt-get -y -q install mysql-server-5.1')
 commands.append('sudo -E mysqladmin -u root password %s' % (password))
 commands.append('sudo -E mysqladmin --password=%s create %s' % (password, dbname))
 commands.append("sudo -E mysql --password=%s -e \"GRANT Select, Insert, Update, Create, Delete ON *.* TO '%s'@'%%' IDENTIFIED BY '%s';\"" % (password, dbuser, password))
 commands.append("sudo -E sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/my.cnf")
-commands.append("/etc/init.d/mysql restart")
+commands.append("sudo -E /etc/init.d/mysql restart")
 
 for cmd in commands:
     print cmd
     rc = os.system(cmd)
     if rc != 0:
-        print "ERROR! %d" % (rc)
+        if os.WIFEXITED(rc):
+            rc = os.WEXITSTATUS(rc)
+            print "ERROR! %d" % (rc)
+        else:
+            print "UNKNOWN EXIT! %d" % (rc)
         sys.exit(rc)
 
 print "SUCCESS"
