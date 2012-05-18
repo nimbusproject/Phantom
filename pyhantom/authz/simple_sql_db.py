@@ -31,9 +31,8 @@ mapper(PhantomUserDBObject, phantom_user_pass_table)
 
 class SimpleSQL(PHAuthzIface):
 
-    def __init__(self, cfg):
-        self.cfg = cfg
-        self._engine = sqlalchemy.create_engine(cfg.phantom.authz.dburl)
+    def __init__(self, dburl):
+        self._engine = sqlalchemy.create_engine(dburl)
         metadata.create_all(self._engine)
         self._SessionX = sessionmaker(bind=self._engine)
         self._Session = self._SessionX()
@@ -59,9 +58,11 @@ class SimpleSQL(PHAuthzIface):
     def get_user_object_by_display_name(self, display_name):
         try:
             q = self._Session.query(PhantomUserDBObject)
-            q = q.filter(PhantomUserDBObject.display_name==display_name)
+            q = q.filter(PhantomUserDBObject.displayname==display_name)
             db_obj = q.first()
-            return PhantomUserObject(access_id, db_obj.access_secret, db_obj.displayname)
+            if not db_obj:
+                raise PhantomAWSException('InvalidClientTokenId')
+            return PhantomUserObject(db_obj.access_key, db_obj.access_secret, db_obj.displayname)
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure')

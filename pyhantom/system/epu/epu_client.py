@@ -153,7 +153,10 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['RequestedKeyName'] = lc.KeyName
         dt_def['mappings'][site_name]['LaunchConfigurationARN'] = lc.LaunchConfigurationARN
 
-        self._dtrs_client.add_dt(user_obj.access_id, dt_name, dt_def)
+        if exists:
+            self._dtrs_client.update_dt(user_obj.access_id, dt_name, dt_def)
+        else:
+            self._dtrs_client.add_dt(user_obj.access_id, dt_name, dt_def)
 
 
     @LogEntryDecorator(classname="EPUSystem")

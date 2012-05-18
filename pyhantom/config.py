@@ -22,7 +22,7 @@ class PhantomConfig(object):
             dburl = self._CFG.phantom.authz.dburl
             self._authz = CumulusDataStore(dburl)
         elif self._CFG.phantom.authz.type == "sqldb":
-            self._authz = SimpleSQL(CFG)
+            self._authz = SimpleSQL(CFG.phantom.authz.dburl)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 

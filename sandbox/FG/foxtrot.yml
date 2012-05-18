@@ -1,3 +1,8 @@
 name: foxtrot
 description: The FutureGrid Nimbus cloud in Florida
 driver_class: libcloud.compute.drivers.ec2.NimbusNodeDriver
+driver_kwargs:
+    host: f1r.idp.ufl.futuregrid.org
+    port: 8444
+    secure: True
+
