@@ -1,0 +1,23 @@
+{
+  "virtualenv": {
+    "python" : "/usr/bin/python2.7",
+    "virtualenv" : "/usr/bin/virtualenv2.7",
+    "path" : "/home/${epu_username}/app-venv"
+  },
+  "phantomweb" : {
+      "git_repo":"git://github.com/nimbusproject/PhantomWebApp.git",
+      "git_branch":"master",
+      "dburl": "mysql://${mysql_username}:${mysql_password}@${mysql_host}/${mysql_dbname}",
+      "syslog_server": "${syslog_host}",
+      "syslog_port": 514,
+      "debug": "On",
+      "djangodebug": "True",
+      "secret_key": "${django_secret_key}"
+  },
+
+  "appdir": "/home/${epu_username}/phantomweb",
+  "username":"${epu_username}",
+  "groupname":"${epu_groupname}",
+  "appname":"phantomweb",
+  "recipes":["phantomweb"]
+}
