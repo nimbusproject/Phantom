@@ -2,7 +2,7 @@ import logging
 import sqlalchemy
 from pyhantom.authz import PHAuthzIface, PhantomUserObject
 from pyhantom.phantom_exceptions import PhantomAWSException, PhantomException
-from sqlalchemy.orm import sessionmaker
+from phantomsql import PhantomSQL
 from sqlalchemy import String, MetaData, Sequence
 from sqlalchemy import Table
 from sqlalchemy import Integer
