@@ -7,11 +7,17 @@
   "phantomweb" : {
       "git_repo":"git://github.com/nimbusproject/PhantomWebApp.git",
       "git_branch":"master",
-      "dburl": "mysql://${mysql_username}:${mysql_password}@${mysql_host}/${mysql_dbname}",
       "syslog_server": "${syslog_host}",
       "syslog_port": 514,
       "debug": "On",
       "djangodebug": "True",
+
+      "mysql_dbname": "${mysql_dbname}",
+      "mysql_username":  "${mysql_username}",
+      "mysql_password": "${mysql_password}",
+      "mysql_host": "${mysql_host}",
+      "mysql_port": "${mysql_port}",
+
       "secret_key": "${django_secret_key}"
   },
 
