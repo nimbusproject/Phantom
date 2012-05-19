@@ -32,24 +32,10 @@ mapper(PhantomUserDBObject, phantom_user_pass_table)
 class SimpleSQL(PHAuthzIface):
 
     def __init__(self, dburl):
-        self._engine = sqlalchemy.create_engine(dburl)
-        metadata.create_all(self._engine)
-        self._SessionX = sessionmaker(bind=self._engine)
-        self._Session = self._SessionX()
-
-    def _lookup_user(self, access_key):
-        try:
-            q = self._Session.query(PhantomUserDBObject)
-            q = q.filter(PhantomUserDBObject.access_key==access_key)
-            db_obj = q.first()
-        except sqlalchemy.exc.SQLAlchemyError, ex:
-            log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
-            raise PhantomAWSException('InternalFailure')
-        
-        return db_obj
+        self._phantom_sql = PhantomSQL(dburl)
 
     def get_user_object_by_access_id(self, access_id):
-        db_obj = self._lookup_user(access_id)
+        db_obj = self._phantom_sql.get_user_object_by_access_id(access_id)
         if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
 
@@ -57,9 +43,7 @@ class SimpleSQL(PHAuthzIface):
 
     def get_user_object_by_display_name(self, display_name):
         try:
-            q = self._Session.query(PhantomUserDBObject)
-            q = q.filter(PhantomUserDBObject.displayname==display_name)
-            db_obj = q.first()
+            db_obj = self._phantom_sql.get_user_object_by_display_name(display_name)
             if not db_obj:
                 raise PhantomAWSException('InvalidClientTokenId')
             return PhantomUserObject(db_obj.access_key, db_obj.access_secret, db_obj.displayname)
@@ -68,27 +52,18 @@ class SimpleSQL(PHAuthzIface):
             raise PhantomAWSException('InternalFailure')
 
     def add_alter_user(self, displayname, access_key, access_secret):
-        db_obj = self._lookup_user(access_key)
-        if not db_obj:
-            db_obj = PhantomUserDBObject()
-            db_obj.access_key = access_key
-        db_obj.access_secret = access_secret
-        db_obj.displayname = displayname
-
-        self._Session.add(db_obj)
+        self._phantom_sql.add_alter_user(displayname, access_key, access_secret)
 
     def remove_user(self, access_key):
-        db_obj = self._lookup_user(access_key)
-        if not db_obj:
+        removed = self._phantom_sql.remove_user(access_key)
+        if not removed:
             raise PhantomAWSException('InvalidClientTokenId')
-        self._Session.delete(db_obj)
 
     def commit(self):
-        self._Session.commit()
+        self._phantom_sql.commit()
 
     def add_user(self, displayname, access_id, access_secret):
-        self.add_alter_user(displayname, access_id, access_secret)
-        self.commit()
+        self._phantom_sql.add_user(displayname, access_id, access_secret)
 
 
     
