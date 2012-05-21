@@ -11,6 +11,10 @@
       "syslog_port": 514,
       "debug": "On",
       "djangodebug": "True",
+      "staticfiles": "/usr/local/djandostatic/",
+
+      "accesslog": "/home/${epu_username}/phantomweb/access.log",
+      "generallog": "/home/${epu_username}/phantomweb/phantomweb.log",
 
       "mysql_dbname": "${mysql_dbname}",
       "mysql_username":  "${mysql_username}",
