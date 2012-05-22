@@ -86,5 +86,7 @@
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
   "appname":"epum",
+  "appdir": "/home/${epu_username}/epum",
+  "process_name": "epu-management-service",
   "recipes":["r2app"]
 }

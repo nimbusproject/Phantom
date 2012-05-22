@@ -43,6 +43,8 @@
     "autorestart":true
   },
   "appname":"${name}",
+  "appdir": "/home/${epu_username}/${name}",
+  "process_name": "epu-provisioner-service",
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
   "recipes":["r2app"]

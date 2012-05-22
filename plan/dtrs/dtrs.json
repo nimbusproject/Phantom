@@ -49,5 +49,7 @@
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
   "appname":"dtrs",
+  "appdir": "/home/${epu_username}/dtrs",
+  "process_name": "epu-dtrs",
   "recipes":["r2app"]
 }

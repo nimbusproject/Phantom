@@ -27,5 +27,6 @@
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
   "appname":"phantom",
+  "process_name": "phantom",
   "recipes":["virtualenv", "nimbusautoscale", "supervisord"]
 }
