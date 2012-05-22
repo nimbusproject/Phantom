@@ -64,8 +64,8 @@
     ]
   },
   "virtualenv": {
-    "python" : "/usr/bin/python2.7",
-    "virtualenv" : "/usr/bin/virtualenv2.7",
+    "python" : "${python}",
+    "virtualenv" : "${virtualenv}",
     "path" : "/home/${epu_username}/app-venv"
   },
   "appretrieve":{
