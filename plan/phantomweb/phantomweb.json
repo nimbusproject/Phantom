@@ -13,8 +13,7 @@
       "djangodebug": "True",
       "staticfiles": "/usr/local/djandostatic/",
 
-      "accesslog": "/home/${epu_username}/phantomweb/access.log",
-      "generallog": "/home/${epu_username}/phantomweb/phantomweb.log",
+      "logdir": "/usr/local/phantomweblog",
 
       "mysql_dbname": "${mysql_dbname}",
       "mysql_username":  "${mysql_username}",
@@ -22,7 +21,12 @@
       "mysql_host": "${mysql_host}",
       "mysql_port": "${mysql_port}",
 
-      "secret_key": "${django_secret_key}"
+      "secret_key": "${django_secret_key}",
+
+      "apacheuser" : "www-data",
+      "apachegroup" : "www-data",
+ 
+      "phantom_url": "${phantom_url}"
   },
 
   "appdir": "/home/${epu_username}/phantomweb",
