@@ -18,5 +18,5 @@
   "appname":"provisioner",
   "username":"${epu_username}",
   "groupname":"${epu_groupname}",
-  "recipes":["kazoo", "r2app"]
+  "recipes":["r2app"]
 }
