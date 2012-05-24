@@ -34,16 +34,16 @@ def get_fg_users(userpattern, nh):
 
 def get_user_public_key(username):
     ldapbasedn = "dc=futuregrid,dc=org"
-    ldapfilter = "(&(objectclass=ldapPublicKey)(cn=%s))" % (sys.argv[1])
-    ldapattribs = ['sshPublicKey']
+    ldapfilter = "(&(objectclass=ldapPublicKey)(cn=%s))" % (username)
+    ldapattribs = ['sshPublicKey', 'mail']
     ldapscope = ldap.SCOPE_SUBTREE
-
     l = ldap.open("ldap.futuregrid.org")
     l.simple_bind_s()
-
     ldapresults = l.search_s(ldapbasedn, ldapscope, ldapfilter, ldapattribs)
     res = ldapresults[0]
-    return res[1]['sshPublicKey'][0]
+    pubkey = res[1]['sshPublicKey'][0]
+    email = res[1]['mail'][0]
+    return (email, pubkey)
 
 def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret):
 
@@ -57,6 +57,21 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port)
     ec2conn.import_key_pair(keyname, keytext)
 
+
+def add_one_user(authz, cred_client, access_key, access_secret, pub_key, email, username):
+    phantomkey_name = get_default_keyname()
+    creds = {'access_key': access_key,
+            'secret_key': access_secret,
+            'key_name': phantomkey_name}
+
+    hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
+    print "public key is %s" % (ssh_key)
+    for host in hosts:
+        cred_client.add_credentials(access_key, host, creds)
+        register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
+
+    authz.add_user(username, email, access_key, access_secret)
+    add_django_user(username, email, access_secret)
 
 def main():
 
@@ -74,21 +89,10 @@ def main():
     dashi_con = get_dashi_client(cfg._CFG)
     cred_client = DTRSCredentialsClient(dashi_con)
 
-    phantomkey_name = get_default_keyname()
     for (name, access_key, access_secret) in user_pw_list:
         print "handling user %s" % (name)
-        creds = {'access_key': access_key,
-                    'secret_key': access_secret,
-                    'key_name': phantomkey_name}
-
-        hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
-        ssh_key = get_user_public_key(name)
-        print "public key is %s" % (ssh_key)
-        for host in hosts:
-            cred_client.add_credentials(access_key, host, creds)
-            register_key_with_iaas(hosts[host], ssh_key, phantomkey_name, access_key, access_secret)
-
-        authz.add_user(name, access_key, access_secret)
+        (email, ssh_key) = get_user_public_key(name)
+        add_one_user(authz, cred_client, access_key, access_secret, ssh_key, email, name)
 
 if __name__ == '__main__':
     rc = main()
