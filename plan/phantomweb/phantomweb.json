@@ -15,6 +15,7 @@
 
       "logdir": "/usr/local/phantomweblog",
 
+      "mysql_user_dbname:": "${mysql_user_dbname:}",
       "mysql_dbname": "${mysql_dbname}",
       "mysql_username":  "${mysql_username}",
       "mysql_password": "${mysql_password}",
