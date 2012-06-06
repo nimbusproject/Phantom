@@ -28,7 +28,9 @@
 
             "persistence_type": "zookeeper",
             "zookeeper_hosts": "${zookeeper}:2181",
-            "zookeeper_path": "/epum",
+            "zookeeper_path": "/sectestepum",
+            "zookeeper_username": "${zkuser}",
+            "zookeeper_password": "${zkpw}",
 
             "provisioner_vars" : {
               "epuworker_image_id":"${worker_id}",

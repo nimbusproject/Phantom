@@ -24,8 +24,10 @@
           },
           "zookeeper": {
             "hosts": "${zookeeper}:2181",
-            "dtrs_path": "/testdtrs",
-            "timeout" : 5
+            "dtrs_path": "/sectestdtrs",
+            "timeout" : 5,
+            "username" : "${zkuser}",
+            "password" : "${zkpw}"
           }
         }
       }

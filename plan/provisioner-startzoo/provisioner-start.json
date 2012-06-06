@@ -24,8 +24,10 @@
           },
           "zookeeper": {
             "hosts": "${zookeeper}:2181",
-            "provisioner_path": "/provisioner",
-            "timeout" : 5
+            "provisioner_path": "/sec/testprovisioner",
+            "timeout" : 5,
+            "username" : "${zkuser}",
+            "password" : "${zkpw}"
           },
           "context": {
             "uri":"https://svc.uc.futuregrid.org:8446/ContextBroker/ctx/",
