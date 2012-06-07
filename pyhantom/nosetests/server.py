@@ -16,6 +16,7 @@ class BaseServer(Thread):
         Thread.__init__(self)
         self.username = str(uuid.uuid4()).split('-')[0]
         self.password = str(uuid.uuid4()).split('-')[0]
+        self.displayname = "tester"
         self.is_ready = False
 
     def run(self):
@@ -50,7 +51,7 @@ class RunPwFileServer(BaseServer):
         (osf, self.pwfile) = tempfile.mkstemp(prefix="/tmp/phantom")
         os.close(osf)
         fptr = open(self.pwfile, "w")
-        fptr.write(self.username + ' ' + self.password + '\n')
+        fptr.write(self.username + ' ' + self.password + ' ' + self.displayname + '\n')
         fptr.close()
 
         (osf, self.conffile) = tempfile.mkstemp(prefix="/tmp/phantom")
@@ -74,7 +75,7 @@ class RunPwFileEPUServer(BaseServer):
         (osf, self.pwfile) = tempfile.mkstemp(prefix="/tmp/phantom")
         os.close(osf)
         fptr = open(self.pwfile, "w")
-        fptr.write(self.username + ' ' + self.password + '\n')
+        fptr.write(self.username + ' ' + self.password + ' ' + self.displayname + '\n')
         fptr.close()
 
         (osf, self.conffile) = tempfile.mkstemp(prefix="/tmp/phantom")

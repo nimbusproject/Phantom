@@ -38,7 +38,6 @@ def not_implemented_decorator(func):
         return raise_error(func)
     return call
 
-
 # A decorator for trapping errors in our applications
 class LogEntryDecorator(object):
 
@@ -66,9 +65,10 @@ class CatchErrorDecorator(object):
         self._app_name = appname
 
     def __call__(self, func):
-        def wrapped(*args, **kw):
+        def wrapped(wsgiapp, req, *args, **kw):
             try:
-                return func(*args, **kw)
+                #user_obj = wsgiapp.get_user_obj(req)
+                return func(wsgiapp, req, *args, **kw)
             except webob.exc.HTTPException, httpde:
                 log(logging.INFO, "Application %s:%s received HTTP error %s" % (self._app_name, func.func_name, httpde), printstack=True)
                 return httpde

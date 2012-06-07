@@ -6,6 +6,7 @@ import uuid
 from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log
+from pyhantom.wsgiapps import PhantomBaseService
 from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
 from pyhantom.wsgiapps.instances import DescribeAutoScalingInstances, TerminateInstanceInAutoScalingGroup
 from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
@@ -28,16 +29,17 @@ class Request(webob.Request):
     pass
 
 
-class MainRouter(object):
+class MainRouter(PhantomBaseService):
 
     def __init__(self):
-        self._cfg = build_cfg()
+        PhantomBaseService.__init__(self, "MainRouter")
 
     @webob.dec.wsgify(RequestClass=Request)
     @CatchErrorDecorator(appname="MainRouter")
     @LogEntryDecorator(classname="MainRouter")
-    def __call__(self, req):
+    def __call__(self, req, user_obj):
 
+        user_obj = None
         request_id = str(uuid.uuid4())
         try:
             log(logging.INFO, "%s Enter main router | %s" % (request_id, str(req.params)))
@@ -61,6 +63,10 @@ class MainRouter(object):
         except Exception, ex:
             log(logging.ERROR, "%s Exiting main router with error %s" % (request_id, str(ex)))
             raise
+        finally:
+            #if user_obj:
+            #    user_obj.close()
+            pass
         
         log(logging.INFO, "%s Exiting main router" % (request_id))
 

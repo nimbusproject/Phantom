@@ -22,18 +22,40 @@ phantom_user_pass_table = Table('phantom_user_pass', metadata,
     Column('CreatedTime', types.TIMESTAMP(), default=datetime.now()),
     )
 
-
 class PhantomUserDBObject(object):
     def __init__(self):
         pass
 
 mapper(PhantomUserDBObject, phantom_user_pass_table)
 
+def reset_db(func):
+    def call(sqlobj, *args,**kwargs):
+        try:
+            func(sqlobj, *args, **kwargs)
+        except sqlalchemy.exc.SQLAlchemyError, ex:
+            log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
+            try:
+                sqlobj._close_dbobj()
+                sqlobj._open_dbobj()
+            except Exception, ex:
+                log(logging.ERROR, "A database error occurred while %s" % (str(ex)))
+                raise PhantomAWSException('InternalFailure')
+    return call
+
+
 class SimpleSQL(PHAuthzIface):
 
     def __init__(self, dburl):
-        self._phantom_sql = PhantomSQL(dburl)
+        self._dburl = dburl
+        self._open_dbobj()
 
+    def _open_dbobj(self):
+        self._phantom_sql = PhantomSQL(self._dburl)
+
+    def _close_dbobj(self):
+        self._phantom_sql.close()
+
+    @reset_db
     def get_user_object_by_access_id(self, access_id):
         db_obj = self._phantom_sql.get_user_object_by_access_id(access_id)
         if not db_obj:
@@ -41,6 +63,7 @@ class SimpleSQL(PHAuthzIface):
 
         return PhantomUserObject(access_id, db_obj.access_secret, db_obj.displayname)
 
+    @reset_db
     def get_user_object_by_display_name(self, display_name):
         try:
             db_obj = self._phantom_sql.get_user_object_by_display_name(display_name)
@@ -51,9 +74,11 @@ class SimpleSQL(PHAuthzIface):
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure')
 
+    @reset_db
     def add_alter_user(self, displayname, access_key, access_secret):
         self._phantom_sql.add_alter_user(displayname, access_key, access_secret)
 
+    @reset_db
     def remove_user(self, access_key):
         removed = self._phantom_sql.remove_user(access_key)
         if not removed:
@@ -62,6 +87,10 @@ class SimpleSQL(PHAuthzIface):
     def commit(self):
         self._phantom_sql.commit()
 
+    def close(self):
+        self._phantom_sql.close()
+
+    @reset_db
     def add_user(self, displayname, access_id, access_secret):
         self._phantom_sql.add_user(displayname, access_id, access_secret)
 
