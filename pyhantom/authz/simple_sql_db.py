@@ -32,7 +32,7 @@ def reset_db(func):
     def call(sqlobj, *args,**kwargs):
         sqlobj._open_dbobj()
         try:
-            func(sqlobj, *args, **kwargs)
+            return func(sqlobj, *args, **kwargs)
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure', ex)
