@@ -30,16 +30,14 @@ mapper(PhantomUserDBObject, phantom_user_pass_table)
 
 def reset_db(func):
     def call(sqlobj, *args,**kwargs):
+        sqlobj._open_dbobj()
         try:
             func(sqlobj, *args, **kwargs)
         except sqlalchemy.exc.SQLAlchemyError, ex:
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
-            try:
-                sqlobj._close_dbobj()
-                sqlobj._open_dbobj()
-            except Exception, ex:
-                log(logging.ERROR, "A database error occurred while %s" % (str(ex)))
-                raise PhantomAWSException('InternalFailure')
+            raise PhantomAWSException('InternalFailure', ex)
+        finally:
+            sqlobj._close_dbobj()
     return call
 
 
@@ -47,12 +45,16 @@ class SimpleSQL(PHAuthzIface):
 
     def __init__(self, dburl):
         self._dburl = dburl
+        # open and close to discover obvious errors early
         self._open_dbobj()
+        sqlobj._close_dbobj()
 
     def _open_dbobj(self):
         self._phantom_sql = PhantomSQL(self._dburl)
 
     def _close_dbobj(self):
+        if not self._phantom_sql:
+            return  
         self._phantom_sql.close()
 
     @reset_db
