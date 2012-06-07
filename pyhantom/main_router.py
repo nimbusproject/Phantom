@@ -37,7 +37,7 @@ class MainRouter(PhantomBaseService):
     @webob.dec.wsgify(RequestClass=Request)
     @CatchErrorDecorator(appname="MainRouter")
     @LogEntryDecorator(classname="MainRouter")
-    def __call__(self, req, user_obj):
+    def __call__(self, req):
 
         user_obj = None
         request_id = str(uuid.uuid4())
