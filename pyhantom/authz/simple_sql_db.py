@@ -47,7 +47,7 @@ class SimpleSQL(PHAuthzIface):
         self._dburl = dburl
         # open and close to discover obvious errors early
         self._open_dbobj()
-        sqlobj._close_dbobj()
+        self._close_dbobj()
 
     def _open_dbobj(self):
         self._phantom_sql = PhantomSQL(self._dburl)
