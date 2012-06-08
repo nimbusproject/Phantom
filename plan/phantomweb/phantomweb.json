@@ -27,7 +27,7 @@
       "apacheuser" : "www-data",
       "apachegroup" : "www-data",
  
-      "phantom_url": "${phantom_url}"
+      "phantom_url": "${phantom_url}",
  
       "email_host": "${email_host}",
       "email_pw": "${email_pw}",
