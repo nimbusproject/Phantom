@@ -29,12 +29,12 @@
  
       "phantom_url": "${phantom_url}"
  
-      "email_host": "zimbra.anl.gov",
+      "email_host": "${email_host}",
       "email_pw": "${email_pw}",
       "email_user": "${email_user}",
       "email_port": 587,
       "email_tls": "True",
-      "email_fromaddr": "${email_addr}",
+      "email_fromaddr": "${email_addr}"
   },
 
   "appdir": "/home/${epu_username}/phantomweb",
