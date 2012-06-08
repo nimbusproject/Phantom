@@ -28,9 +28,6 @@ def log_reply(doc, user_obj):
     log(logging.INFO, "Sending reply %s to user %s" % (doc.documentElement.toprettyxml(), user_obj.access_id))
 
 
-def get_default_keyname():
-    return "phantomkey"
-
 def not_implemented_decorator(func):
     def call(self, *args,**kwargs):
         def raise_error(func):

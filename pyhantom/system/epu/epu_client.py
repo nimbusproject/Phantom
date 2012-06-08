@@ -4,8 +4,9 @@ from pyhantom.system import SystemAPI
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import EPUMClient, DTRSDTClient
-from pyhantom.util import log, LogEntryDecorator, _get_time, make_time, get_default_keyname
+from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
 from dashi import DashiError
+from phantomsql import phantom_get_default_key_name
 
 
 g_add_template = {'general' :
@@ -141,7 +142,7 @@ class EPUSystem(SystemAPI):
         # values needed by the system
         dt_def['mappings'][site_name]['iaas_allocation'] = lc.InstanceType
         dt_def['mappings'][site_name]['iaas_image'] = lc.ImageId
-        dt_def['mappings'][site_name]['key_name'] = get_default_keyname()
+        dt_def['mappings'][site_name]['key_name'] = phantom_get_default_key_name()
 
         # user defined values
         dt_def['mappings'][site_name]['CreatedTime'] = make_time(lc.CreatedTime.date_time)
@@ -210,7 +211,7 @@ class EPUSystem(SystemAPI):
                     ot_lc.InstanceMonitoring.Enabled = False
                     ot_lc.InstanceType = mapped_def['iaas_allocation']
                     ot_lc.KernelId = None
-                    ot_lc.KeyName = get_default_keyname()
+                    ot_lc.KeyName = phantom_get_default_key_name()
                     ot_lc.LaunchConfigurationARN = mapped_def['LaunchConfigurationARN']
                     ot_lc.LaunchConfigurationName = out_name
                     ot_lc.RamdiskId = None

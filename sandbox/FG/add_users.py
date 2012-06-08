@@ -8,10 +8,11 @@ from ceiclient.connection import DashiCeiConnection
 import boto
 import urlparse
 from pyhantom.config import build_cfg
-from pyhantom.util import get_default_keyname
 import boto
 from boto.ec2.regioninfo import RegionInfo
 import ldap
+from phantomsql import phantom_get_default_key_name
+
 
 def get_dashi_client(cfg):
     ssl = cfg.phantom.system.rabbit_ssl
@@ -59,7 +60,7 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
 
 
 def add_one_user(authz, cred_client, access_key, access_secret, pub_key, email, username):
-    phantomkey_name = get_default_keyname()
+    phantomkey_name = phantom_get_default_key_name()
     creds = {'access_key': access_key,
             'secret_key': access_secret,
             'key_name': phantomkey_name}
