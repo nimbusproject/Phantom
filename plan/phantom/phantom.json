@@ -28,7 +28,6 @@
   "appname": "phantom",
   "process_name": "phantom",
   "recipes": [
-    "virtualenv",
     "nimbusautoscale",
     "supervisord"
   ]
