@@ -1,45 +1,40 @@
 {
   "virtualenv": {
-    "python" : "${python}",
-    "virtualenv" : "${virtualenv}",
-    "path" : "/home/${epu_username}/app-venv"
+    "python": "${python}",
+    "virtualenv": "${virtualenv}",
+    "path": "/home/${epu_username}/app-venv"
   },
-  "phantomweb" : {
-      "git_repo":"git://github.com/nimbusproject/PhantomWebApp.git",
-      "git_branch":"master",
-      "syslog_server": "${syslog_host}",
-      "syslog_port": 514,
-      "debug": "On",
-      "djangodebug": "True",
-      "staticfiles": "/usr/local/djandostatic/",
-
-      "logdir": "/usr/local/phantomweblog",
-
-      "mysql_user_dbname": "${mysql_user_dbname}",
-      "mysql_dbname": "${mysql_dbname}",
-      "mysql_username":  "${mysql_username}",
-      "mysql_password": "${mysql_password}",
-      "mysql_host": "${mysql_host}",
-      "mysql_port": "${mysql_port}",
-
-      "secret_key": "${django_secret_key}",
-
-      "apacheuser" : "www-data",
-      "apachegroup" : "www-data",
- 
-      "phantom_url": "${phantom_url}",
- 
-      "email_host": "${email_host}",
-      "email_pw": "${email_pw}",
-      "email_user": "${email_user}",
-      "email_port": 587,
-      "email_tls": "True",
-      "email_fromaddr": "${email_addr}"
+  "phantomweb": {
+    "git_repo": "git://github.com/nimbusproject/PhantomWebApp.git",
+    "git_branch": "master",
+    "syslog_server": "${syslog_host}",
+    "syslog_port": 514,
+    "debug": "On",
+    "djangodebug": "True",
+    "staticfiles": "/usr/local/djandostatic/",
+    "logdir": "/usr/local/phantomweblog",
+    "mysql_user_dbname": "${mysql_user_dbname}",
+    "mysql_dbname": "${mysql_dbname}",
+    "mysql_username": "${mysql_username}",
+    "mysql_password": "${mysql_password}",
+    "mysql_host": "${mysql_host}",
+    "mysql_port": "${mysql_port}",
+    "secret_key": "${django_secret_key}",
+    "apacheuser": "www-data",
+    "apachegroup": "www-data",
+    "phantom_url": "${phantom_url}",
+    "email_host": "${email_host}",
+    "email_pw": "${email_pw}",
+    "email_user": "${email_user}",
+    "email_port": 587,
+    "email_tls": "True",
+    "email_fromaddr": "${email_addr}"
   },
-
   "appdir": "/home/${epu_username}/phantomweb",
-  "username":"${epu_username}",
-  "groupname":"${epu_groupname}",
-  "appname":"phantomweb",
-  "recipes":["phantomweb"]
+  "username": "${epu_username}",
+  "groupname": "${epu_groupname}",
+  "appname": "phantomweb",
+  "recipes": [
+    "phantomweb"
+  ]
 }

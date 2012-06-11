@@ -1,1 +1,7 @@
-{"dbpassword": "${dbpassword}", "dbuser": "${dbuser}", "dbname": "${dbname}", "webdbname": "${webdbname}", "dbhost": "${dbhost}"}
+{
+  "dbpassword": "${dbpassword}",
+  "dbuser": "${dbuser}",
+  "dbname": "${dbname}",
+  "webdbname": "${webdbname}",
+  "dbhost": "${dbhost}"
+}
