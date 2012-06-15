@@ -42,7 +42,7 @@
         },
         "zookeeper": {
           "hosts": "${zookeeper}:2181",
-          "dtrs_path": "/sectestdtrs",
+          "dtrs_path": "/sec/test/dtrs",
           "timeout": 5,
           "username": "${zkuser}",
           "password": "${zkpw}"

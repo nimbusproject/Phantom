@@ -44,7 +44,7 @@
           "default_user": "${epu_username}",
           "persistence_type": "zookeeper",
           "zookeeper_hosts": "${zookeeper}:2181",
-          "zookeeper_path": "/sectestepum",
+          "zookeeper_path": "/sec/test/epum",
           "zookeeper_username": "${zkuser}",
           "zookeeper_password": "${zkpw}"
         }
