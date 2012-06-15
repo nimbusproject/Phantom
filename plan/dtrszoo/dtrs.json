@@ -39,14 +39,14 @@
               "syslog"
             ]
           }
+        },
+        "zookeeper": {
+          "hosts": "${zookeeper}:2181",
+          "dtrs_path": "/sectestdtrs",
+          "timeout": 5,
+          "username": "${zkuser}",
+          "password": "${zkpw}"
         }
-      },
-      "zookeeper": {
-        "hosts": "${zookeeper}:2181",
-        "dtrs_path": "/sectestdtrs",
-        "timeout": 5,
-        "username": "${zkuser}",
-        "password": "${zkpw}"
       }
     }
   },
