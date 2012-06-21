@@ -41,7 +41,7 @@
           }
         },
         "epumanagement": {
-          "default_user": "${epu_username}",
+          "default_user": "${epu_username}"
         }
       }
     }
