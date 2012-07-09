@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy.exc import IntegrityError
-from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, DateTimeType, AutoScalingGroupType
+import uuid
+from pyhantom.out_data_types import LaunchConfigurationType, AWSListType, DateTimeType, AutoScalingGroupType, InstanceType
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.system import SystemAPI
 from pyhantom.system.local_db.persistance import LaunchConfigurationDB, LaunchConfigurationObject, AutoscaleGroupObject
@@ -93,6 +94,21 @@ class SystemLocalDB(SystemAPI):
         self._db.delete_lc(db_lco[0])
         self._db.db_commit()
 
+    def _set_instances(self, asg):
+        asg.Instances = AWSListType('Instances')
+
+        for i in range(asg.DesiredCapacity):
+            out_t = InstanceType('Instance')
+
+            out_t.AutoScalingGroupName = asg.AutoScalingGroupName
+            out_t.HealthStatus = 'Healthy'
+            out_t.LifecycleState = '400-Running'
+            out_t.AvailabilityZone = 'alamo'
+            out_t.LaunchConfigurationName = 'stuff'
+            out_t.InstanceId = 'i-' + str(uuid.uuid4()).split('-')[0]
+            asg.Instances.type_list.append(out_t)
+
+
     def _create_autoscale_group(self, user_obj, asg):
         db_asg = self._db.get_asg(user_obj, asg.AutoScalingGroupName)
         if db_asg:
@@ -139,6 +155,7 @@ class SystemLocalDB(SystemAPI):
         for asgdb in db_asgs:
             a = db_asg_to_outtype(asgdb)
             asg_list_type.type_list.append(a)
+            self._set_instances(a)
 
         return (asg_list_type, next_token)
 
