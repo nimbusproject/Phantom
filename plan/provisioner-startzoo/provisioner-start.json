@@ -42,7 +42,7 @@
         },
         "zookeeper": {
           "hosts": "${zookeeper}:2181",
-          "provisioner_path": "/sec/test/provisioner",
+          "provisioner_path": "${zkbasedir}/provisioner",
           "timeout": 5,
           "username": "${zkuser}",
           "password": "${zkpw}"
