@@ -1,0 +1,16 @@
+Phantom 0.1
+-----------
+
+[*] Initial release
+
+Features:
+
+- N preserving policy on the individual clouds of FutureGrid.
+- N can change throughout the lifetime of the domain.
+- Simple web application for creating, adjusting, and termination domains
+- Implements a subset of the 'AWS Autoscaling Groups' protocol.
+
+- EPU services are backed by zookeeper
+- Authentication and web application data is backed by MySQL
+
+
