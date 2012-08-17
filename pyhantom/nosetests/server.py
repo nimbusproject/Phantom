@@ -3,7 +3,6 @@ from wsgiref.simple_server import make_server
 import tempfile
 import os
 import uuid
-import time
 from pyhantom.main_router import MainRouter
 
 class BaseServer(Thread):

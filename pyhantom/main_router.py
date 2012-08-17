@@ -3,9 +3,8 @@ import webob
 import webob.dec
 import webob.exc
 import uuid
-from pyhantom.config import build_cfg
 from pyhantom.phantom_exceptions import PhantomAWSException
-from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log
+from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log, get_aws_access_key
 from pyhantom.wsgiapps import PhantomBaseService
 from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
 from pyhantom.wsgiapps.instances import DescribeAutoScalingInstances, TerminateInstanceInAutoScalingGroup
@@ -44,8 +43,10 @@ class MainRouter(PhantomBaseService):
         try:
             log(logging.INFO, "%s Enter main router | %s" % (request_id, str(req.params)))
             authz = self._cfg.get_authz()
-            user_obj = authz.get_user_object_by_access_id(req.params['AWSAccessKeyId'])
-            authenticate_user(req, user_obj.secret_key)
+
+            access_dict = get_aws_access_key(req)
+            user_obj = authz.get_user_object_by_access_id(access_dict['AWSAccessKeyId'])
+            authenticate_user(user_obj.secret_key, req, access_dict)
             key = 'Action'
             if key not in req.params.keys():
                 raise PhantomAWSException('InvalidParameterValue')

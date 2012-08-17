@@ -14,9 +14,8 @@ from pyhantom.nosetests.server import RunPwFileEPUServer
 class BasicAutoScaleGroupTests(unittest.TestCase):
 
     def _get_good_con(self):
-        region = RegionInfo(self.hostname)
+        region = RegionInfo(endpoint=self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = self.hostname
         return con
 
     def setUp(self):

@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 import sys
-Version = "0.2"
+Version = "0.3"
 
 if float("%d.%d" % sys.version_info[:2]) < 2.6:
     sys.stderr.write("Your Python version %d.%d.%d is not supported.\n" % sys.version_info[:3])
@@ -23,7 +23,7 @@ setup(name='pyhantom',
       keywords = "Nimbus auto scale",
       long_description="""Some other time""",
       license="Apache2",
-      install_requires = ["simplejson == 2.3.2", "boto == 2.0", "dashi", "ceiclient", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python >= 1.2", "phantomsql"],
+      install_requires = ["simplejson == 2.3.2", "boto >= 2.5", "dashi", "ceiclient", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python >= 1.2", "phantomsql"],
       entry_points = {
         'console_scripts': [
             'phantomwsgiref = pyhantom.execs.simpleref:main',

@@ -2,6 +2,7 @@ import uuid
 from webob.response import Response
 from pyhantom.config import build_cfg
 import xml.dom.minidom
+from pyhantom.util import get_aws_access_key
 
 class PhantomBaseService(object):
 
@@ -14,7 +15,9 @@ class PhantomBaseService(object):
         self._authz = self._cfg.get_authz()
 
     def get_user_obj(self, req):
-        user_obj = self._authz.get_user_object_by_access_id(req.params['AWSAccessKeyId'])
+        access_dict = get_aws_access_key(req)
+
+        user_obj = self._authz.get_user_object_by_access_id(access_dict['AWSAccessKeyId'])
         return user_obj
 
     def get_default_response_body_dom(self, doc_name=None):

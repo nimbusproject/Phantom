@@ -16,9 +16,8 @@ from pyhantom.system.tester import _TESTONLY_clear_registry
 class BasicLaunchConfigTests(unittest.TestCase):
 
     def _get_good_con(self):
-        region = RegionInfo(self.hostname)
+        region = RegionInfo(endpoint=self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = self.hostname
         return con
 
     def setUp(self):
@@ -155,9 +154,8 @@ class BasicLaunchConfigTests(unittest.TestCase):
         self.assertEqual(len(sec_groups), len(x[0].security_groups))
 
     def test_bad_login(self):
-        region = RegionInfo(self.hostname)
+        region = RegionInfo(endpoint=self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id="XXX", aws_secret_access_key=self.password, is_secure=False, port=self.port, debug=3, region=region)
-        con.host = self.hostname
         try:
             x = con.get_all_launch_configurations()
             self.assertTrue(False, "login should have failed")
@@ -166,9 +164,8 @@ class BasicLaunchConfigTests(unittest.TestCase):
 
 
     def test_bad_pw(self):
-        region = RegionInfo(self.hostname)
+        region = RegionInfo(endpoint=self.hostname)
         con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=self.username, aws_secret_access_key="XXX", is_secure=False, port=self.port, debug=3, region=region)
-        con.host = self.hostname
         try:
             x = con.get_all_launch_configurations()
             self.assertTrue(False, "login should have failed")
