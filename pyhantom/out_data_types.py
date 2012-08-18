@@ -167,6 +167,17 @@ class AutoScalingGroupType(AWSType):
         self.Status = "Healthy"
         self.SuspendedProcesses = AWSListType('SuspendedProcesses')
         self.Tags = AWSListType('Tags')
+
+        if asg.Tags:
+            for tag in asg.Tags:
+                td = TagDescription('Tag')
+                td.Key = tag.Key
+                td.PropagateAtLaunch = tag.PropagateAtLaunch
+                td.ResourceId = tag.ResourceId
+                td.ResourceType = tag.ResourceType
+                td.Value = tag.Value
+                self.Tags.type_list.append(td)
+            
         self.VPCZoneIdentifier = asg.VPCZoneIdentifier
 
         if self.DesiredCapacity is None:

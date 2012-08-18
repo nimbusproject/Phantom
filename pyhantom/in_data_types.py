@@ -1,4 +1,5 @@
 from pyhantom.phantom_exceptions import PhantomAWSException
+from pyhantom.util import phantom_is_primative
 
 
 class ObjectFromReqInput(object):
@@ -23,7 +24,7 @@ class ObjectFromReqInput(object):
             else:
                 val = False
         else:
-            o = t(name)
+            o = t()
             val = o.set_from_dict(in_val)
         return val
 
@@ -38,11 +39,40 @@ class ObjectFromReqInput(object):
         for pl in type_d.keys():
             ndx = p.find(pl)
             if ndx == 0:
-                val = self._get_value(p, params[p], type_d[pl])
-                if val:
+                if phantom_is_primative(type_d[pl]):
+                    val = self._get_value(p, params[p], type_d[pl])
+                    if val:
+                        if pl not in self.__dict__:
+                            self.__dict__[pl] = []
+                        self.__dict__[pl].append(val)
+                else:
                     if pl not in self.__dict__:
                         self.__dict__[pl] = []
-                    self.__dict__[pl].append(val)
+                    l = self.__dict__[pl]
+                    member_info = p.split('.', 3)
+                    member_ndx = int(member_info[2])
+                    for i in range(len(l), int(member_ndx)):
+                        l.append(type_d[pl]())
+
+                    element = l[member_ndx-1]
+                    value_name = member_info[3]
+                    element.set_value(value_name, params[p])
+
+    def set_value(self, name, value):
+        if name in self.optional_param_keys:
+            t = self.optional_param_keys[name]
+        elif name in self.needed_param_keys:
+            t = self.needed_param_keys[name]
+        elif name in self.optional_param_list_keys:
+            raise PhantomAWSException("We cannot work with this type yet")
+        elif name in self.needed_param_list_keys:
+            raise PhantomAWSException("We cannot work with this type yet")
+        else:
+            raise PhantomAWSException("%s is not a known value name" % (name))
+
+        if not phantom_is_primative(t):
+            raise PhantomAWSException("We cannot work with this type yet")
+        self.__setattr__(name, t(value))
 
     def set_from_dict(self, params):
 
@@ -78,12 +108,12 @@ class ObjectFromReqInput(object):
 
 class BlockDeviceMappingInput(ObjectFromReqInput):
     def __init__(self):
-        ObjectFromReqInput.__init__(self, "BlockDeviceMapping")
+        ObjectFromReqInput.__init__(self)
         self.optional_param_keys = {"DeviceName": str,  "VirtualName": str}
 
 class TagsInput(ObjectFromReqInput):
     def __init__(self):
-        ObjectFromReqInput.__init__(self, "Tags")
+        ObjectFromReqInput.__init__(self)
         self.needed_param_keys = {"Key": str,  "PropagateAtLaunch": bool, "ResourceId": str, "ResourceType": str, "Value": str}
 
 class LaunchConfigurationInput(ObjectFromReqInput):
@@ -110,7 +140,7 @@ class CreateAutoScalingGroupInput(ObjectFromReqInput):
         ObjectFromReqInput.__init__(self)
 
         self.needed_param_list_keys = {'AvailabilityZones': str}
-        self.optional_param_list_keys = {"Tags": str, "LoadBalancerNames": str}
+        self.optional_param_list_keys = {"Tags": TagsInput, "LoadBalancerNames": str}
         self.optional_param_keys = {"DefaultCooldown": int,  "DesiredCapacity": int, "HealthCheckGracePeriod": int, "HealthCheckType": str,  "PlacementGroup": str, "VPCZoneIdentifier": str}
         self.needed_param_keys = {"AutoScalingGroupName": str, "LaunchConfigurationName": str, "MaxSize": int, "MinSize": int}
 
