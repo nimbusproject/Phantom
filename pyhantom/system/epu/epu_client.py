@@ -9,10 +9,19 @@ from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
 
 
-g_add_template = {'general' :
-                    {'engine_class': 'epu.decisionengine.impls.phantom.PhantomEngine'},
-                  'health':
-                    {'monitor_health': False},
+g_definition_name = "phantom0.1def"
+
+g_definition = {
+    'general' : {
+        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomEngine',
+    },
+    'health' : {
+        'monitor_health' : False
+    }
+}
+
+
+g_add_template = {
                   'engine_conf':
                     {'preserve_n': None,
                      'epuworker_type': None,
@@ -107,6 +116,11 @@ class EPUSystem(SystemAPI):
         self._dashi_conn = DashiCeiConnection(self._rabbit, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange, timeout=60, port=self._rabbit_port, ssl=ssl)
         self._epum_client = EPUMClient(self._dashi_conn)
         self._dtrs_client = DTRSDTClient(self._dashi_conn)
+        self._epum_def_client = EPUMDefinitionClient(self._dashi_conn)
+
+        domain_def_list = self.self._epum_def_client.list_domain_definitions()
+        if g_definition_name not in domain_def_list:
+            self.epum_client.add_domain_definition(g_definition_name, g_definition)
 
     def _get_dt_details(self, name, caller):
         return self._dtrs_client.describe_dt(caller, name)
@@ -242,7 +256,7 @@ class EPUSystem(SystemAPI):
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
-            self._epum_client.add_domain(asg.AutoScalingGroupName, conf, caller=user_obj.access_id)
+            self._epum_client.add_domain(asg.AutoScalingGroupName, g_definition_name, conf, caller=user_obj.access_id)
         except DashiError, de:
             if de.exc_type == u'WriteConflictError':
                 raise PhantomAWSException('InvalidParameterValue', details="auto scale name already exists")
