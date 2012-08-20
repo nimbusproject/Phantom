@@ -3,7 +3,7 @@ from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurati
 from pyhantom.system import SystemAPI
 from pyhantom.phantom_exceptions import PhantomAWSException
 from ceiclient.connection import DashiCeiConnection
-from ceiclient.client import EPUMClient, DTRSDTClient
+from ceiclient.client import EPUMClient, DTRSDTClient, EPUMDefinitionClient
 from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
 from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
