@@ -120,7 +120,7 @@ class EPUSystem(SystemAPI):
 
         domain_def_list = self._epum_def_client.list_domain_definitions()
         if g_definition_name not in domain_def_list:
-            self.epum_client.add_domain_definition(g_definition_name, g_definition)
+            self._epum_def_client.add_domain_definition(g_definition_name, g_definition)
 
     def _get_dt_details(self, name, caller):
         return self._dtrs_client.describe_dt(caller, name)
