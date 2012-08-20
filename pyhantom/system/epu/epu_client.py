@@ -118,7 +118,7 @@ class EPUSystem(SystemAPI):
         self._dtrs_client = DTRSDTClient(self._dashi_conn)
         self._epum_def_client = EPUMDefinitionClient(self._dashi_conn)
 
-        domain_def_list = self.self._epum_def_client.list_domain_definitions()
+        domain_def_list = self._epum_def_client.list_domain_definitions()
         if g_definition_name not in domain_def_list:
             self.epum_client.add_domain_definition(g_definition_name, g_definition)
 
