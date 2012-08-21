@@ -134,7 +134,6 @@ class DescribeLaunchConfigurationsInput(ObjectFromReqInput):
         self.optional_param_keys = {"MaxRecords": int, "NextToken": str}
         self.optional_param_list_keys = {"LaunchConfigurationNames": str}
 
-
 class CreateAutoScalingGroupInput(ObjectFromReqInput):
     def __init__(self):
         ObjectFromReqInput.__init__(self)
@@ -143,6 +142,11 @@ class CreateAutoScalingGroupInput(ObjectFromReqInput):
         self.optional_param_list_keys = {"Tags": TagsInput, "LoadBalancerNames": str}
         self.optional_param_keys = {"DefaultCooldown": int,  "DesiredCapacity": int, "HealthCheckGracePeriod": int, "HealthCheckType": str,  "PlacementGroup": str, "VPCZoneIdentifier": str}
         self.needed_param_keys = {"AutoScalingGroupName": str, "LaunchConfigurationName": str, "MaxSize": int, "MinSize": int}
+
+class CreateOrUpdateTagsInput(ObjectFromReqInput):
+    def __init__(self):
+        ObjectFromReqInput.__init__(self)
+        self.needed_param_list_keys = {"Tags": TagsInput,}
 
 class DeleteAutoScalingGroupInput(ObjectFromReqInput):
     def __init__(self):

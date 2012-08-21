@@ -19,7 +19,7 @@ class SystemAPI(object):
         pass
 
     @not_implemented_decorator
-    def alter_autoscale_group(self, user_obj, name, desired_capacity):
+    def alter_autoscale_group(self, user_obj, name, new_conf):
         pass
 
     @not_implemented_decorator

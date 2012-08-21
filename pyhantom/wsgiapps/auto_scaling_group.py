@@ -1,9 +1,10 @@
 import logging
 import webob
-from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput
+from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput, CreateOrUpdateTagsInput
 from pyhantom.out_data_types import AutoScalingGroupType
 from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply, log_request
 from pyhantom.wsgiapps import PhantomBaseService
+from pyhantom.system.epu.definitions import tags_to_definition
 
 class CreateAutoScalingGroup(PhantomBaseService):
 
@@ -115,12 +116,52 @@ class SetDesiredCapacity(PhantomBaseService):
         if input.HonorCooldown:
             force = True
 
-        self._system.alter_autoscale_group(user_obj, input.AutoScalingGroupName, input.DesiredCapacity, force)
+        new_conf = {'desired_capacity': input.DesiredCapacity}
+        self._system.alter_autoscale_group(user_obj, input.AutoScalingGroupName, new_conf, force)
 
         res = self.get_response()
         doc = self.get_default_response_body_dom(doc_name="SetDesiredCapacityResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
 
         log(logging.INFO, "User %s change %s capacity to %d" % (user_obj.access_id, input.AutoScalingGroupName, input.DesiredCapacity))
+        log_reply(doc, user_obj)
+        return res
+
+
+class CreateOrUpdateTags(PhantomBaseService):
+
+    def __init__(self, name):
+        PhantomBaseService.__init__(self, name)
+
+    @webob.dec.wsgify
+    @CatchErrorDecorator(appname="CreateOrUpdateTags")
+    def __call__(self, req):
+
+        user_obj = self.get_user_obj(req)
+        log_request(req, user_obj)
+
+        input = CreateOrUpdateTagsInput()
+        input.set_from_dict(req.params)
+
+        # first we need to organize the tags by group association
+        tag_groups = {}
+        for tag in input.Tags:
+            if tag.ResourceId not in tag_groups:
+                tag_groups[tag.ResourceId] = []
+            l = tag_groups[tag.ResourceId]
+            l.append(tag)
+
+        for group_name in tag_groups:
+            log(logging.INFO, "Processing tags for the group %s" % (group_name))
+
+            tags = tag_groups[group_name]
+            (name, new_conf) = tags_to_definition(tags)
+            
+            self._system.alter_autoscale_group(user_obj, group_name, new_conf, force=True)
+
+        res = self.get_response()
+        doc = self.get_default_response_body_dom(doc_name="CreateOrUpdateTagsResponse")
+        res.unicode_body = doc.documentElement.toprettyxml()
+
         log_reply(doc, user_obj)
         return res

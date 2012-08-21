@@ -7,26 +7,7 @@ from ceiclient.client import EPUMClient, DTRSDTClient, EPUMDefinitionClient
 from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
 from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
-
-
-g_definition_name = "phantom0.1def"
-
-g_definition = {
-    'general' : {
-        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomEngine',
-    },
-    'health' : {
-        'monitor_health' : False
-    }
-}
-
-
-g_add_template = {
-                  'engine_conf':
-                    {'preserve_n': None,
-                     'epuworker_type': None,
-                     'force_site': None}
-                  }
+from pyhantom.system.epu.definitions import tags_to_definition, load_known_definitions
 
 def _is_healthy(state):
 
@@ -117,10 +98,8 @@ class EPUSystem(SystemAPI):
         self._epum_client = EPUMClient(self._dashi_conn)
         self._dtrs_client = DTRSDTClient(self._dashi_conn)
         self._epum_def_client = EPUMDefinitionClient(self._dashi_conn)
-
-        domain_def_list = self._epum_def_client.list_domain_definitions()
-        if g_definition_name not in domain_def_list:
-            self._epum_def_client.add_domain_definition(g_definition_name, g_definition)
+        
+        load_known_definitions(self._epum_def_client)
 
     def _get_dt_details(self, name, caller):
         return self._dtrs_client.describe_dt(caller, name)
@@ -239,24 +218,26 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def create_autoscale_group(self, user_obj, asg):
-        global g_add_template
-
         log(logging.DEBUG, "entering create_autoscale_group with %s" % (asg.LaunchConfigurationName))
-        (dt_name, site_name) = self._breakup_name(asg.LaunchConfigurationName)
 
-        conf = g_add_template.copy()
-        conf['engine_conf']['preserve_n'] = asg.DesiredCapacity
-        conf['engine_conf']['epuworker_type'] = dt_name
-        conf['engine_conf']['force_site'] = site_name
-        conf['engine_conf']['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
-        conf['engine_conf']['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
-        conf['engine_conf']['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier
-        conf['engine_conf']['HealthCheckType'] =  asg.HealthCheckType
-        conf['engine_conf']['PlacementGroup'] =  asg.PlacementGroup
+        (definition_name, domain_opts) = tags_to_definition(asg.Tags)
+        domain_opts['domain_desired_size'] = asg.DesiredCapacity
+        domain_opts['domain_min_size'] = asg.MinSize
+        domain_opts['domain_max_size'] = asg.MaxSize
+        domain_opts['epuworker_type'] = asg.LaunchConfigurationName
+        domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
+        domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
+        domain_opts['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier
+        domain_opts['HealthCheckType'] =  asg.HealthCheckType
+        domain_opts['PlacementGroup'] =  asg.PlacementGroup
+
+        conf = {
+            {'engine_conf': domain_opts}
+        }
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
-            self._epum_client.add_domain(asg.AutoScalingGroupName, g_definition_name, conf, caller=user_obj.access_id)
+            self._epum_client.add_domain(asg.AutoScalingGroupName, definition_name, conf, caller=user_obj.access_id)
         except DashiError, de:
             if de.exc_type == u'WriteConflictError':
                 raise PhantomAWSException('InvalidParameterValue', details="auto scale name already exists")
@@ -264,9 +245,9 @@ class EPUSystem(SystemAPI):
             raise
 
     @LogEntryDecorator(classname="EPUSystem")
-    def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
+    def alter_autoscale_group(self, user_obj, name, new_conf, force):
         conf = {'engine_conf':
-                    {'preserve_n': desired_capacity},
+                    {'domain_desired_size': new_conf['desired_capacity']},
                   }
         try:
             self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)

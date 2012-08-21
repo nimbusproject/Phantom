@@ -39,7 +39,8 @@ class TestInterfaceSystem(unittest.TestCase):
         except PhantomNotImplementedException:
             pass
         try:
-            iface.alter_autoscale_group(name, 1)
+            new_conf = {'alter_autoscale_group': 1}
+            iface.alter_autoscale_group(name, new_conf)
         except PhantomNotImplementedException:
             pass
         try:

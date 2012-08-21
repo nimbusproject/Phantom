@@ -130,12 +130,12 @@ class SystemLocalDB(SystemAPI):
         self._db.db_obj_add(db_asg)
         self._db.db_commit()
 
-    def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
+    def alter_autoscale_group(self, user_obj, name, new_conf, force):
         asg = self._db.get_asg(user_obj, name)
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (asg.AutoScalingGroupName))
 
-        asg.DesiredCapacity = desired_capacity
+        asg.DesiredCapacity = new_conf['desired_capacity']
         self._db.db_commit()
 
 

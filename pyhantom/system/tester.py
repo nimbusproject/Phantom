@@ -88,15 +88,19 @@ class TestSystem(object):
 
         g_instance_registry[inst.InstanceId] = inst
 
-    def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
+    def alter_autoscale_group(self, user_obj, name, new_conf, force):
         if name not in self._asgs:
             raise PhantomAWSException('InvalidParameterValue', details=name)
         asg = self._asgs[name]
-        asg.DesiredCapacity = desired_capacity
+
+        if 'desired_capacity' not in new_conf:
+            return
+
+        asg.DesiredCapacity = new_conf['desired_capacity']
 
         global g_instance_registry
         # add instance up to that capacity
-        for i in range(0, desired_capacity):
+        for i in range(0, asg.DesiredCapacity):
             self._make_new_instance(asg)
 
     # add instances to it XXX 

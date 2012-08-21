@@ -110,14 +110,14 @@ class EPUSystemWithLocalDB(SystemLocalDB):
 
 
     @LogEntryDecorator(classname="EPUSystemWithLocalDB")
-    def alter_autoscale_group(self, user_obj, name, desired_capacity, force):
+    def alter_autoscale_group(self, user_obj, name, new_conf, force):
         self._clean_up_db()
         asg = self._db.get_asg(user_obj, name)
         if not asg:
             raise PhantomAWSException('InvalidParameterValue', details="The name %s does not exists" % (asg.AutoScalingGroupName))
 
         conf = {'engine_conf':
-                    {'preserve_n': desired_capacity},
+                    {'preserve_n': new_conf['desired_capacity']},
                   }
         try:
             self._epum_client.reconfigure_domain(name, conf)

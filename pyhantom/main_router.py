@@ -6,13 +6,14 @@ import uuid
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log, get_aws_access_key
 from pyhantom.wsgiapps import PhantomBaseService
-from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity
+from pyhantom.wsgiapps.auto_scaling_group import CreateAutoScalingGroup, DeleteAutoScalingGroup, DescribeAutoScalingGroup, SetDesiredCapacity, CreateOrUpdateTags
 from pyhantom.wsgiapps.instances import DescribeAutoScalingInstances, TerminateInstanceInAutoScalingGroup
 from pyhantom.wsgiapps.launch_configuration import CreateLaunchConfiguration, DescribeLaunchConfigurations, DeleteLaunchConfiguration
 from wsgiref.simple_server import make_server
 
 _action_to_application_map = {
     'CreateAutoScalingGroup' : CreateAutoScalingGroup,
+    'CreateOrUpdateTags' : CreateOrUpdateTags,
     'CreateLaunchConfiguration' : CreateLaunchConfiguration,
     'DeleteAutoScalingGroup' : DeleteAutoScalingGroup,
     'DeleteLaunchConfiguration' : DeleteLaunchConfiguration,
