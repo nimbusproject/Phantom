@@ -6,7 +6,7 @@
   },
   "phantomweb": {
     "git_repo": "git://github.com/nimbusproject/PhantomWebApp.git",
-    "git_branch": "master",
+    "git_branch": "phantom0.2",
     "syslog_server": "${syslog_host}",
     "syslog_port": 514,
     "debug": "On",
