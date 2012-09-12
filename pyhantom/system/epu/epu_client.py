@@ -9,7 +9,7 @@ from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
 from pyhantom.system.epu.definitions import tags_to_definition, load_known_definitions
 
-def _breakup_name(self, name):
+def _breakup_name(name):
     s_a = name.split("@", 1)
     if len(s_a) != 2:
         raise PhantomAWSException('InvalidParameterValue', details="The name %s is not in the proper format.  It must be <dt name>@<site name>" % (name))
@@ -50,11 +50,11 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
 
-    (dt_name, site_name) =_breakup_name(config['epuworker_type'])
-    asg.AvailabilityZones.add_item(site_name)
+    dt_name = config['epuworker_type']
+    asg.AvailabilityZones.add_item(config['force_site'])
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
-    asg.LaunchConfigurationName = "%s" % (config['epuworker_type'])
+    asg.LaunchConfigurationName = "%s@%s" % (dt_name, config['force_site'])
     asg.MaxSize = config['domain_max_size']
     asg.MinSize = config['domain_min_size']
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
@@ -226,7 +226,11 @@ class EPUSystem(SystemAPI):
         domain_opts['domain_desired_size'] = asg.DesiredCapacity
         domain_opts['domain_min_size'] = asg.MinSize
         domain_opts['domain_max_size'] = asg.MaxSize
-        domain_opts['epuworker_type'] = asg.LaunchConfigurationName
+
+        (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
+
+        domain_opts['epuworker_type'] = dt_name
+        domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
         domain_opts['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier
