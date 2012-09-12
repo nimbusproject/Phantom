@@ -11,7 +11,7 @@ g_add_template = {
                   }
 single_site_n_preserving_definition = {
     'general' : {
-        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomSingleSiteEngine',
+        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomEngine',
         },
     'health' : {
         'monitor_health' : False
@@ -24,7 +24,7 @@ g_test_def_types = {
 }
 g_test_def_definition = {
     'general' : {
-        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomSingleSiteEngine',
+        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomEngine',
     },
     'health' : {
         'monitor_health' : False
@@ -36,8 +36,8 @@ n_preserving_types = {
 }
 single_site_n_preserving_definition = {
     'general' : {
-        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomSingleSiteEngine',
-    },
+        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomEngine',
+    },  
     'health' : {
         'monitor_health' : False
     }

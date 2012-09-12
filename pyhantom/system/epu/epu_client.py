@@ -220,7 +220,7 @@ class EPUSystem(SystemAPI):
     def create_autoscale_group(self, user_obj, asg):
         log(logging.DEBUG, "entering create_autoscale_group with %s" % (asg.LaunchConfigurationName))
 
-        (definition_name, domain_opts) = tags_to_definition(asg.Tags)
+        (definition_name, domain_opts) = tags_to_definition(asg.Tags.type_list)
         domain_opts['domain_desired_size'] = asg.DesiredCapacity
         domain_opts['domain_min_size'] = asg.MinSize
         domain_opts['domain_max_size'] = asg.MaxSize
@@ -231,9 +231,8 @@ class EPUSystem(SystemAPI):
         domain_opts['HealthCheckType'] =  asg.HealthCheckType
         domain_opts['PlacementGroup'] =  asg.PlacementGroup
 
-        conf = {
-            {'engine_conf': domain_opts}
-        }
+        conf = {'engine_conf': domain_opts}
+        
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
