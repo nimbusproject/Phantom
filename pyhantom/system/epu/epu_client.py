@@ -9,6 +9,12 @@ from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
 from pyhantom.system.epu.definitions import tags_to_definition, load_known_definitions
 
+def _breakup_name(self, name):
+    s_a = name.split("@", 1)
+    if len(s_a) != 2:
+        raise PhantomAWSException('InvalidParameterValue', details="The name %s is not in the proper format.  It must be <dt name>@<site name>" % (name))
+    return (s_a)
+
 def _is_healthy(state):
 
     a = state.split('-')
@@ -35,7 +41,7 @@ def convert_epu_description_to_asg_out(desc, name):
     
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = desc['name']
-    asg.DesiredCapacity = config['preserve_n']
+    asg.DesiredCapacity = config['domain_desired_size']
     tm = _get_key_or_none(config, 'CreatedTime')
     if tm:
         tm = _get_time(config['CreatedTime'])
@@ -43,11 +49,14 @@ def convert_epu_description_to_asg_out(desc, name):
 
     asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
-    asg.AvailabilityZones.add_item(config['force_site'])
+
+    (dt_name, site_name) =_breakup_name(config['epuworker_type'])
+    asg.AvailabilityZones.add_item(site_name)
+
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
-    asg.LaunchConfigurationName = "%s@%s" % (config['epuworker_type'], config['force_site'])
-    asg.MaxSize = config['preserve_n']
-    asg.MinSize = config['preserve_n']
+    asg.LaunchConfigurationName = "%s" % (config['epuworker_type'])
+    asg.MaxSize = config['domain_max_size']
+    asg.MinSize = config['domain_min_size']
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
     #asg.Status
     asg.VPCZoneIdentifier = _get_key_or_none(config,'VPCZoneIdentifier')
@@ -108,16 +117,9 @@ class EPUSystem(SystemAPI):
         name_list = self._dtrs_client.list_dts(caller=caller)
         return name in name_list
 
-    def _breakup_name(self, name):
-        s_a = name.split("@", 1)
-        if len(s_a) != 2:
-            raise PhantomAWSException('InvalidParameterValue', details="The name %s is not in the proper format.  It must be <dt name>@<site name>" % (name))
-        return (s_a)
-
-
     @LogEntryDecorator(classname="EPUSystem")
     def create_launch_config(self, user_obj, lc):
-        (dt_name, site_name) = self._breakup_name(lc.LaunchConfigurationName)
+        (dt_name, site_name) = _breakup_name(lc.LaunchConfigurationName)
 
         # see if that name already exists
         dt_def = None
@@ -155,7 +157,7 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def delete_launch_config(self, user_obj, name):
-        (dt_name, site_name) = self._breakup_name(name)
+        (dt_name, site_name) = _breakup_name(name)
         dt_def = self._get_dt_details(dt_name, user_obj.access_id)
         if not dt_def:
             raise PhantomAWSException('InvalidParameterValue', details="Name %s not found" % (name))
