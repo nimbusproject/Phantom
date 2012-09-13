@@ -4,8 +4,8 @@
     "groupname": "${epu_groupname}",
     "virtualenv": {
       "path": "/home/${epu_username}/app-venv",
-      "python" : "${python}",
-      "virtualenv" : "${virtualenv}"
+      "python": "${python}",
+      "virtualenv": "${virtualenv}"
     },
     "action": [
       "run"
