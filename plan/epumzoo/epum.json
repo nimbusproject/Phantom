@@ -24,17 +24,17 @@
           }
         },
         "logging": {
-          "formatters" : {
-             "default": {
-               "format": "%(asctime)s %(levelname)-8s %(name)-15s %(domain_info)s %(message)s",
-               "datefmt": "%Y-%m-%d %H:%M:%S"
-             }
+          "formatters": {
+            "default": {
+              "format": "%(asctime)s %(levelname)-8s %(name)-15s %(domain_info)s %(message)s",
+              "datefmt": "%Y-%m-%d %H:%M:%S"
+            }
           },
           "filters": {
-             "domain": {
-               "()" : "epu.domain_log.DomainLogFilter"
-             }
-           },
+            "domain": {
+              "()": "epu.domain_log.DomainLogFilter"
+            }
+          },
           "handlers": {
             "syslog": {
               "address": [
@@ -45,7 +45,9 @@
             "file": {
               "formatter": "default",
               "level": "DEBUG",
-              "filters": ["domain"]
+              "filters": [
+                "domain"
+              ]
             }
           },
           "root": {
