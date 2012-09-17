@@ -59,7 +59,7 @@
           }
         },
         "zookeeper": {
-          "hosts": "${zookeeper}:2181",
+          "hosts": "${zookeeper}",
           "provisioner_path": "${zkbasedir}/provisioner",
           "timeout": 5,
           "username": "${zkuser}",

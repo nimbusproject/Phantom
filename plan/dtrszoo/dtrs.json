@@ -59,7 +59,7 @@
           }
         },
         "zookeeper": {
-          "hosts": "${zookeeper}:2181",
+          "hosts": "${zookeeper}",
           "dtrs_path": "${zkbasedir}/dtrs",
           "timeout": 5,
           "username": "${zkuser}",
