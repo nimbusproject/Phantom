@@ -145,9 +145,12 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['InstanceMonitoring'] = lc.InstanceMonitoring.Enabled
         dt_def['mappings'][site_name]['KernelId'] = lc.KernelId
         dt_def['mappings'][site_name]['RamdiskId'] = lc.RamdiskId
-        dt_def['mappings'][site_name]['UserData'] = lc.UserData
         dt_def['mappings'][site_name]['RequestedKeyName'] = lc.KeyName
         dt_def['mappings'][site_name]['LaunchConfigurationARN'] = lc.LaunchConfigurationARN
+
+        if lc.UserData:
+            dt_def['contextualization']['method'] = 'userdata'
+            dt_def['contextualization']['userdata'] = lc.UserData
 
         if exists:
             self._dtrs_client.update_dt(user_obj.access_id, dt_name, dt_def)
@@ -211,7 +214,11 @@ class EPUSystem(SystemAPI):
                     ot_lc.LaunchConfigurationName = out_name
                     ot_lc.RamdiskId = None
                     ot_lc.SecurityGroups = AWSListType('SecurityGroups')
-                    ot_lc.UserData = None
+                    contextualization = dt_descr.get('contextualization')
+                    if contextualization is not None and contextualization.get('method') == 'userdata':
+                        ot_lc.UserData = contextualization.get('userdata')
+                    else:
+                        ot_lc.UserData = None
 
                     lc_list_type.add_item(ot_lc)
 
