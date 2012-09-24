@@ -78,7 +78,7 @@ class ObjectFromReqInput(object):
 
         for p in self.needed_param_keys.keys():
             if p not in params:
-                raise PhantomAWSException('MissingParameter', details="paramter %s missing" % (p))
+                raise PhantomAWSException('MissingParameter', details="parameter %s missing" % (p))
 
         for pl in self.needed_param_list_keys.keys():
             found = False
@@ -87,7 +87,7 @@ class ObjectFromReqInput(object):
                 if ndx == 0:
                     found = True
             if not found:
-                raise PhantomAWSException('MissingParameter', details="paramter %s missing" % (pl))
+                raise PhantomAWSException('MissingParameter', details="parameter %s missing" % (pl))
 
         for p in params:
             self._do_list_param(params, p, self.needed_param_list_keys)
