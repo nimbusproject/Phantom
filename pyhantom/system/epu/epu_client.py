@@ -149,6 +149,7 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['LaunchConfigurationARN'] = lc.LaunchConfigurationARN
 
         if lc.UserData:
+            dt_def['contextualization'] = {}
             dt_def['contextualization']['method'] = 'userdata'
             dt_def['contextualization']['userdata'] = lc.UserData
 
