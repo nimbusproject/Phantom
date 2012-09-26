@@ -1,4 +1,6 @@
+import base64
 import logging
+
 from pyhantom.out_data_types import InstanceType, AWSListType, LaunchConfigurationType, InstanceMonitoringType, DateTimeType, AutoScalingGroupType
 from pyhantom.system import SystemAPI
 from pyhantom.phantom_exceptions import PhantomAWSException
@@ -149,6 +151,11 @@ class EPUSystem(SystemAPI):
         dt_def['mappings'][site_name]['LaunchConfigurationARN'] = lc.LaunchConfigurationARN
 
         if lc.UserData:
+            try:
+                lc.UserData = base64.b64decode(lc.UserData)
+            except:
+                raise PhantomAWSException('InvalidParameterValue', details="UserData should be base64-encoded")
+
             dt_def['contextualization'] = {}
             dt_def['contextualization']['method'] = 'userdata'
             dt_def['contextualization']['userdata'] = lc.UserData
