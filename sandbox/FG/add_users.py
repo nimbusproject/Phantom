@@ -71,8 +71,7 @@ def add_one_user(authz, cred_client, access_key, access_secret, pub_key, email, 
         cred_client.add_credentials(access_key, host, creds)
         register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
 
-    authz.add_user(username, email, access_key, access_secret)
-    add_django_user(username, email, access_secret)
+    #authz.add_user(username, email, access_key, access_secret)
 
 def main():
 
