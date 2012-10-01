@@ -242,10 +242,10 @@ class EPUSystem(SystemAPI):
         domain_opts['domain_min_size'] = asg.MinSize
         domain_opts['domain_max_size'] = asg.MaxSize
 
-        (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
+        dt_name = asg.LaunchConfigurationName
 
         domain_opts['epuworker_type'] = dt_name
-        domain_opts['force_site'] = site_name
+        #domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
         domain_opts['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier

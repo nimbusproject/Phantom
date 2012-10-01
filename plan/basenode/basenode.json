@@ -32,9 +32,7 @@
   },
   "logstash": {
     "username": "${epu_username}",
-    "groupname": "${epu_groupname}",
-    "metrics_username": "${metrics_username}",
-    "metrics_password": "${metrics_password}"
+    "groupname": "${epu_groupname}"
   },
   "epu": {
     "username": "${epu_username}",
