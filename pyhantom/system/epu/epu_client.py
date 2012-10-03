@@ -53,10 +53,9 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
 
     dt_name = config['epuworker_type']
-    asg.AvailabilityZones.add_item(config['force_site'])
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
-    asg.LaunchConfigurationName = "%s@%s" % (dt_name, config['force_site'])
+    asg.LaunchConfigurationName = "%s" % (dt_name)
     asg.MaxSize = config['domain_max_size']
     asg.MinSize = config['domain_min_size']
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
@@ -243,8 +242,11 @@ class EPUSystem(SystemAPI):
         domain_opts['domain_max_size'] = asg.MaxSize
 
         dt_name = asg.LaunchConfigurationName
+        site_name = ""
+        if dt_name.find('@') > 0:
+            (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
 
-        domain_opts['epuworker_type'] = dt_name
+        domain_opts['dtname'] = dt_name
         #domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
@@ -254,7 +256,6 @@ class EPUSystem(SystemAPI):
 
         conf = {'engine_conf': domain_opts}
         
-
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
             self._epum_client.add_domain(asg.AutoScalingGroupName, definition_name, conf, caller=user_obj.access_id)
