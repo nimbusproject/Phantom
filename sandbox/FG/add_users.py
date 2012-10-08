@@ -3,7 +3,7 @@
 import sys
 import os
 import subprocess
-from ceiclient.client import DTRSCredentialsClient
+from ceiclient.client import DTRSClient
 from ceiclient.connection import DashiCeiConnection
 import boto
 import urlparse
@@ -59,7 +59,7 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     ec2conn.import_key_pair(keyname, keytext)
 
 
-def add_one_user(authz, cred_client, access_key, access_secret, pub_key, email, username):
+def add_one_user(authz, dtrs_client, access_key, access_secret, pub_key, email, username):
     phantomkey_name = phantom_get_default_key_name()
     creds = {'access_key': access_key,
             'secret_key': access_secret,
@@ -68,7 +68,7 @@ def add_one_user(authz, cred_client, access_key, access_secret, pub_key, email, 
     hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
     print "public key is %s" % (pub_key)
     for host in hosts:
-        cred_client.add_credentials(access_key, host, creds)
+        dtrs_client.add_credentials(access_key, host, creds)
         register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
 
     #authz.add_user(username, email, access_key, access_secret)
@@ -87,12 +87,12 @@ def main():
     authz = cfg.get_authz()
 
     dashi_con = get_dashi_client(cfg._CFG)
-    cred_client = DTRSCredentialsClient(dashi_con)
+    dtrs_client = DTRSClient(dashi_con)
 
     for (name, access_key, access_secret) in user_pw_list:
         print "handling user %s" % (name)
         (email, ssh_key) = get_user_public_key(name)
-        add_one_user(authz, cred_client, access_key, access_secret, ssh_key, email, name)
+        add_one_user(authz, dtrs_client, access_key, access_secret, ssh_key, email, name)
 
 if __name__ == '__main__':
     rc = main()
