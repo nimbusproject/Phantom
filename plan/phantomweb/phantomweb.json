@@ -28,7 +28,11 @@
     "email_user": "${email_user}",
     "email_port": 587,
     "email_tls": "True",
-    "email_fromaddr": "${email_addr}"
+    "email_fromaddr": "${email_addr}",
+    "rabbit_host": "${rabbitmq_host}",
+    "rabbit_user": "${rabbitmq_username}",
+    "rabbit_password": "${rabbitmq_password}",
+    "rabbit_exchange": "${rabbitmq_host}"
   },
   "appdir": "/home/${epu_username}/phantomweb",
   "username": "${epu_username}",
