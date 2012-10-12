@@ -30,7 +30,7 @@
     "email_tls": "True",
     "email_fromaddr": "${email_addr}",
     "rabbit_host": "${rabbitmq_host}",
-    "rabbit_port": 5762,
+    "rabbit_port": 5672,
     "rabbit_user": "${rabbitmq_username}",
     "rabbit_password": "${rabbitmq_password}",
     "rabbit_exchange": "${exchange_scope}",
