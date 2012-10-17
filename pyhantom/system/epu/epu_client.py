@@ -370,6 +370,7 @@ class EPUSystem(SystemAPI):
                 log(logging.INFO, "decreasing the desired_size to %d" % (desired_size))
                 conf['engine_conf']['domain_desired_size'] = desired_size
 
+            log(logging.INFO, "calling reconfigure_domain with %s" % (str(conf)))
             self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
