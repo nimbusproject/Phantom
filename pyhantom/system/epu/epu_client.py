@@ -52,7 +52,7 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
 
-    dt_name = config['epuworker_type']
+    dt_name = config['dtname']
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
     asg.LaunchConfigurationName = "%s" % (dt_name)
