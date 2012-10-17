@@ -307,3 +307,38 @@ class EPUSystem(SystemAPI):
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise
+
+
+    def _find_group_by_instance(self, user_obj, inst_id):
+        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        for domain_name in epu_list:
+            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.access_id)
+
+            inst_list = desc['instances']
+            for inst in inst_list:
+                if 'iaas_id' in  inst:
+                    if inst_id == inst['iaas_id']:
+                        return (domain_name, desc)
+        return None
+
+    @LogEntryDecorator(classname="EPUSystem")
+    def terminate_instances(self, user_obj, instance_id, adjust_policy):
+
+        # gotta find the asg that has this instance id.  this is a messed up part of the aws protocol
+
+        try:
+            desc_t = self._find_group_by_instance(user_obj, instance_id)
+            if desc_t is None:
+                raise PhantomAWSException('InvalidParameterValue', details="There is no domain associated with that instnace id")
+            (name, desc) = desc_t
+
+            log(logging.INFO, "found asg: %s" % (str(desc)))
+            conf = {'engine_conf':
+                    {'domain_desired_size': new_conf['desired_capacity']},
+                  }
+
+            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
+        except DashiError, de:
+            log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
+            raise
+

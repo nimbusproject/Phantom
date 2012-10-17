@@ -23,5 +23,9 @@ x = con.get_all_groups()
 for asg in x:
     print asg
     print "%s" % (asg.launch_config_name)
+    print "%d" % (asg.desired_capacity)
+    print "\t\t%s" % (dir(asg))
     for i in asg.instances:
-        print "\t\t%s" % (str(i))
+        print "\n\t%s" % (i.availability_zone)
+
+

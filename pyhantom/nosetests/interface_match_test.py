@@ -56,7 +56,7 @@ class TestInterfaceSystem(unittest.TestCase):
         except PhantomNotImplementedException:
             pass
         try:
-            iface.terminate_instances(name, True)
+            iface.terminate_instances(None, "i-deadbeef", false)
         except PhantomNotImplementedException:
             pass
 
