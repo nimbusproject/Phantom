@@ -366,7 +366,11 @@ class EPUSystem(SystemAPI):
 
             if adjust_policy:
                 desired_size = desc['config']['engine_conf']['domain_desired_size']
-                desired_size = desired_size - 1
+                if desired_size < 1:
+                    log(logging.WARN, "Trying to decrease the sie lower than 0")
+                    desired_size = 0
+                else:
+                    desired_size = desired_size - 1
                 log(logging.INFO, "decreasing the desired_size to %d" % (desired_size))
                 conf['engine_conf']['domain_desired_size'] = desired_size
 
