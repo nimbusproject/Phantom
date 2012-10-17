@@ -321,7 +321,7 @@ class EPUSystem(SystemAPI):
             for inst in inst_list:
                 if 'iaas_id' in  inst:
                     if inst_id == inst['iaas_id']:
-                        return (domain_name, desc)
+                        return (domain_name, desc, inst['instance_id'])
         return None
 
     def _find_all_instances(self, user_obj, instance_id_list=None):
@@ -359,15 +359,15 @@ class EPUSystem(SystemAPI):
             desc_t = self._find_group_by_instance(user_obj, instance_id)
             if desc_t is None:
                 raise PhantomAWSException('InvalidParameterValue', details="There is no domain associated with that instnace id")
-            (name, desc) = desc_t
+            (name, desc, epu_instance_id) = desc_t
 
-            conf = {'engine_conf': {'terminate': instance_id}
+            conf = {'engine_conf': {'terminate': epu_instance_id}
                   }
 
             if adjust_policy:
                 desired_size = desc['config']['engine_conf']['domain_desired_size']
                 if desired_size < 1:
-                    log(logging.WARN, "Trying to decrease the sie lower than 0")
+                    log(logging.WARN, "Trying to decrease the size lower than 0")
                     desired_size = 0
                 else:
                     desired_size = desired_size - 1
