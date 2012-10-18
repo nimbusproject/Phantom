@@ -1,8 +1,8 @@
 #!/bin/bash
 
 thisdir=`dirname $0`
-#sites="hotel alamo sierra foxtrot"
-sites="ec2"
+sites="hotel alamo sierra foxtrot ec2"
+#sites="ec2"
 
 if [ -z $PHANTOM_EPU_RABBIT_HOST ]; then
     echo "Please setup the environment"
@@ -11,7 +11,9 @@ fi
 
 for site in $sites
 do
-    ceictl -b $PHANTOM_EPU_RABBIT_HOST -x $EXCHANGE_SCOPE -u $RABBITMQ_USERNAME -p $RABBITMQ_PASSWORD site add $site --definition $thisdir/$site.yml
+    cmd="ceictl -b $PHANTOM_EPU_RABBIT_HOST -x $EXCHANGE_SCOPE -u $RABBITMQ_USERNAME -p $RABBITMQ_PASSWORD site add $site --definition $thisdir/$site.yml"
+    echo $cmd   
+    $cmd
 done
 
 ceictl -b $PHANTOM_EPU_RABBIT_HOST -x $EXCHANGE_SCOPE -u $RABBITMQ_USERNAME -p $RABBITMQ_PASSWORD site list
