@@ -381,7 +381,7 @@ class EPUSystem(SystemAPI):
             raise
 
     def get_autoscale_instances(self, user_obj, instance_id_list=None, max=-1, startToken=None):
-        lc_list_type = AWSListType(list_name)
+        lc_list_type = AWSListType("AutoScalingInstances")
         instance_list = self._find_all_instances(user_obj, instance_id_list)
         for inst in instance_list:
             out_t = convert_instance_type(inst['domain_name'], inst)

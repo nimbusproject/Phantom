@@ -27,5 +27,3 @@ for asg in x:
     print "\t\t%s" % (dir(asg))
     for i in asg.instances:
         print "\n\t%s" % (i.availability_zone)
-
-
