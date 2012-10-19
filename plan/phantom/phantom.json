@@ -10,7 +10,7 @@
   },
   "autoscale": {
     "git_repo": "git://github.com/nimbusproject/Phantom.git",
-    "git_branch": "phantom0.2",
+    "git_branch": "master",
     "logfile": "/home/${epu_username}/phantom/phantom.log",
     "dburl": "mysql://${mysql_username}:${mysql_password}@${mysql_host}/${mysql_dbname}",
     "rabbit_host": "${rabbitmq_host}",

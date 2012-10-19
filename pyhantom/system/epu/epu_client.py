@@ -35,6 +35,25 @@ def _get_key_or_none(config, k):
         return None
     return config[k]
 
+def convert_instance_type(name, inst):
+    log(logging.DEBUG, "Converting instance %s" %(str(inst)))
+    out_t = InstanceType('Instance')
+
+    out_t.AutoScalingGroupName = name
+    out_t.HealthStatus = _is_healthy(inst['state'])
+    if 'state_desc' in inst and inst['state_desc'] is not None:
+        out_t.HealthStatus = out_t.HealthStatus + " " + str(inst['state_desc'])
+    out_t.LifecycleState = inst['state']
+    out_t.AvailabilityZone = inst['site']
+    out_t.LaunchConfigurationName = inst['deployable_type']
+
+    if 'iaas_id' in  inst:
+        out_t.InstanceId = inst['iaas_id']
+    else:
+        out_t.InstanceId = ""
+    return out_t
+
+
 def convert_epu_description_to_asg_out(desc, name):
 
     log(logging.DEBUG, "conversion description: %s" %(str(desc)))
@@ -52,11 +71,10 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
 
-    dt_name = config['epuworker_type']
-    asg.AvailabilityZones.add_item(config['force_site'])
+    dt_name = config['dtname']
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
-    asg.LaunchConfigurationName = "%s@%s" % (dt_name, config['force_site'])
+    asg.LaunchConfigurationName = "%s" % (dt_name)
     asg.MaxSize = config['domain_max_size']
     asg.MinSize = config['domain_min_size']
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
@@ -74,22 +92,7 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.Instances = AWSListType('Instances')
 
     for inst in inst_list:
-        log(logging.DEBUG, "Converting instance %s" %(str(inst)))
-        out_t = InstanceType('Instance')
-
-        out_t.AutoScalingGroupName = name
-        out_t.HealthStatus = _is_healthy(inst['state'])
-        if 'state_desc' in inst and inst['state_desc'] is not None:
-            out_t.HealthStatus = out_t.HealthStatus + " " + str(inst['state_desc'])
-        out_t.LifecycleState = inst['state']
-        out_t.AvailabilityZone = inst['site']
-        out_t.LaunchConfigurationName = inst['deployable_type']
-
-        if 'iaas_id' in  inst:
-            out_t.InstanceId = inst['iaas_id']
-        else:
-            out_t.InstanceId = ""
-
+        out_t = convert_instance_type(name, inst)
         asg.Instances.type_list.append(out_t)
 
     return asg
@@ -241,10 +244,13 @@ class EPUSystem(SystemAPI):
         domain_opts['domain_min_size'] = asg.MinSize
         domain_opts['domain_max_size'] = asg.MaxSize
 
-        (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
+        dt_name = asg.LaunchConfigurationName
+        site_name = ""
+        if dt_name.find('@') > 0:
+            (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
 
-        domain_opts['epuworker_type'] = dt_name
-        domain_opts['force_site'] = site_name
+        domain_opts['dtname'] = dt_name
+        #domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
         domain_opts['VPCZoneIdentifier'] =  asg.VPCZoneIdentifier
@@ -253,7 +259,6 @@ class EPUSystem(SystemAPI):
 
         conf = {'engine_conf': domain_opts}
         
-
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
             self._epum_client.add_domain(asg.AutoScalingGroupName, definition_name, conf, caller=user_obj.access_id)
@@ -306,3 +311,79 @@ class EPUSystem(SystemAPI):
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise
+
+    def _find_group_by_instance(self, user_obj, inst_id):
+        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        for domain_name in epu_list:
+            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.access_id)
+
+            inst_list = desc['instances']
+            for inst in inst_list:
+                if 'iaas_id' in  inst:
+                    if inst_id == inst['iaas_id']:
+                        return (domain_name, desc, inst['instance_id'])
+        return None
+
+    def _find_all_instances(self, user_obj, instance_id_list=None):
+        instances = []
+        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        for domain_name in epu_list:
+            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.access_id)
+            inst_list = desc['instances']
+            for inst in inst_list:
+
+                inst['domain_name'] = domain_name
+
+                if 'iaas_id' not in inst:
+                    continue
+
+                inst_id = inst['iaas_id']
+                if instance_id_list is None:
+                    instances.append(inst)
+                elif inst_id in instance_id_list:
+                    instances.append(inst)
+
+        sorted_instance = sorted(instances, key=lambda hm: hm['iaas_id'])
+
+        return sorted_instance
+
+
+    @LogEntryDecorator(classname="EPUSystem")
+    def terminate_instances(self, user_obj, instance_id, adjust_policy):
+
+        # gotta find the asg that has this instance id.  this is a messed up part of the aws protocol
+
+        log(logging.INFO, "epu_client:terminate_instances %s, adjust %s" % (instance_id, adjust_policy))
+
+        try:
+            desc_t = self._find_group_by_instance(user_obj, instance_id)
+            if desc_t is None:
+                raise PhantomAWSException('InvalidParameterValue', details="There is no domain associated with that instnace id")
+            (name, desc, epu_instance_id) = desc_t
+
+            conf = {'engine_conf': {'terminate': epu_instance_id}
+                  }
+
+            if adjust_policy:
+                desired_size = desc['config']['engine_conf']['domain_desired_size']
+                if desired_size < 1:
+                    log(logging.WARN, "Trying to decrease the size lower than 0")
+                    desired_size = 0
+                else:
+                    desired_size = desired_size - 1
+                log(logging.INFO, "decreasing the desired_size to %d" % (desired_size))
+                conf['engine_conf']['domain_desired_size'] = desired_size
+
+            log(logging.INFO, "calling reconfigure_domain with %s for user %s" % (str(conf), user_obj.access_id))
+            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
+        except DashiError, de:
+            log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
+            raise
+
+    def get_autoscale_instances(self, user_obj, instance_id_list=None, max=-1, startToken=None):
+        lc_list_type = AWSListType("AutoScalingInstances")
+        instance_list = self._find_all_instances(user_obj, instance_id_list)
+        for inst in instance_list:
+            out_t = convert_instance_type(inst['domain_name'], inst)
+            lc_list_type.add_item(out_t)
+        return (lc_list_type, None)

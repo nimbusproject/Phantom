@@ -1,7 +1,7 @@
 from pyhantom.phantom_exceptions import PhantomAWSException
 import simplejson as json
 
-g_definition_key_name = "PHANTOM_DEFINTION"
+g_definition_key_name = "PHANTOM_DEFINITION"
 g_default_definition = "single_site_n_preserving"
 
 g_add_template = {
@@ -77,7 +77,6 @@ def ordered_cloud_list(cloud_list_string):
 
     rank = 1
     ordered_list = []
-    
 
     for cloud in c_l:
         res_doc = validate_cloud(cloud)
@@ -89,11 +88,11 @@ def ordered_cloud_list(cloud_list_string):
 
 error_overflow_n_preserving_types = {
     'clouds': ordered_cloud_list,
-    'n_preserve': str,
+    'n_preserve': int,
 }
 error_overflow_n_preserving_definition = {
     'general' : {
-        'engine_class' : 'epu.decisionengine.impls.phantom.PhantomErrorOverflowEngine',
+        'engine_class' : 'epu.decisionengine.impls.phantom_multi_site_overflow.PhantomMultiSiteOverflowEngine',
     },
     'health' : {
         'monitor_health' : False

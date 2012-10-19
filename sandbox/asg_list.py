@@ -21,6 +21,9 @@ con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_sec
 x = con.get_all_groups()
 
 for asg in x:
-    print asg
+    print asg.name
+    print "\t%s : %d" % (asg.launch_config_name, asg.desired_capacity)
+    print "\tInstances:"
+    print "\t---------"
     for i in asg.instances:
-        print "\t%s" % (str(i))
+        print "\t\t%s : %s " % (i.availability_zone, i.health_status)

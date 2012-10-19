@@ -6,7 +6,7 @@
   },
   "phantomweb": {
     "git_repo": "git://github.com/nimbusproject/PhantomWebApp.git",
-    "git_branch": "phantom0.2",
+    "git_branch": "master",
     "syslog_server": "${syslog_host}",
     "syslog_port": 514,
     "debug": "On",
@@ -28,7 +28,13 @@
     "email_user": "${email_user}",
     "email_port": 587,
     "email_tls": "True",
-    "email_fromaddr": "${email_addr}"
+    "email_fromaddr": "${email_addr}",
+    "rabbit_host": "${rabbitmq_host}",
+    "rabbit_port": 5672,
+    "rabbit_user": "${rabbitmq_username}",
+    "rabbit_password": "${rabbitmq_password}",
+    "rabbit_exchange": "${exchange_scope}",
+    "rabbit_ssl": "False"
   },
   "appdir": "/home/${epu_username}/phantomweb",
   "username": "${epu_username}",

@@ -23,4 +23,4 @@ con.host = host
 x = con.get_all_launch_configurations()
 
 for lc in x:
-    print lc
+    print lc.name

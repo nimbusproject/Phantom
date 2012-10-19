@@ -1,0 +1,130 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import sys
+
+from cloudinitd.exceptions import APIUsageException, ConfigException
+from cloudinitd.user_api import CloudInitD
+
+def load_cloudinitd_db(run_name):
+    vars = {}
+    home = os.environ['HOME']
+
+    try:
+        cid = CloudInitD(home + '/.cloudinitd', db_name=run_name, terminate=False, boot=False, ready=False)
+    except APIUsageException, e:
+        print "Problem loading records from cloudinit.d: %s" % str(e)
+        raise
+
+    svc_list = cid.get_all_services()
+    services = dict((svc.name, svc) for svc in svc_list)
+
+    rabbitmq = services.get('rabbitmq')
+    basenode = services.get('basenode')
+    dtrs = services.get('dtrs')
+    mysql = services.get('mysql')
+
+    if not rabbitmq and not basenode:
+        raise Exception("cloudinit.d plan has neither rabbitmq or basenode services")
+
+    if rabbitmq:
+        vars['rabbitmq_host'] = rabbitmq.get_attr_from_bag("rabbitmq_host")
+        vars['rabbitmq_username'] = rabbitmq.get_attr_from_bag("rabbitmq_username")
+        vars['rabbitmq_password'] = rabbitmq.get_attr_from_bag("rabbitmq_password")
+        try:
+            vars['rabbitmq_exchange'] = rabbitmq.get_attr_from_bag("rabbitmq_exchange")
+        except ConfigException:
+            vars['rabbitmq_exchange'] = None
+    else:
+        vars['rabbitmq_host'] = basenode.get_attr_from_bag("hostname")
+        vars['rabbitmq_username'] = basenode.get_attr_from_bag("rabbitmq_username")
+        vars['rabbitmq_password'] = basenode.get_attr_from_bag("rabbitmq_password")
+        try:
+            vars['rabbitmq_exchange'] = basenode.get_attr_from_bag("rabbitmq_exchange")
+        except ConfigException:
+            vars['rabbitmq_exchange'] = None
+
+    vars['hostname'] = basenode.get_attr_from_bag("hostname")
+
+    if dtrs:
+        try:
+            vars['zookeeper_hostname'] = dtrs.get_attr_from_bag("zookeeper")
+            vars['zookeeper_user'] = dtrs.get_attr_from_bag("zkuser")
+            vars['zookeeper_password'] = dtrs.get_attr_from_bag("zkpw")
+            vars['zookeeper_basedir'] = dtrs.get_attr_from_bag("zkbasedir")
+        except ConfigException:
+            vars['zookeeper_hostname'] = None
+            vars['zookeeper_user'] = None
+            vars['zookeeper_password'] = None
+            vars['zookeeper_basedir'] = None
+
+    if mysql:
+        try:
+            vars['mysql_dbname'] = mysql.get_attr_from_bag("dbname")
+            vars['mysql_webdbname'] = mysql.get_attr_from_bag("webdbname")
+            vars['mysql_dbuser'] = mysql.get_attr_from_bag("dbuser")
+            vars['mysql_dbpassword'] = mysql.get_attr_from_bag("dbpassword")
+            vars['mysql_dbhost'] = mysql.get_attr_from_bag("dbhost")
+        except ConfigException:
+            vars['mysql_dbname'] = None
+            vars['mysql_webdbname'] = None
+            vars['mysql_dbuser'] = None
+            vars['mysql_dbpassword'] = None
+            vars['mysql_dbhost'] = None
+
+    return vars
+
+if len(sys.argv) != 3:
+    sys.exit("usage: %s run_name debug_name" % sys.argv[0])
+
+phantom_key = os.environ['PHANTOM_LOCAL_KEY']
+if phantom_key is None:
+    sys.exit("PHANTOM_LOCAL_KEY must be set")
+
+cloudinitd_vars = load_cloudinitd_db(sys.argv[1])
+debug_name = sys.argv[2]
+print cloudinitd_vars
+
+phantom_vm = cloudinitd_vars['hostname']
+rabbitmq_vm = cloudinitd_vars['rabbitmq_host']
+
+# Shut down services on the VM
+try:
+    subprocess.check_call("ssh -i %s root@%s pkill supervisor" % (phantom_key, phantom_vm), shell=True)
+except subprocess.CalledProcessError:
+    print "pkill failed, services already stopped?"
+
+# Duplicate the MySQL user databaase
+# http://dev.mysql.com/doc/refman/5.5/en/copying-databases.html
+
+mysql_hostname = cloudinitd_vars['mysql_dbhost']
+mysql_user = cloudinitd_vars['mysql_dbuser']
+mysql_password = cloudinitd_vars['mysql_dbpassword']
+mysql_database = cloudinitd_vars['mysql_dbname']
+
+with open(os.path.expanduser("~/.my.cnf"), 'w') as f:
+    f.write("[client]\npassword=%s\n" % mysql_password)
+
+mysql_debug_database = mysql_database + "_" + debug_name
+
+if phantom_vm != mysql_hostname:
+    subprocess.check_call("mysqladmin -h %s -u %s create %s" % (mysql_hostname, mysql_user, mysql_debug_database), shell=True)
+    subprocess.check_call("mysqldump -h %s -u %s %s | mysql -h %s -u %s %s" % (mysql_hostname, mysql_user, mysql_database, mysql_hostname, mysql_user, mysql_debug_database), shell=True)
+
+# Block communication between Phantom VM and clouds
+subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A INPUT -p tcp --sport 8444 -j DROP" % (phantom_key, phantom_vm), shell=True)
+subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A OUTPUT -p tcp --dport 8444 -j DROP" % (phantom_key, phantom_vm), shell=True)
+
+# Block Autoscaling traffic
+subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A INPUT -p tcp --dport 8445 -j DROP" % (phantom_key, phantom_vm), shell=True)
+subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A OUTPUT -p tcp --sport 8445 -j DROP" % (phantom_key, phantom_vm), shell=True)
+
+# Block communication between Phantom and RabbitMQ (if external)
+if phantom_vm != rabbitmq_vm:
+    subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A INPUT -s %s --sport 5672 -j DROP" % (phantom_key, phantom_vm, rabbitmq_vm), shell=True)
+    subprocess.check_call("ssh -i %s root@%s /sbin/iptables -A OUTPUT -d %s --dport 5672 -j DROP" % (phantom_key, phantom_vm, rabbitmq_vm), shell=True)
+
+# Change the database name in the configuration
+if phantom_vm != mysql_hostname:
+    subprocess.check_call("ssh -i %s root@%s sed -i -e 's/%s/%s/' /home/epu/phantom/phantomautoscale.yml" % (phantom_key, phantom_vm, mysql_database, mysql_debug_database), shell=True)
