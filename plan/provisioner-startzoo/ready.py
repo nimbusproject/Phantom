@@ -1,5 +1,6 @@
 #!/home/epu/app-venv/bin/python
 
+import time
 import uuid
 import simplejson as json
 import sys
@@ -22,6 +23,17 @@ def main():
     client_topic = "provisioner_client_%s" % uuid.uuid4()
     client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=uri)
     client = ProvisionerClient(client_dashi)
+    for i in range(0, 3):
+        try:
+            x = client.describe_nodes(caller="HTEdNFYDys8RdP")
+            print x
+            break
+        except Exception, ex:
+            print ex
+            time.sleep(5);
+
+    # if we passed check one more time to avoid a fluke.  If we failed give 
+    # a brubbah one more shot at glory
     x = client.describe_nodes(caller="HTEdNFYDys8RdP")
     print x
     return 0

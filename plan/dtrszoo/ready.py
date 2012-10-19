@@ -1,6 +1,8 @@
 #!/home/epu/app-venv/bin/python
 
 import uuid
+import time
+import uuid
 import simplejson as json
 import sys
 from epu.dashiproc.dtrs import DTRS, DTRSClient
@@ -19,13 +21,22 @@ def main():
 
 
     uri = "amqp://%s:%s@%s" % (rabbitmq_username, rabbitmq_password, rabbitmq_host)
-    #dtrs = DTRS(amqp_uri=uri)
     client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=uri)
 
     dtrs_client = DTRSClient(dashi=client_dashi)
+    for i in range(0, 3):
+        try:
+            sites = dtrs_client.list_sites()
+            print sites
+            break
+        except Exception, ex:
+            print ex
+            time.sleep(5);
+
+    # if we passed check one more time to avoid a fluke.  If we failed give 
+    # a brubbah one more shot at glory
     sites = dtrs_client.list_sites()
     print sites
-
     return 0
 
 rc = main()
