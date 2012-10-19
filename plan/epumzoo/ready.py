@@ -19,7 +19,7 @@ def main():
     uri = "amqp://%s:%s@%s" % (rabbitmq_username, rabbitmq_password, rabbitmq_host)
     dtrs = DTRS(amqp_uri=uri)
 
-    epum_client = EPUManagementClient(dtrs.dashi, topic='epum')
+    epum_client = EPUManagementClient(dtrs.dashi, topic='epu_management_service')
     defs = epum_client.list_domain_definitions()    
     print defs
 
