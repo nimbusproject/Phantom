@@ -1,7 +1,7 @@
 from pyhantom.phantom_exceptions import PhantomAWSException
 import simplejson as json
 
-g_definition_key_name = "PHANTOM_DEFINTION"
+g_definition_key_name = "PHANTOM_DEFINITION"
 g_default_definition = "single_site_n_preserving"
 
 g_add_template = {

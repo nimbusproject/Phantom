@@ -24,7 +24,7 @@ name=sys.argv[1]
 lc_name=sys.argv[2]
 n_preserve=int(sys.argv[3])
 
-policy_name_key = 'PHANTOM_DEFINTION'
+policy_name_key = 'PHANTOM_DEFINITION'
 policy_name = 'error_overflow_n_preserving'
 ordered_clouds_key = 'clouds'
 ordered_clouds = ""

@@ -262,7 +262,7 @@ class BasicAutoScaleGroupTests(unittest.TestCase):
     def test_update_tags(self):
         group_name = str(uuid.uuid4()).split('-')[0]
 
-        t = Tag(connection=self.con, key="PHANTOM_DEFINTION", value="test", resource_id=group_name)
+        t = Tag(connection=self.con, key="PHANTOM_DEFINITION", value="test", resource_id=group_name)
         t2 = Tag(connection=self.con, key="number", value="1", resource_id=group_name)
         t2 = Tag(connection=self.con, key="string", value="hello world", resource_id=group_name)
         tags = [t, t2,]
