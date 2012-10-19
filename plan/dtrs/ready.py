@@ -1,8 +1,10 @@
 #!/home/epu/app-venv/bin/python
 
+import uuid
 import simplejson as json
 import sys
 from epu.dashiproc.dtrs import DTRS, DTRSClient
+import dashi.bootstrap as bootstrap
 
 def main():
     f = open("bootconf.json", "r")
@@ -13,11 +15,14 @@ def main():
     rabbitmq_username = rabbitmq_conf["username"]
     rabbitmq_password = rabbitmq_conf["password"]
 
-    rabbitmq_exchange = "default_dashi_exchange"
+    client_topic = "dtrs_client_%s" % uuid.uuid4()
+
 
     uri = "amqp://%s:%s@%s" % (rabbitmq_username, rabbitmq_password, rabbitmq_host)
-    dtrs = DTRS(amqp_uri=uri)
-    dtrs_client = DTRSClient(dashi=dtrs.dashi)
+    #dtrs = DTRS(amqp_uri=uri)
+    client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=uri)
+
+    dtrs_client = DTRSClient(dashi=client_dashi)
     sites = dtrs_client.list_sites()
     print sites
 
@@ -25,3 +30,4 @@ def main():
 
 rc = main()
 sys.exit(rc)
+
