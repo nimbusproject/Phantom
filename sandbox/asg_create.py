@@ -43,7 +43,7 @@ npreserve_tag = Tag(connection=con, key=n_preserve_key, value=n_preserve, resour
 
 tags = [policy_tag, clouds_tag, npreserve_tag]
 
-lc_a = x = con.get_all_launch_configurations(names=['%s@%s' % (lc_name, cloudname),])
+lc_a = x = con.get_all_launch_configurations(names=[lc_name,])
 if not lc_a:
     print "No such launch configuration"
     sys.exit(1)
