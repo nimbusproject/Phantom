@@ -1,9 +1,11 @@
 #!/home/epu/app-venv/bin/python
 
+import uuid
 import simplejson as json
 import sys
-from epu.dashiproc.dtrs import DTRS
+
 from epu.dashiproc.epumanagement import EPUManagementClient
+import dashi.bootstrap as bootstrap
 
 def main():
     f = open("bootconf.json", "r")
@@ -17,11 +19,11 @@ def main():
     rabbitmq_exchange = "default_dashi_exchange"
 
     uri = "amqp://%s:%s@%s" % (rabbitmq_username, rabbitmq_password, rabbitmq_host)
+
+    client_topic = "epum_client_%s" % uuid.uuid4()
     client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=uri)
-
-
-    epum_client = EPUManagementClient(dtrs.dashi, topic='epum')
-    defs = epum_client.list_domain_definitions()    
+    epum_client = EPUManagementClient(client_dashi, 'epu_management_service')
+    defs = epum_client.list_domain_definitions()
     print defs
 
     return 0
