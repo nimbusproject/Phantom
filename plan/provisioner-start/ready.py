@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/home/epu/app-venv/bin/python
 
+import uuid
 import simplejson as json
 import sys
 import dashi.bootstrap as bootstrap
@@ -19,9 +20,9 @@ def main():
     uri = "amqp://%s:%s@%s" % (rabbitmq_username, rabbitmq_password, rabbitmq_host)
 
     client_topic = "provisioner_client_%s" % uuid.uuid4()
-    client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=amqp_uri)
+    client_dashi = bootstrap.dashi_connect(client_topic, amqp_uri=uri)
     client = ProvisionerClient(client_dashi)
-    x = client.describe_nodes()
+    x = client.describe_nodes(caller="HTEdNFYDys8RdP")
     print x
     return 0
 
