@@ -2,7 +2,7 @@
 
 import uuid
 import time
-import simplejson as json
+import json
 import sys
 from epu.dashiproc.epumanagement import EPUManagementClient
 import dashi.bootstrap as bootstrap

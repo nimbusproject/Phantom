@@ -1,7 +1,7 @@
 #!/home/epu/app-venv/bin/python
 
 import uuid
-import simplejson as json
+import json
 import sys
 
 from epu.dashiproc.epumanagement import EPUManagementClient

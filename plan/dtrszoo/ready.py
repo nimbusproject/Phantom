@@ -3,7 +3,7 @@
 import uuid
 import time
 import uuid
-import simplejson as json
+import json
 import sys
 from epu.dashiproc.dtrs import DTRS, DTRSClient
 import dashi.bootstrap as bootstrap

@@ -1,7 +1,7 @@
 #!/home/epu/app-venv/bin/python
 
 import uuid
-import simplejson as json
+import json
 import sys
 import dashi.bootstrap as bootstrap
 from epu.dashiproc.provisioner import ProvisionerClient
