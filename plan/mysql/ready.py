@@ -2,7 +2,7 @@
 
 import sys
 import os
-import simplejson as json
+import json
 
 f = open("bootconf.json", "r")
 vals_dict = json.load(f)
