@@ -30,6 +30,10 @@
       "virtualenv": "${virtualenv}"
     }
   },
+  "logstash": {
+    "username": "${epu_username}",
+    "groupname": "${epu_groupname}"
+  },
   "epu": {
     "username": "${epu_username}",
     "groupname": "${epu_groupname}",
@@ -55,6 +59,7 @@
     "rabbitmq",
     "rsyslog",
     "kazoo",
+    "logstash",
     "epu"
   ]
 }
