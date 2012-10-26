@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -25,4 +27,3 @@ size=int(sys.argv[2])
 
 x = con.get_all_groups(names=[name,])
 x[0].set_capacity(size)
-

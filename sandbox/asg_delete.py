@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -26,4 +28,3 @@ x = con.get_all_groups(names=[name,])
 
 print "deleting %s" % (str(x[0]))
 x[0].delete()
-

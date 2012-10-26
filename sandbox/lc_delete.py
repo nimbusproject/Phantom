@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -24,4 +26,3 @@ name = sys.argv[1]
 con.delete_launch_configuration(name)
 
 sys.exit(0)
-

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -28,4 +30,3 @@ it="m1.small"
 lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(con, name=name, image_id=image_id, key_name=key_name, security_groups=['default'], instance_type=it)
 
 con.create_launch_configuration(lc)
-
