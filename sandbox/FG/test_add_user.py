@@ -60,7 +60,7 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, usernam
 def main():
 
     if len(sys.argv) != 5:
-        print "usage: add_users <user pattern> <nimbus home> <phantom conf file>"
+        print "usage: test_add_user name access_key access_secret email"
         sys.exit(1)
 
     name = sys.argv[1]
