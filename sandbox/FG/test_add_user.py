@@ -12,7 +12,6 @@ import urlparse
 from pyhantom.config import build_cfg
 import boto
 from boto.ec2.regioninfo import RegionInfo
-import ldap
 from phantomsql import phantom_get_default_key_name
 
 
