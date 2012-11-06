@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.regioninfo import RegionInfo
 import boto.ec2.autoscale
@@ -51,4 +53,3 @@ lc = lc_a[0]
 print 'using %s' % (str(lc))
 asg = boto.ec2.autoscale.group.AutoScalingGroup(connection=con, group_name=name, availability_zones=["us-east-1"], min_size=n_preserve, max_size=n_preserve, launch_config=lc, tags=tags)
 con.create_auto_scaling_group(asg)
-

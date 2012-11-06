@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import boto
 from boto.exception import BotoServerError
 from boto.regioninfo import RegionInfo
@@ -23,4 +25,3 @@ print x
 #x = con.get_all_launch_configurations()
 
 print x
-

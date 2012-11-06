@@ -1,5 +1,4 @@
 from pyhantom.phantom_exceptions import PhantomAWSException
-import simplejson as json
 
 g_definition_key_name = "PHANTOM_DEFINITION"
 g_default_definition = "single_site_n_preserving"
@@ -53,7 +52,7 @@ def validate_cloud(cloud_string):
 
     try:
         int(n_vms)
-    except Exception, ex:
+    except Exception:
         raise PhantomAWSException('InvalidParameterValue', details="The format is <cloud site name>:<integer size>.  You sent %s" % (cloud_string))
 
     result_doc = {'site_name': site_name, 'size': n_vms}
@@ -99,17 +98,41 @@ error_overflow_n_preserving_definition = {
     }
 }
 
+sensor_engine_types = {
+    'sensor_type': str,
+    'metric': str,
+    'sample_function': str,
+    'minimum_vms': int,
+    'maximum_vms': int,
+    'scale_up_threshold': float,
+    'scale_up_n_vms': int,
+    'scale_down_threshold': float,
+    'scale_down_n_vms': int,
+    'sensor_data': list,
+    'iaas_allocation': str
+}
+sensor_engine_definition = {
+    'general': {
+        'engine_class': 'epu.decisionengine.impls.sensor.SensorEngine',
+    },
+    'health': {
+        'monitor_health': False
+    }
+}
+
 g_known_definitions = {
     "test": g_test_def_definition,
     "single_site_n_preserving": single_site_n_preserving_definition,
     "multi_site_n_preserving": multi_site_n_preserving_definition,
-    "error_overflow_n_preserving": error_overflow_n_preserving_definition
+    "error_overflow_n_preserving": error_overflow_n_preserving_definition,
+    "sensor_engine": sensor_engine_definition
     }
 g_known_templates = {
     "test": g_test_def_types,
     "single_site_n_preserving": n_preserving_types,
     "multi_site_n_preserving": multi_site_n_preserving_types,
-    "error_overflow_n_preserving": error_overflow_n_preserving_types
+    "error_overflow_n_preserving": error_overflow_n_preserving_types,
+    "sensor_engine": sensor_engine_types
 }
 
 
@@ -136,7 +159,7 @@ def tags_to_definition(Tags):
 
         try:
             val = def_template[p](parameters[p])
-        except PhantomAWSException, paex:
+        except PhantomAWSException:
             raise
         except Exception:
             raise PhantomAWSException('InvalidParameterValue', details="The tag %s has a value %s that could not be understood.  Please check the type" % (p, parameters[p]))

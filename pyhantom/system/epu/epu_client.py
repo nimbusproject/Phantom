@@ -71,12 +71,18 @@ def convert_epu_description_to_asg_out(desc, name):
     asg.AutoScalingGroupARN = _get_key_or_none(config, 'AutoScalingGroupARN')
     asg.AvailabilityZones = AWSListType('AvailabilityZones')
 
-    dt_name = config['dtname']
+    dt_name = config.get('dtname')
+    if dt_name is None:
+        dt_name = config.get('deployable_type')
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
     asg.LaunchConfigurationName = "%s" % (dt_name)
-    asg.MaxSize = config['domain_max_size']
-    asg.MinSize = config['domain_min_size']
+    asg.MaxSize = config.get('domain_max_size')
+    if asg.MaxSize is None:
+        asg.MaxSize = config.get('maximum_vms')
+    asg.MinSize = config.get('domain_min_size')
+    if asg.MinSize is None:
+        asg.MinSize = config.get('minimum_vms')
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
     #asg.Status
     asg.VPCZoneIdentifier = _get_key_or_none(config,'VPCZoneIdentifier')
@@ -241,15 +247,21 @@ class EPUSystem(SystemAPI):
 
         (definition_name, domain_opts) = tags_to_definition(asg.Tags.type_list)
         domain_opts['domain_desired_size'] = asg.DesiredCapacity
-        domain_opts['domain_min_size'] = asg.MinSize
-        domain_opts['domain_max_size'] = asg.MaxSize
 
         dt_name = asg.LaunchConfigurationName
         site_name = ""
         if dt_name.find('@') > 0:
             (dt_name, site_name) = _breakup_name(asg.LaunchConfigurationName)
 
-        domain_opts['dtname'] = dt_name
+        if definition_name == 'sensor_engine':
+            domain_opts['deployable_type'] = dt_name
+            domain_opts['iaas_site'] = site_name
+            domain_opts['minimum_vms'] = asg.MinSize
+            domain_opts['maximum_vms'] = asg.MaxSize
+        else:
+            domain_opts['dtname'] = dt_name
+            domain_opts['domain_min_size'] = asg.MinSize
+            domain_opts['domain_max_size'] = asg.MaxSize
         #domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN

@@ -12,7 +12,6 @@ import urlparse
 from pyhantom.config import build_cfg
 import boto
 from boto.ec2.regioninfo import RegionInfo
-import ldap
 from phantomsql import phantom_get_default_key_name
 
 
@@ -61,7 +60,7 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, usernam
 def main():
 
     if len(sys.argv) != 5:
-        print "usage: add_users <user pattern> <nimbus home> <phantom conf file>"
+        print "usage: test_add_user name access_key access_secret email"
         sys.exit(1)
 
     name = sys.argv[1]
