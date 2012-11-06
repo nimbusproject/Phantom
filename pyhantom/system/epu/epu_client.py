@@ -257,11 +257,6 @@ class EPUSystem(SystemAPI):
         domain_opts['HealthCheckType'] =  asg.HealthCheckType
         domain_opts['PlacementGroup'] =  asg.PlacementGroup
 
-        # TODO: This should be exposed in the GUI
-        domain_opts['sensor_type'] = 'cloudwatch'
-        domain_opts['metric'] = 'CPUUtilization'
-        domain_opts['sample_function'] = 'Average'
-
         conf = {'engine_conf': domain_opts}
         
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
