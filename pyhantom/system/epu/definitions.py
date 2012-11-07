@@ -86,6 +86,9 @@ def ordered_cloud_list(cloud_list_string):
     return ordered_list
 
 error_overflow_n_preserving_types = {
+    'sensor_type': str,
+    'metric': str,
+    'sample_function': str,
     'clouds': ordered_cloud_list,
     'n_preserve': int,
 }
