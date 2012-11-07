@@ -1,0 +1,6 @@
+description: The Wispy Nimbus cloud at Purdue
+driver_class: libcloud.compute.drivers.ec2.NimbusNodeDriver
+driver_kwargs:
+    host: wispy.rcac.purdue.edu
+    port: 8444
+    secure: True
