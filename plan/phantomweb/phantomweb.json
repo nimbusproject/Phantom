@@ -33,7 +33,7 @@
     "rabbit_port": 5672,
     "rabbit_user": "${rabbitmq_username}",
     "rabbit_password": "${rabbitmq_password}",
-    "rabbit_exchange": "${exchange_scope}",
+    "rabbit_exchange": "${rabbitmq_exchange}",
     "rabbit_ssl": "False"
   },
   "appdir": "/home/${epu_username}/phantomweb",
