@@ -12,6 +12,7 @@ import boto
 from boto.ec2.regioninfo import RegionInfo
 import ldap
 from phantomsql import phantom_get_default_key_name
+import dashi
 
 
 def get_dashi_client(cfg):
@@ -68,10 +69,16 @@ def add_one_user(authz, dtrs_client, access_key, access_secret, pub_key, email, 
     hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
     print "public key is %s" % (pub_key)
     for host in hosts:
-        dtrs_client.add_credentials(access_key, host, creds)
+        try:
+            dtrs_client.add_credentials(access_key, host, creds)
+        except dashi.exceptions.DashiError:
+            print "Failed to add credentials for site %s" % host
+            pass
+
+        print "Adding key %s to cloud %s" % (phantomkey_name, hosts[host])
         register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
 
-    #authz.add_user(username, email, access_key, access_secret)
+    authz.add_user(username, access_key, access_secret)
 
 def main():
 
