@@ -21,15 +21,6 @@
     "archive_url": "${dtdata_archive_url}",
     "chef_debug_level": "debug"
   },
-  "kazoo": {
-    "username": "${epu_username}",
-    "groupname": "${epu_groupname}",
-    "virtualenv": {
-      "path": "/home/${epu_username}/app-venv",
-      "python": "${python}",
-      "virtualenv": "${virtualenv}"
-    }
-  },
   "logstash": {
     "username": "${epu_username}",
     "groupname": "${epu_groupname}",
@@ -60,7 +51,6 @@
     "apt",
     "rabbitmq",
     "rsyslog",
-    "kazoo",
     "logstash",
     "epu"
   ]
