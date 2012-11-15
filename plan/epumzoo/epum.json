@@ -21,6 +21,13 @@
             "host": "${rabbitmq_host}",
             "username": "${rabbitmq_username}",
             "password": "${rabbitmq_password}"
+          },
+          "zookeeper": {
+            "hosts": "${zookeeper}",
+            "path": "${zkbasedir}/epum",
+            "timeout": 5,
+            "username": "${zkuser}",
+            "password": "${zkpw}"
           }
         },
         "logging": {
@@ -59,12 +66,7 @@
           }
         },
         "epumanagement": {
-          "default_user": "${epu_username}",
-          "persistence_type": "zookeeper",
-          "zookeeper_hosts": "${zookeeper}",
-          "zookeeper_path": "${zkbasedir}/epum",
-          "zookeeper_username": "${zkuser}",
-          "zookeeper_password": "${zkpw}"
+          "default_user": "${epu_username}"
         }
       }
     }

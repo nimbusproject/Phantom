@@ -21,6 +21,13 @@
             "host": "${rabbitmq_host}",
             "username": "${rabbitmq_username}",
             "password": "${rabbitmq_password}"
+          },
+          "zookeeper": {
+            "hosts": "${zookeeper}",
+            "path": "${zkbasedir}/dtrs",
+            "timeout": 5,
+            "username": "${zkuser}",
+            "password": "${zkpw}"
           }
         },
         "logging": {
@@ -57,13 +64,6 @@
               "syslog"
             ]
           }
-        },
-        "zookeeper": {
-          "hosts": "${zookeeper}",
-          "dtrs_path": "${zkbasedir}/dtrs",
-          "timeout": 5,
-          "username": "${zkuser}",
-          "password": "${zkpw}"
         }
       }
     }
