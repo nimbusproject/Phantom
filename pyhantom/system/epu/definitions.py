@@ -107,6 +107,7 @@ sensor_engine_types = {
     'sample_function': str,
     'minimum_vms': int,
     'maximum_vms': int,
+    'cooldown_period': int,
     'scale_up_threshold': float,
     'scale_up_n_vms': int,
     'scale_down_threshold': float,
