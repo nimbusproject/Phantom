@@ -255,7 +255,9 @@ class EPUSystem(SystemAPI):
 
         if definition_name == 'sensor_engine':
             domain_opts['deployable_type'] = dt_name
+            domain_opts['dtname'] = dt_name
             domain_opts['iaas_site'] = site_name
+            domain_opts['iaas_allocation'] = "m1.small"
             domain_opts['minimum_vms'] = asg.MinSize
             domain_opts['maximum_vms'] = asg.MaxSize
         else:
@@ -282,11 +284,15 @@ class EPUSystem(SystemAPI):
 
     @LogEntryDecorator(classname="EPUSystem")
     def alter_autoscale_group(self, user_obj, name, new_conf, force):
-        conf = {'engine_conf':
-                    {'domain_desired_size': new_conf['desired_capacity']},
-                  }
+        conf = {'engine_conf': new_conf}
+        engine_conf = conf['engine_conf']
+
+        if new_conf.get('desired_capacity'):
+            engine_conf['domain_desired_size'] = new_conf.get('desired_capacity')
+
         try:
-            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
+            if engine_conf:
+                self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise
