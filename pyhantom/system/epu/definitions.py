@@ -85,7 +85,12 @@ def ordered_cloud_list(cloud_list_string):
     
     return ordered_list
 
+def monitor_sensors_list(sensors_list_string):
+
+    return sensors_list_string.split(",")
+
 error_overflow_n_preserving_types = {
+    'monitor_sensors': monitor_sensors_list,
     'sensor_type': str,
     'metric': str,
     'sample_function': str,
@@ -102,6 +107,7 @@ error_overflow_n_preserving_definition = {
 }
 
 sensor_engine_types = {
+    'monitor_sensors': monitor_sensors_list,
     'sensor_type': str,
     'metric': str,
     'sample_function': str,
