@@ -287,7 +287,7 @@ class EPUSystem(SystemAPI):
         conf = {'engine_conf': new_conf}
         engine_conf = conf['engine_conf']
 
-        if new_conf.get('desired_capacity'):
+        if new_conf.get('desired_capacity') is not None:
             engine_conf['domain_desired_size'] = new_conf.get('desired_capacity')
 
         try:
