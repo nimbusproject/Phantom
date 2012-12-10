@@ -49,11 +49,20 @@
       "package_repo": "${package_repo}"
     }
   },
+  "opentsdb": {
+      "port": 4242
+  },
+  "tcollector": {
+      "tsd_port": 4242
+  },
   "recipes": [
     "apt",
     "rabbitmq",
     "rsyslog",
     "logstash",
+    "hbase_basic",
+    "opentsdb",
+    "tcollector",
     "epu"
   ]
 }
