@@ -96,6 +96,7 @@ error_overflow_n_preserving_types = {
     'sample_function': str,
     'clouds': ordered_cloud_list,
     'n_preserve': int,
+    'sensor_data': list,
 }
 error_overflow_n_preserving_definition = {
     'general' : {
