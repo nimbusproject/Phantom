@@ -11,6 +11,10 @@ from dashi import DashiError
 from phantomsql import phantom_get_default_key_name
 from pyhantom.system.epu.definitions import tags_to_definition, load_known_definitions
 
+DEFAULT_OPENTSDB_HOST = 'localhost'
+DEFAULT_OPENTSDB_PORT = 4242
+
+
 def _breakup_name(name):
     s_a = name.split("@", 1)
     if len(s_a) != 2:
@@ -115,6 +119,17 @@ class EPUSystem(SystemAPI):
         self._rabbitexchange = cfg.phantom.system.rabbit_exchange
         log(logging.INFO, "Connecting to epu messaging fabric: %s, %s, XXXXX, %d, ssl=%s" % (self._rabbit, self._rabbituser, self._rabbit_port, str(ssl)))
         self._dashi_conn = DashiCeiConnection(self._rabbit, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange, timeout=60, port=self._rabbit_port, ssl=ssl)
+
+        try:
+            self._opentsdb_host = cfg.phantom.sensor.opentsdb_host
+        except AttributeError:
+            self._opentsdb_host = DEFAULT_OPENTSDB_HOST
+
+        try:
+            self._opentsdb_port = cfg.phantom.sensor.opentsdb_port
+        except AttributeError:
+            self._opentsdb_port = DEFAULT_OPENTSDB_PORT
+
         self._epum_client = EPUMClient(self._dashi_conn)
         self._dtrs_client = DTRSClient(self._dashi_conn)
 
@@ -260,10 +275,14 @@ class EPUSystem(SystemAPI):
             domain_opts['iaas_allocation'] = "m1.small"
             domain_opts['minimum_vms'] = asg.MinSize
             domain_opts['maximum_vms'] = asg.MaxSize
+            domain_opts['opentsdb_host'] = self._opentsdb_host
+            domain_opts['opentsdb_port'] = self._opentsdb_port
         else:
             domain_opts['dtname'] = dt_name
             domain_opts['domain_min_size'] = asg.MinSize
             domain_opts['domain_max_size'] = asg.MaxSize
+            domain_opts['opentsdb_host'] = self._opentsdb_host
+            domain_opts['opentsdb_port'] = self._opentsdb_port
         #domain_opts['force_site'] = site_name
         domain_opts['CreatedTime'] =  make_time(asg.CreatedTime.date_time)
         domain_opts['AutoScalingGroupARN'] =  asg.AutoScalingGroupARN
