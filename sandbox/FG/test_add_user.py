@@ -41,7 +41,7 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     port = up.port
 
     region = RegionInfo(name="nimbus", endpoint=host)
-    ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port)
+    ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port, is_secure=True, validate_certs=False)
     ec2conn.import_key_pair(keyname, keytext)
 
 
