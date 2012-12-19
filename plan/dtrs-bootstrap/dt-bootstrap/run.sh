@@ -9,7 +9,7 @@ Options:
 [-t|--dtdir dtdirectory]
 [-s|--sitedir sitedirectory]
 [-u|--caller caller_name]
-[-c|--credentials iaas_credentials.yml]
+[-c|--creds_dir creds_directory]
 [-n|--name run]
 "
 # Parse command line arguments
@@ -27,8 +27,8 @@ while [ "$1" != "" ]; do
         -s | --sitedir )        shift
                                 sitedir=$1
                                 ;;
-        -c | --credentials )    shift
-                                credentials=$1
+        -c | --creds_dir )      shift
+                                creds_dir=$1
                                 ;;
         -u | --caller )         shift
                                 caller=$1
@@ -62,8 +62,8 @@ if [ -z "$sitedir" ]; then
     sitedir="sites"
 fi
 
-if [ -z "$credentials" ]; then
-    echo "Your IaaS credentials must be set"
+if [ -z "$creds_dir" ]; then
+    echo "Your IaaS credential directory must be set"
     echo $USAGE
     exit $ERROR
 fi
@@ -109,13 +109,15 @@ for site_file in `ls $sitedir/*.yml`; do
     $CEICTL --yaml -n $run_name site add --definition $site_file $site_name
 done
 
-# Add credentials for one site
-iaas_site=`basename $credentials | sed 's/.yml//'`
-$CEICTL --yaml -c $caller -n $run_name credentials add --definition $credentials $iaas_site
-if [ $? -ne 0 ]; then
-    echo "Couldn't add credential $iaas_site ($iaas_credentials)" >&2
-    exit 1
-fi
+# Add credentials for all sites
+for site_file in `ls $sitedir/*.yml`; do
+    site_name=`basename $site_file | sed 's/.yml//'`
+    $CEICTL --yaml -c $caller -n $run_name credentials add --definition $creds_dir/$site_name.yml $site_name
+    if [ $? -ne 0 ]; then
+        echo "Couldn't add credential $site_name ($iaas_credentials)" >&2
+        exit 1
+    fi
+done
 
 # Add all dts
 for dt_file in `ls $dtdir/*.yml`; do

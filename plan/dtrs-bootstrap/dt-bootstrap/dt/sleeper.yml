@@ -1,0 +1,8 @@
+---
+mappings:
+  hotel:
+    iaas_image: hello-cloud
+    iaas_allocation: m1.small
+  sierra:
+    iaas_image: hello-cloud
+    iaas_allocation: m1.small
