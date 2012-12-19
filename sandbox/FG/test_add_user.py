@@ -54,7 +54,10 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, usernam
     hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
     print "public key is %s" % (pub_key)
     for host in hosts:
-        dtrs_client.add_credentials(access_key, host, creds)
+        try:
+            dtrs_client.add_credentials(access_key, host, creds)
+        except:
+            pass
         register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
 
 def main():
