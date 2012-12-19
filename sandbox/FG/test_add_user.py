@@ -45,7 +45,7 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     ec2conn.import_key_pair(keyname, keytext)
 
 
-def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, username):
+def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
     phantomkey_name = phantom_get_default_key_name()
     creds = {'access_key': access_key,
             'secret_key': access_secret,
@@ -63,18 +63,17 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, usernam
 def main():
 
     if len(sys.argv) != 5:
-        print "usage: test_add_user name access_key access_secret email"
+        print "usage: test_add_user name access_key access_secret"
         sys.exit(1)
 
     name = sys.argv[1]
     access_key = sys.argv[2]
     access_secret = sys.argv[3]
-    email = sys.argv[4]
     ssh_key = get_user_public_key()
 
     dashi_con = get_dashi_client()
     dtrs_client = DTRSClient(dashi_con)
-    add_one_user(dtrs_client, access_key, access_secret, ssh_key, email, name)
+    add_one_user(dtrs_client, access_key, access_secret, ssh_key, name)
 
 if __name__ == '__main__':
     rc = main()
