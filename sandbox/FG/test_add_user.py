@@ -41,11 +41,11 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     port = up.port
 
     region = RegionInfo(name="nimbus", endpoint=host)
-    ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port)
+    ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port, is_secure=True, validate_certs=False)
     ec2conn.import_key_pair(keyname, keytext)
 
 
-def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, username):
+def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
     phantomkey_name = phantom_get_default_key_name()
     creds = {'access_key': access_key,
             'secret_key': access_secret,
@@ -54,24 +54,26 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, email, usernam
     hosts = {"hotel": "https://svc.uc.futuregrid.org:8444", "sierra" : "https://s83r.idp.sdsc.futuregrid.org:8444", "alamo": "https://master1.futuregrid.tacc.utexas.edu:8444", "foxtrot": "https://f1r.idp.ufl.futuregrid.org:9444"}
     print "public key is %s" % (pub_key)
     for host in hosts:
-        dtrs_client.add_credentials(access_key, host, creds)
+        try:
+            dtrs_client.add_credentials(access_key, host, creds)
+        except:
+            pass
         register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
 
 def main():
 
-    if len(sys.argv) != 5:
-        print "usage: test_add_user name access_key access_secret email"
+    if len(sys.argv) != 4:
+        print "usage: test_add_user name access_key access_secret"
         sys.exit(1)
 
     name = sys.argv[1]
     access_key = sys.argv[2]
     access_secret = sys.argv[3]
-    email = sys.argv[4]
     ssh_key = get_user_public_key()
 
     dashi_con = get_dashi_client()
     dtrs_client = DTRSClient(dashi_con)
-    add_one_user(dtrs_client, access_key, access_secret, ssh_key, email, name)
+    add_one_user(dtrs_client, access_key, access_secret, ssh_key, name)
 
 if __name__ == '__main__':
     rc = main()
