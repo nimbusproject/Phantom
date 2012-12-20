@@ -66,7 +66,7 @@ def convert_epu_description_to_asg_out(desc, name):
     
     asg = AutoScalingGroupType('AutoScalingGroup')
     asg.AutoScalingGroupName = desc['name']
-    asg.DesiredCapacity = config['domain_desired_size']
+    asg.DesiredCapacity = config['minimum_vms']
     tm = _get_key_or_none(config, 'CreatedTime')
     if tm:
         tm = _get_time(config['CreatedTime'])
@@ -81,10 +81,10 @@ def convert_epu_description_to_asg_out(desc, name):
 
     asg.HealthCheckType = _get_key_or_none(config, 'HealthCheckType')
     asg.LaunchConfigurationName = "%s" % (dt_name)
-    asg.MaxSize = config.get('domain_max_size')
+    asg.MaxSize = config.get('maximum_vms')
     if asg.MaxSize is None:
         asg.MaxSize = config.get('maximum_vms')
-    asg.MinSize = config.get('domain_min_size')
+    asg.MinSize = config.get('minimum_vms')
     if asg.MinSize is None:
         asg.MinSize = config.get('minimum_vms')
     asg.PlacementGroup = _get_key_or_none(config,'PlacementGroup')
@@ -261,7 +261,7 @@ class EPUSystem(SystemAPI):
         log(logging.DEBUG, "entering create_autoscale_group with %s" % (asg.LaunchConfigurationName))
 
         (definition_name, domain_opts) = tags_to_definition(asg.Tags.type_list)
-        domain_opts['domain_desired_size'] = asg.DesiredCapacity
+        domain_opts['minimum_vms'] = asg.DesiredCapacity
 
         dt_name = asg.LaunchConfigurationName
         site_name = ""
@@ -279,8 +279,8 @@ class EPUSystem(SystemAPI):
             domain_opts['opentsdb_port'] = self._opentsdb_port
         else:
             domain_opts['dtname'] = dt_name
-            domain_opts['domain_min_size'] = asg.MinSize
-            domain_opts['domain_max_size'] = asg.MaxSize
+            domain_opts['minimum_vms'] = asg.MinSize
+            domain_opts['maximum_vms'] = asg.MaxSize
             domain_opts['opentsdb_host'] = self._opentsdb_host
             domain_opts['opentsdb_port'] = self._opentsdb_port
         #domain_opts['force_site'] = site_name
@@ -307,7 +307,8 @@ class EPUSystem(SystemAPI):
         engine_conf = conf['engine_conf']
 
         if new_conf.get('desired_capacity') is not None:
-            engine_conf['domain_desired_size'] = new_conf.get('desired_capacity')
+            engine_conf['minimum_vms'] = new_conf.get('desired_capacity')
+            engine_conf['maximum_vms'] = new_conf.get('desired_capacity')
 
         try:
             if engine_conf:
@@ -402,14 +403,15 @@ class EPUSystem(SystemAPI):
                   }
 
             if adjust_policy:
-                desired_size = desc['config']['engine_conf']['domain_desired_size']
+                desired_size = desc['config']['engine_conf']['minimum_vms']
                 if desired_size < 1:
                     log(logging.WARN, "Trying to decrease the size lower than 0")
                     desired_size = 0
                 else:
                     desired_size = desired_size - 1
                 log(logging.INFO, "decreasing the desired_size to %d" % (desired_size))
-                conf['engine_conf']['domain_desired_size'] = desired_size
+                conf['engine_conf']['minimum_vms'] = desired_size
+                conf['engine_conf']['maximum_vms'] = desired_size
 
             log(logging.INFO, "calling reconfigure_domain with %s for user %s" % (str(conf), user_obj.access_id))
             self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
