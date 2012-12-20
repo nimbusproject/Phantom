@@ -62,7 +62,7 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
 
 def main():
 
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 4:
         print "usage: test_add_user name access_key access_secret"
         sys.exit(1)
 
