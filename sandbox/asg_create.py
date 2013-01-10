@@ -39,7 +39,7 @@ for cloud_size in sys.argv[4:]:
     ordered_clouds = ordered_clouds + delim + cloud_size
     delim = ","
 
-n_preserve_key = 'n_preserve'
+n_preserve_key = 'minimum_vms'
 
 # make the tags
 policy_tag = Tag(connection=con, key=policy_name_key, value=policy_name, resource_id=name)
