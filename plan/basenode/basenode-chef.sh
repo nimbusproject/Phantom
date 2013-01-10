@@ -18,7 +18,7 @@ else
     DTDATA_ARCHIVE_URL=$2
 fi
 
-CHEF_LOGLEVEL="info"
+CHEF_LOGLEVEL="debug"
 DTDATA_DIR="/opt/dt-data"
 DTDATA_ARCHIVE_PATH="/opt/dt-data.tar.gz"
 
@@ -71,7 +71,7 @@ fi
 
 cat >> chefconf.rb << "EOF"
 cookbook_path "/opt/dt-data/cookbooks"
-log_level :info
+log_level :debug
 file_store_path "/opt/dt-data/tmp"
 file_cache_path "/opt/dt-data/tmp"
 Chef::Log::Formatter.show_time = true
@@ -85,7 +85,7 @@ fi
 
 cat >> rerun-chef-$RUN_NAME.sh << "EOF"
 #!/bin/bash
-CHEFLEVEL="info"
+CHEFLEVEL="debug"
 if [ "X" != "X$1" ]; then
   CHEFLEVEL=$1
 fi

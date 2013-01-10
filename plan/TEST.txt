@@ -1,0 +1,11 @@
+In order to set up an initial Phantom user in both the Autoscale API and the
+web application, you must export the following environment variables:
+
+    PHANTOM_USERNAME
+    PHANTOM_USER_EMAIL
+    PHANTOM_IAAS_ACCESS_KEY
+    PHANTOM_IAAS_SECRET_KEY
+
+The test.conf launch plan will create a user account with these
+credentials. It will also create an SSH key on the VM and register it on
+the FG clouds if there is not already one called phantomkey.
