@@ -22,6 +22,9 @@ region = RegionInfo(name="nimbus", endpoint=host)
 con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=ssl, port=port, debug=0, region=region)
 con.host = host
 
+if len(sys.argv) < 5:
+    sys.exit("usage: %s name lc_name n_preserve cloudname:maxsize ..." % sys.argv[0])
+
 name=sys.argv[1]
 lc_name=sys.argv[2]
 n_preserve=int(sys.argv[3])
