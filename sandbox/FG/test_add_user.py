@@ -4,6 +4,7 @@
 
 import sys
 import os
+import socket
 import subprocess
 from ceiclient.client import DTRSClient
 from ceiclient.connection import DashiCeiConnection
@@ -40,6 +41,8 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
     host = up.hostname
     port = up.port
 
+    print "Registering key %s with %s" % (keyname, iaas_url)
+
     region = RegionInfo(name="nimbus", endpoint=host)
     ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port, is_secure=True, validate_certs=False)
     ec2conn.import_key_pair(keyname, keytext)
@@ -58,7 +61,11 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
             dtrs_client.add_credentials(access_key, host, creds)
         except:
             pass
-        register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
+        try:
+            register_key_with_iaas(hosts[host], pub_key, phantomkey_name, access_key, access_secret)
+        except socket.timeout:
+            print "Error: timeout when registering key %s on %s" % (phantomkey_name, host)
+            pass
 
 def main():
 
@@ -70,6 +77,11 @@ def main():
     access_key = sys.argv[2]
     access_secret = sys.argv[3]
     ssh_key = get_user_public_key()
+
+    if not boto.config.has_section('Boto'):
+        boto.config.add_section('Boto')
+    boto.config.set('Boto', 'http_socket_timeout', '10')
+    boto.config.set('Boto', 'num_retries', '3')
 
     dashi_con = get_dashi_client()
     dtrs_client = DTRSClient(dashi_con)
