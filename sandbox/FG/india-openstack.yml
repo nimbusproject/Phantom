@@ -1,0 +1,8 @@
+description: The FutureGrid OpenStack cloud at Indiana University
+driver_class: libcloud.compute.drivers.ec2.EucNodeDriver
+driver_kwargs:
+  host: 149.165.146.50
+  port: 8773
+  secure: false
+  path: /services/Cloud
+name: india-openstack
