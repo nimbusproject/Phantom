@@ -91,6 +91,7 @@ def monitor_sensors_list(sensors_list_string):
 
 error_overflow_n_preserving_types = {
     'monitor_sensors': monitor_sensors_list,
+    'monitor_domain_sensors': monitor_sensors_list,
     'sensor_type': str,
     'metric': str,
     'sample_function': str,
