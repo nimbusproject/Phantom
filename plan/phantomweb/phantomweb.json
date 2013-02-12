@@ -29,6 +29,7 @@
     "email_port": 587,
     "email_tls": "True",
     "email_fromaddr": "${email_addr}",
+    "google_analytics_code": "${google_analytics_code}",
     "rabbit_host": "${rabbitmq_host}",
     "rabbit_port": 5672,
     "rabbit_user": "${rabbitmq_username}",
