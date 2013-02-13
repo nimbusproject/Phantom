@@ -47,7 +47,8 @@
     },
     "install_config": {
       "install_method": "py_venv_offline_setup",
-      "package_repo": "${package_repo}"
+      "package_repo": "${package_repo}",
+      "extras": ["exceptional"]
     }
   },
   "opentsdb": {

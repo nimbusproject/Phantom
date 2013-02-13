@@ -48,13 +48,21 @@
                 "${syslog_host}",
                 514
               ]
+            },
+            "exceptional": {
+              "class": "exceptional.ExceptionalLogHandler",
+              "api_key": "${exceptional_api_key}",
+              "environment": false,
+              "append_log_messages": true,
+              "level": "ERROR"
             }
           },
           "root": {
             "handlers": [
               "console",
               "file",
-              "syslog"
+              "syslog",
+              "exceptional"
             ]
           }
         }
