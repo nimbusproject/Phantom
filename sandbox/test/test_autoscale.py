@@ -23,7 +23,7 @@ host = up.hostname
 port = up.port
 
 region = RegionInfo(name="nimbus", endpoint=host)
-con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=ssl, port=port, debug=2, region=region)
+con = boto.ec2.autoscale.AutoScaleConnection(aws_access_key_id=username, aws_secret_access_key=password, is_secure=ssl, port=port, debug=2, region=region, validate_certs=False)
 con.host = host
 
 lc_name = 'lc-' + uuid.uuid4().hex + '@' + cloud
