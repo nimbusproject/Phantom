@@ -23,10 +23,8 @@ setup(name='pyhantom',
       keywords = "Nimbus auto scale",
       long_description="""Some other time""",
       license="Apache2",
-      dependency_links=[
-          'https://github.com/nimbusproject/ceiclient/archive/master.tar.gz#egg=ceiclient-0.1',
-          'https://github.com/nimbusproject/PhantomSQL/archive/master.tar.gz#egg=phantomsql-0.2.1'],
-      install_requires = ["simplejson == 2.3.2", "boto == 2.8.0", "dashi", "ceiclient == 0.1", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python == 1.2.3", "phantomsql == 0.2.1"],
+      dependency_links=['https://github.com/nimbusproject/PhantomSQL/archive/master.tar.gz#egg=phantomsql-0.2.1'],
+      install_requires = ["simplejson == 2.3.2", "boto == 2.8.0", "dashi", "ceiclient == 0.1.2", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python == 1.2.3", "phantomsql == 0.2.1"],
       entry_points = {
         'console_scripts': [
             'phantomwsgiref = pyhantom.execs.simpleref:main',

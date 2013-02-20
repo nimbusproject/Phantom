@@ -6,7 +6,10 @@
   },
   "supervisord": {
     "command": "/home/${epu_username}/phantom/start-phantom.sh",
-    "name": "phantom"
+    "name": "phantom",
+    "memmon": {
+      "maxmb": 200
+    }
   },
   "autoscale": {
     "retrieve_method": "${phantom_retrieve_method}",
