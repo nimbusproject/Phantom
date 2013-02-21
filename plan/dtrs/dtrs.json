@@ -29,9 +29,11 @@
         },
         "logging": {
           "formatters": {
-            "default": {
-              "format": "%(asctime)s %(levelname)-8s %(name)-15s %(domain_info)s %(message)s",
-              "datefmt": "%Y-%m-%d %H:%M:%S"
+            "detailed": {
+              "format": "%(asctime)s %(name)-25s:%(lineno)4d[%(process)5d] %(levelname)s: %(domain_info)s %(message)s"
+            },
+            "detailednostamp": {
+              "format": "%(name)-25s:%(lineno)4d[%(process)5d] %(levelname)s: %(domain_info)s %(message)s"
             }
           },
           "filters": {
@@ -41,7 +43,7 @@
           },
           "handlers": {
             "file": {
-              "formatter": "default",
+              "formatter": "detailed",
               "level": "DEBUG",
               "filters": [
                 "domain"
@@ -51,6 +53,11 @@
               "address": [
                 "${syslog_host}",
                 514
+              ],
+              "formatter": "detailednostamp",
+              "level": "DEBUG",
+              "filters": [
+                "domain"
               ]
             },
             "exceptional": {
@@ -63,7 +70,6 @@
           },
           "root": {
             "handlers": [
-              "console",
               "file",
               "syslog",
               "exceptional"
