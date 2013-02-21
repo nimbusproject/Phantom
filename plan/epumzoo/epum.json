@@ -15,6 +15,7 @@
       "run_directory": "/home/${epu_username}/epum",
       "run_method": "supervised",
       "autorestart": true,
+      "replicas": 2,
       "config": {
         "server": {
           "amqp": {
