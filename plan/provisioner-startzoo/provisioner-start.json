@@ -14,7 +14,7 @@
       "program": "epu-provisioner-service",
       "run_directory": "/home/${epu_username}/${name}",
       "run_method": "supervised",
-      "replicas": 2,
+      "replicas": 1,
       "autorestart": true,
       "config": {
         "server": {
