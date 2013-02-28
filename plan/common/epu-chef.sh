@@ -13,14 +13,14 @@ RUN_NAME=$1
 
 # the archive url can be passed in as an optional second argument
 if [ "X$2" == "X" ]; then
-    DTDATA_ARCHIVE_URL="http://ooici.net/releases/dt-data-develop.tar.gz"
+    COOKBOOKS_ARCHIVE_URL="https://github.com/nimbusproject/phantom-cookbooks/archive/master.tar.gz"
 else
-    DTDATA_ARCHIVE_URL=$2
+    COOKBOOKS_ARCHIVE_URL=$2
 fi
 
 CHEF_LOGLEVEL="debug"
-DTDATA_DIR="/opt/dt-data"
-DTDATA_ARCHIVE_PATH="/opt/dt-data.tar.gz"
+COOKBOOKS_DIR="/opt/cookbooks"
+COOKBOOKS_ARCHIVE_PATH="/opt/cookbooks.tar.gz"
 
 # ========================================================================
 
@@ -29,32 +29,37 @@ if [ `id -u` -ne 0 ]; then
   CMDPREFIX="sudo "
 fi
 
-if [ ! -d $DTDATA_DIR ]; then
-  echo "PROBLEM: dt-data directory does not exist: $DTDATA_DIR"
+if [ ! -d $COOKBOOKS_DIR ]; then
+  echo "PROBLEM: cookbooks directory does not exist: $COOKBOOKS_DIR"
   exit 1
 fi
 
-$CMDPREFIX mkdir -p /opt/dt-data/run/$RUN_NAME
+$CMDPREFIX mkdir -p /opt/run/$RUN_NAME
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+$CMDPREFIX mkdir -p /opt/tmp
 if [ $? -ne 0 ]; then
   exit 1
 fi
 
 $CMDPREFIX chmod 600 bootconf.json
-$CMDPREFIX cp bootconf.json /opt/dt-data/run/$RUN_NAME/chefroles.json
+$CMDPREFIX cp bootconf.json /opt/run/$RUN_NAME/chefroles.json
 if [ $? -ne 0 ]; then
   exit 1
 fi
 
 cat >> chefconf.rb << "EOF"
-cookbook_path "/opt/dt-data/cookbooks"
+cookbook_path "/opt/cookbooks"
 log_level :debug
-file_store_path "/opt/dt-data/tmp"
-file_cache_path "/opt/dt-data/tmp"
+file_store_path "/opt/tmp"
+file_cache_path "/opt/tmp"
 Chef::Log::Formatter.show_time = true
 
 EOF
 
-$CMDPREFIX mv chefconf.rb /opt/dt-data/run/$RUN_NAME/chefconf.rb
+$CMDPREFIX mv chefconf.rb /opt/run/$RUN_NAME/chefconf.rb
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -67,8 +72,7 @@ if [ "X" != "X$1" ]; then
 fi
 EOF
 
-echo "rm -rf /home/epu/$RUN_NAME " >> rerun-chef-$RUN_NAME.sh
-echo "chef-solo -l \$CHEFLEVEL -c /opt/dt-data/run/$RUN_NAME/chefconf.rb -j /opt/dt-data/run/$RUN_NAME/chefroles.json" >> rerun-chef-$RUN_NAME.sh
+echo "chef-solo -l \$CHEFLEVEL -c /opt/run/$RUN_NAME/chefconf.rb -j /opt/run/$RUN_NAME/chefroles.json" >> rerun-chef-$RUN_NAME.sh
 echo 'exit $?' >> rerun-chef-$RUN_NAME.sh
 
 chmod +x rerun-chef-$RUN_NAME.sh

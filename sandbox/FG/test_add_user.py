@@ -66,6 +66,9 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
         except socket.timeout:
             print "Error: timeout when registering key %s on %s" % (phantomkey_name, host)
             pass
+        except socket.error:
+            print "Error: socket error when registering key %s on %s" % (phantomkey_name, host)
+            pass
 
 def main():
 
