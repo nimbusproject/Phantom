@@ -6,13 +6,19 @@ from pyhantom.util import get_aws_access_key
 
 class PhantomBaseService(object):
 
-    def __init__(self, name):
-        self._cfg = build_cfg()
+    def __init__(self, name, cfg=None, authz=None):
+        if cfg is None:
+            self._cfg = build_cfg()
+        else:
+            self._cfg = cfg
         self._system = self._cfg.get_system()
         self.name = name
         self.ns = u"http://autoscaling.amazonaws.com/doc/2009-05-15/"
         self.xamznRequestId = str(uuid.uuid4())
-        self._authz = self._cfg.get_authz()
+        if authz is None:
+            self._authz = self._cfg.get_authz()
+        else:
+            self._authz = authz
 
     def get_user_obj(self, req):
         access_dict = get_aws_access_key(req)
@@ -42,7 +48,3 @@ class PhantomBaseService(object):
         res = Response()
         res.headers['x-amzn-RequestId'] = self.xamznRequestId
         return res
-
-
-            
-

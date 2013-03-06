@@ -2,7 +2,7 @@ import logging
 import sqlalchemy
 from pyhantom.authz import PHAuthzIface, PhantomUserObject
 from pyhantom.phantom_exceptions import PhantomAWSException, PhantomException
-from phantomsql import PhantomSQL
+from phantomsql import PhantomSQL, PhantomSQLSessionMaker
 from sqlalchemy import String, MetaData, Sequence
 from sqlalchemy import Table
 from sqlalchemy import Integer
@@ -45,12 +45,14 @@ class SimpleSQL(PHAuthzIface):
 
     def __init__(self, dburl):
         self._dburl = dburl
+        self._Session = PhantomSQLSessionMaker(dburl)
+
         # open and close to discover obvious errors early
         self._open_dbobj()
         self._close_dbobj()
 
     def _open_dbobj(self):
-        self._phantom_sql = PhantomSQL(self._dburl)
+        self._phantom_sql = PhantomSQL(self._Session.get_session())
 
     def _close_dbobj(self):
         if not self._phantom_sql:
@@ -95,6 +97,3 @@ class SimpleSQL(PHAuthzIface):
     @reset_db
     def add_user(self, displayname, access_id, access_secret):
         self._phantom_sql.add_user(displayname, access_id, access_secret)
-
-
-    

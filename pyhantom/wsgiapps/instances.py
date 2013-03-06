@@ -5,8 +5,8 @@ from pyhantom.wsgiapps import PhantomBaseService
 
 class DescribeAutoScalingInstances(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeAutoScalingInstances")
@@ -40,8 +40,8 @@ class DescribeAutoScalingInstances(PhantomBaseService):
 
 class TerminateInstanceInAutoScalingGroup(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="TerminateInstanceInAutoScalingGroup")
