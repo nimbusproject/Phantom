@@ -8,8 +8,8 @@ from pyhantom.system.epu.definitions import tags_to_definition
 
 class CreateAutoScalingGroup(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateAutoScalingGroup")
@@ -35,8 +35,8 @@ class CreateAutoScalingGroup(PhantomBaseService):
 
 class DeleteAutoScalingGroup(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteAutoScalingGroup")
@@ -60,8 +60,8 @@ class DeleteAutoScalingGroup(PhantomBaseService):
 
 class DescribeAutoScalingGroup(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeAutoScalingGroup")
@@ -100,8 +100,8 @@ class DescribeAutoScalingGroup(PhantomBaseService):
 
 class SetDesiredCapacity(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="SetDesiredCapacity")
@@ -130,8 +130,8 @@ class SetDesiredCapacity(PhantomBaseService):
 
 class CreateOrUpdateTags(PhantomBaseService):
 
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateOrUpdateTags")
@@ -165,6 +165,3 @@ class CreateOrUpdateTags(PhantomBaseService):
 
         log_reply(doc, user_obj)
         return res
-
-
-    

@@ -57,7 +57,6 @@ class SimpleSQL(PHAuthzIface):
             return  
         self._phantom_sql.close()
 
-    @reset_db
     def get_user_object_by_access_id(self, access_id):
         db_obj = self._phantom_sql.get_user_object_by_access_id(access_id)
         if not db_obj:
@@ -65,7 +64,6 @@ class SimpleSQL(PHAuthzIface):
 
         return PhantomUserObject(access_id, db_obj.access_secret, db_obj.displayname)
 
-    @reset_db
     def get_user_object_by_display_name(self, display_name):
         try:
             db_obj = self._phantom_sql.get_user_object_by_display_name(display_name)
@@ -76,11 +74,9 @@ class SimpleSQL(PHAuthzIface):
             log(logging.ERROR, "A database error occurred while trying to access the user db %s" % (str(ex)))
             raise PhantomAWSException('InternalFailure')
 
-    @reset_db
     def add_alter_user(self, displayname, access_key, access_secret):
         self._phantom_sql.add_alter_user(displayname, access_key, access_secret)
 
-    @reset_db
     def remove_user(self, access_key):
         removed = self._phantom_sql.remove_user(access_key)
         if not removed:
@@ -92,9 +88,5 @@ class SimpleSQL(PHAuthzIface):
     def close(self):
         self._phantom_sql.close()
 
-    @reset_db
     def add_user(self, displayname, access_id, access_secret):
         self._phantom_sql.add_user(displayname, access_id, access_secret)
-
-
-    
