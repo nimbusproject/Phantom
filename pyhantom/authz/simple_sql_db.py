@@ -41,22 +41,24 @@ def reset_db(func):
     return call
 
 
-class SimpleSQL(PHAuthzIface):
+class SimpleSQLSessionMaker(object):
 
     def __init__(self, dburl):
         self._dburl = dburl
         self._Session = PhantomSQLSessionMaker(dburl)
 
-        # open and close to discover obvious errors early
-        self._open_dbobj()
-        self._close_dbobj()
+
+class SimpleSQL(PHAuthzIface):
+
+    def __init__(self, sessionmaker):
+        self._sessionmaker = sessionmaker
 
     def _open_dbobj(self):
-        self._phantom_sql = PhantomSQL(self._Session.get_session())
+        self._phantom_sql = PhantomSQL(self._sessionmaker.get_session())
 
     def _close_dbobj(self):
         if not self._phantom_sql:
-            return  
+            return
         self._phantom_sql.close()
 
     @reset_db
