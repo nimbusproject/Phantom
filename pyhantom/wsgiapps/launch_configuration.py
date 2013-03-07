@@ -7,8 +7,9 @@ from pyhantom.wsgiapps import PhantomBaseService
 
 
 class CreateLaunchConfiguration(PhantomBaseService):
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateLaunchConfiguration")
@@ -31,8 +32,9 @@ class CreateLaunchConfiguration(PhantomBaseService):
 
 
 class DeleteLaunchConfiguration(PhantomBaseService):
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteLaunchConfiguration")
@@ -52,8 +54,9 @@ class DeleteLaunchConfiguration(PhantomBaseService):
 
 
 class DescribeLaunchConfigurations(PhantomBaseService):
-    def __init__(self, name):
-        PhantomBaseService.__init__(self, name)
+
+    def __init__(self, name, cfg=None, authz=None):
+        PhantomBaseService.__init__(self, name, cfg, authz)
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeLaunchConfigurations")
@@ -88,6 +91,3 @@ class DescribeLaunchConfigurations(PhantomBaseService):
         res.unicode_body = doc.documentElement.toxml()
         log_reply(doc, user_obj)
         return res
-
-
-

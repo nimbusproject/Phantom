@@ -8,12 +8,13 @@ from ceiclient.connection import DashiCeiConnection
 from ceiclient.client import DTRSClient, EPUMClient
 from pyhantom.util import log, LogEntryDecorator, _get_time, make_time
 from dashi import DashiError
-from phantomsql import phantom_get_default_key_name
 from pyhantom.system.epu.definitions import tags_to_definition, load_known_definitions
 
 DEFAULT_OPENTSDB_HOST = 'localhost'
 DEFAULT_OPENTSDB_PORT = 4242
 
+def phantom_get_default_key_name():
+    return "phantomkey"
 
 def _breakup_name(name):
     s_a = name.split("@", 1)

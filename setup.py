@@ -23,7 +23,7 @@ setup(name='pyhantom',
       keywords = "Nimbus auto scale",
       long_description="""Some other time""",
       license="Apache2",
-      install_requires = ["simplejson == 2.3.2", "boto >= 2.6", "dashi", "ceiclient", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python == 1.2.3", "phantomsql"],
+      install_requires = ["simplejson == 2.3.2", "boto >= 2.6", "dashi", "ceiclient", "sqlalchemy == 0.7.6", "wsgiref", "webob", "cherrypy >= 3.2", "mysql-python == 1.2.3"],
       entry_points = {
         'console_scripts': [
             'phantomwsgiref = pyhantom.execs.simpleref:main',

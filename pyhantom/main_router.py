@@ -61,7 +61,7 @@ class MainRouter(PhantomBaseService):
 
             log(logging.INFO, "%s Getting phantom action %s" % (request_id, action))
             
-            app = app_cls(action)
+            app = app_cls(action, cfg=self._cfg)
         except Exception, ex:
             log(logging.ERROR, "%s Exiting main router with error %s" % (request_id, str(ex)))
             raise

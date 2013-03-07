@@ -6,8 +6,11 @@ from pyhantom.util import get_aws_access_key
 
 class PhantomBaseService(object):
 
-    def __init__(self, name):
-        self._cfg = build_cfg()
+    def __init__(self, name, cfg=None, authz=None):
+        if cfg is None:
+            self._cfg = build_cfg()
+        else:
+            self._cfg = cfg
         self._system = self._cfg.get_system()
         self.name = name
         self.ns = u"http://autoscaling.amazonaws.com/doc/2009-05-15/"
@@ -42,7 +45,3 @@ class PhantomBaseService(object):
         res = Response()
         res.headers['x-amzn-RequestId'] = self.xamznRequestId
         return res
-
-
-            
-
