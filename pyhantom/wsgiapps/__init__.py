@@ -3,7 +3,6 @@ from webob.response import Response
 from pyhantom.config import build_cfg
 import xml.dom.minidom
 from pyhantom.util import get_aws_access_key
-from pyhantom.authz.simple_sql_db import SimpleSQL
 
 class PhantomBaseService(object):
 
@@ -16,10 +15,7 @@ class PhantomBaseService(object):
         self.name = name
         self.ns = u"http://autoscaling.amazonaws.com/doc/2009-05-15/"
         self.xamznRequestId = str(uuid.uuid4())
-        if authz is None:
-            self._authz = SimpleSQL(self._cfg.get_authz())
-        else:
-            self._authz = SimpleSQL(authz)
+        self._cfg.get_authz()
 
     def get_user_obj(self, req):
         access_dict = get_aws_access_key(req)
