@@ -1,15 +1,17 @@
+from datetime import datetime
 import logging
-import sqlalchemy
-from pyhantom.authz import PHAuthzIface, PhantomUserObject
-from pyhantom.phantom_exceptions import PhantomAWSException, PhantomException
-from phantomsql import PhantomSQL, PhantomSQLSessionMaker
+
+from sqlalchemy import Column
+from sqlalchemy import Integer
 from sqlalchemy import String, MetaData, Sequence
 from sqlalchemy import Table
-from sqlalchemy import Integer
 from sqlalchemy import types
-from sqlalchemy import Column
-from datetime import datetime
-from sqlalchemy.orm import mapper
+from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.pool import NullPool
+import sqlalchemy
+
+from pyhantom.authz import PHAuthzIface, PhantomUserObject
+from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import log
 
 metadata = MetaData()
@@ -21,6 +23,7 @@ phantom_user_pass_table = Table('phantom_user_pass', metadata,
     Column('access_secret', String(128), nullable=False),
     Column('CreatedTime', types.TIMESTAMP(), default=datetime.now()),
     )
+
 
 class PhantomUserDBObject(object):
     def __init__(self):
@@ -44,11 +47,12 @@ def reset_db(func):
 class SimpleSQLSessionMaker(object):
 
     def __init__(self, dburl):
-        self._dburl = dburl
-        self._Session = PhantomSQLSessionMaker(dburl)
+        self._engine = sqlalchemy.create_engine(dburl, poolclass=NullPool)
+        metadata.create_all(self._engine)
+        self._Session = sessionmaker(bind=self._engine)
 
     def get_session(self):
-        return self._Session.get_session()
+        return self._Session()
 
 
 class SimpleSQL(PHAuthzIface):
@@ -57,16 +61,16 @@ class SimpleSQL(PHAuthzIface):
         self._sessionmaker = sessionmaker
 
     def _open_dbobj(self):
-        self._phantom_sql = PhantomSQL(self._sessionmaker.get_session())
+        self._session = self._sessionmaker.get_session()
 
     def _close_dbobj(self):
-        if not self._phantom_sql:
+        if not self._session:
             return
-        self._phantom_sql.close()
+        self._session.close()
 
     @reset_db
     def get_user_object_by_access_id(self, access_id):
-        db_obj = self._phantom_sql.get_user_object_by_access_id(access_id)
+        db_obj = self._lookup_user(access_id)
         if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
 
@@ -75,7 +79,9 @@ class SimpleSQL(PHAuthzIface):
     @reset_db
     def get_user_object_by_display_name(self, display_name):
         try:
-            db_obj = self._phantom_sql.get_user_object_by_display_name(display_name)
+            q = self._session.query(PhantomUserDBObject)
+            q = q.filter(PhantomUserDBObject.displayname==display_name)
+            db_obj = q.first()
             if not db_obj:
                 raise PhantomAWSException('InvalidClientTokenId')
             return PhantomUserObject(db_obj.access_key, db_obj.access_secret, db_obj.displayname)
@@ -85,20 +91,35 @@ class SimpleSQL(PHAuthzIface):
 
     @reset_db
     def add_alter_user(self, displayname, access_key, access_secret):
-        self._phantom_sql.add_alter_user(displayname, access_key, access_secret)
+        db_obj = self._lookup_user(access_key)
+        if not db_obj:
+            db_obj = PhantomUserDBObject()
+            db_obj.access_key = access_key
+        db_obj.access_secret = access_secret
+        db_obj.displayname = displayname
+        self._session.add(db_obj)
 
     @reset_db
     def remove_user(self, access_key):
-        removed = self._phantom_sql.remove_user(access_key)
-        if not removed:
+        db_obj = self._lookup_user(access_key)
+        if not db_obj:
             raise PhantomAWSException('InvalidClientTokenId')
-
-    def commit(self):
-        self._phantom_sql.commit()
-
-    def close(self):
-        self._phantom_sql.close()
+        self._session.delete(db_obj)
+        return True
 
     @reset_db
     def add_user(self, displayname, access_id, access_secret):
-        self._phantom_sql.add_user(displayname, access_id, access_secret)
+        self.add_alter_user(displayname, access_id, access_secret)
+        self.commit()
+
+    def _lookup_user(self, access_key):
+        q = self._session.query(PhantomUserDBObject)
+        q = q.filter(PhantomUserDBObject.access_key==access_key)
+        db_obj = q.first()
+        return db_obj
+
+    def commit(self):
+        self._session.commit()
+
+    def close(self):
+        self._session.close()
