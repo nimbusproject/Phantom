@@ -1,6 +1,6 @@
 import os
 from pyhantom.authz.simple_file import SimpleFileDataStore
-from pyhantom.authz.simple_sql_db import SimpleSQL
+from pyhantom.authz.simple_sql_db import SimpleSQL, SimpleSQLSessionMaker
 from pyhantom.phantom_exceptions import PhantomAWSException
 import logging
 import dashi.bootstrap
@@ -22,7 +22,7 @@ class PhantomConfig(object):
             dburl = self._CFG.phantom.authz.dburl
             self._authz = CumulusDataStore(dburl)
         elif self._CFG.phantom.authz.type == "sqldb":
-            self._authz = SimpleSQL(CFG.phantom.authz.dburl)
+            self._authz_sessionmaker = SimpleSQLSessionMaker(CFG.phantom.authz.dburl)
         else:
             raise PhantomAWSException('InternalFailure', details="Phantom authz module is not setup.")
 
@@ -44,7 +44,10 @@ class PhantomConfig(object):
         return self._logger
 
     def get_authz(self):
-        return self._authz
+        if self._authz_sessionmaker is not None:
+            return SimpleSQL(self._authz_sessionmaker)
+        else:
+            return self._authz
 
 
 def determine_path():

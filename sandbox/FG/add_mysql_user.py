@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import subprocess
 import sys
-import urlparse
-
-import boto
-from boto.ec2.regioninfo import RegionInfo
-from phantomsql import phantom_get_default_key_name
 
 from pyhantom.config import build_cfg
 

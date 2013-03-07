@@ -13,8 +13,9 @@ import urlparse
 from pyhantom.config import build_cfg
 import boto
 from boto.ec2.regioninfo import RegionInfo
-from phantomsql import phantom_get_default_key_name
 
+def phantom_get_default_key_name():
+    return "phantomkey"
 
 def get_dashi_client():
 
