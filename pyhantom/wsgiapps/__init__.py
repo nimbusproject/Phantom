@@ -15,7 +15,7 @@ class PhantomBaseService(object):
         self.name = name
         self.ns = u"http://autoscaling.amazonaws.com/doc/2009-05-15/"
         self.xamznRequestId = str(uuid.uuid4())
-        self._cfg.get_authz()
+        self._authz = self._cfg.get_authz()
 
     def get_user_obj(self, req):
         access_dict = get_aws_access_key(req)
