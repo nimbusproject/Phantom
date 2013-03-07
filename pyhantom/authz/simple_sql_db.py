@@ -47,6 +47,9 @@ class SimpleSQLSessionMaker(object):
         self._dburl = dburl
         self._Session = PhantomSQLSessionMaker(dburl)
 
+    def get_session(self):
+        return self._Session.get_session()
+
 
 class SimpleSQL(PHAuthzIface):
 
