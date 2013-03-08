@@ -30,14 +30,20 @@ lc_name = 'lc-' + uuid.uuid4().hex + '@' + cloud
 image_id = os.environ['PHANTOM_IMAGE']
 key_name = "phantomkey"
 it = "m1.small"
+user_data = 'USERDATA_TEST_STRING'
 
 initial = con.get_all_launch_configurations()
 try:
-    lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(con, name=lc_name, image_id=image_id, key_name=key_name, security_groups=['default'], instance_type=it)
+    lc = boto.ec2.autoscale.launchconfig.LaunchConfiguration(con, name=lc_name, image_id=image_id, key_name=key_name, security_groups=['default'], instance_type=it, user_data=user_data)
     con.create_launch_configuration(lc)
     after_create = con.get_all_launch_configurations()
 
     assert len(after_create) == len(initial) + 1
+    assert after_create[0].name == lc_name
+    assert after_create[0].image_id == image_id
+    assert after_create[0].instance_type == it
+    assert after_create[0].key_name == key_name
+    assert after_create[0].user_data == user_data
 
     initial = con.get_all_groups()
 
