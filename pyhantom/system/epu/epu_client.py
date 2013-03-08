@@ -248,7 +248,8 @@ class EPUSystem(SystemAPI):
                     ot_lc.SecurityGroups = AWSListType('SecurityGroups')
                     contextualization = dt_descr.get('contextualization')
                     if contextualization is not None and contextualization.get('method') == 'userdata':
-                        ot_lc.UserData = contextualization.get('userdata')
+                        # UserData should be base64-encoded to be properly decoded by boto
+                        ot_lc.UserData = base64.b64encode(contextualization.get('userdata'))
                     else:
                         ot_lc.UserData = None
 
