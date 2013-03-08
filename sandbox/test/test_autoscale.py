@@ -86,7 +86,7 @@ try:
 
     asg.delete()
 
-    time.sleep(10)
+    time.sleep(30)
 
     after_delete = con.get_all_groups()
     assert len(after_delete) == len(initial)
