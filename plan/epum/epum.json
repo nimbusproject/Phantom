@@ -23,6 +23,10 @@
             "password": "${rabbitmq_password}"
           }
         },
+        "statsd": {
+          "host": "localhost",
+          "port": 8125
+        },
         "logging": {
           "formatters": {
             "detailed": {

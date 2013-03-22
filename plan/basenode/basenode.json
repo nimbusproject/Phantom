@@ -22,6 +22,12 @@
     "metrics_username": "${metrics_username}",
     "metrics_password": "${metrics_password}"
   },
+  "statsd": {
+    "username": "${epu_username}",
+    "groupname": "${epu_groupname}",
+    "librato_email": "${librato_email}",
+    "librato_token": "${librato_token}"
+  },
   "epu": {
     "username": "${epu_username}",
     "groupname": "${epu_groupname}",
@@ -43,7 +49,7 @@
     "install_config": {
       "install_method": "py_venv_offline_setup",
       "package_repo": "${package_repo}",
-      "extras": ["exceptional"]
+      "extras": ["exceptional", "statsd"]
     }
   },
   "opentsdb": {
@@ -60,6 +66,7 @@
     "hbase_basic",
     "opentsdb",
     "tcollector",
+    "statsd",
     "epu"
   ]
 }
