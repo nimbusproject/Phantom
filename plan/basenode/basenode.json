@@ -48,7 +48,7 @@
     "install_config": {
       "install_method": "py_venv_setup",
       "package_repo": "${package_repo}",
-      "extras": ["exceptional"]
+      "extras": ["exceptional", "statsd"]
     }
   },
   "opentsdb": {
