@@ -22,6 +22,12 @@
     "metrics_username": "${metrics_username}",
     "metrics_password": "${metrics_password}"
   },
+  "statsd": {
+    "username": "${epu_username}",
+    "groupname": "${epu_groupname}",
+    "librato_email": "${librato_email}",
+    "librato_token": "${librato_token}"
+  },
   "epu": {
     "username": "${epu_username}",
     "groupname": "${epu_groupname}",
@@ -59,6 +65,7 @@
     "hbase_basic",
     "opentsdb",
     "tcollector",
+    "statsd",
     "epu"
   ]
 }
