@@ -1,8 +1,10 @@
 import logging
+import time
+import uuid
+
 import webob
 import webob.dec
 import webob.exc
-import uuid
 from pyhantom.phantom_exceptions import PhantomAWSException
 from pyhantom.util import authenticate_user, CatchErrorDecorator, LogEntryDecorator, log, get_aws_access_key
 from pyhantom.wsgiapps import PhantomBaseService
@@ -38,7 +40,7 @@ class MainRouter(PhantomBaseService):
     @CatchErrorDecorator(appname="MainRouter")
     @LogEntryDecorator(classname="MainRouter")
     def __call__(self, req):
-
+        before = time.time()
         user_obj = None
         request_id = str(uuid.uuid4())
         try:
@@ -60,7 +62,7 @@ class MainRouter(PhantomBaseService):
             app_cls = _action_to_application_map[action]
 
             log(logging.INFO, "%s Getting phantom action %s" % (request_id, action))
-            
+
             app = app_cls(action, cfg=self._cfg)
         except Exception, ex:
             log(logging.ERROR, "%s Exiting main router with error %s" % (request_id, str(ex)))
@@ -68,8 +70,11 @@ class MainRouter(PhantomBaseService):
         finally:
             #if user_obj:
             #    user_obj.close()
+            after = time.time()
+            if self._cfg.statsd_client is not None:
+                self._cfg.statsd_client.timing('autoscale.timing.MainRouter', (after - before) * 1000)
             pass
-        
+
         log(logging.INFO, "%s Exiting main router" % (request_id))
 
         return app

@@ -1,3 +1,5 @@
+import time
+
 import base64
 import boto
 from hashlib import sha1
@@ -12,6 +14,22 @@ import re
 import webob.exc
 import datetime
 from pyhantom.phantom_exceptions import PhantomAWSException, PhantomNotImplementedException
+
+
+def statsd(func):
+    def call(phantom_service, *args, **kwargs):
+        before = time.time()
+        ret = func(phantom_service, *args, **kwargs)
+        after = time.time()
+        if phantom_service._cfg.statsd_client is not None:
+            try:
+                phantom_service._cfg.statsd_client.timing('autoscale.timing.%s' % str(phantom_service.__class__.__name__), (after - before) * 1000)
+                phantom_service._cfg.statsd_client.incr('autoscale.count.%s' % str(phantom_service.__class__.__name__))
+            except:
+                logger = logging.getLogger("phantom")
+                logger.exception("Failed to submit metrics")
+        return ret
+    return call
 
 def log(lvl, message, printstack=False):
     logger = logging.getLogger("phantom")
