@@ -15,6 +15,7 @@ PyYAML==3.10
 simplejson==2.3.2
 SQLAlchemy==0.7.6
 ssh==1.8.0
+statsd==2.0.0
 uuid==1.30
 WebOb==1.2.3
 wsgiref==0.1.2
