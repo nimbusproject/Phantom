@@ -1,8 +1,10 @@
 import logging
+
 import webob
+
 from pyhantom.in_data_types import CreateAutoScalingGroupInput, DeleteAutoScalingGroupInput, DescribeAutoScalingGroupInput, SetDesiredCapacityInput, CreateOrUpdateTagsInput
 from pyhantom.out_data_types import AutoScalingGroupType
-from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply, log_request
+from pyhantom.util import CatchErrorDecorator, make_arn, log, log_reply, log_request, statsd
 from pyhantom.wsgiapps import PhantomBaseService
 from pyhantom.system.epu.definitions import tags_to_definition
 
@@ -13,6 +15,7 @@ class CreateAutoScalingGroup(PhantomBaseService):
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateAutoScalingGroup")
+    @statsd
     def __call__(self, req):
 
         user_obj = self.get_user_obj(req)
@@ -40,6 +43,7 @@ class DeleteAutoScalingGroup(PhantomBaseService):
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DeleteAutoScalingGroup")
+    @statsd
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
         log_request(req, user_obj)
@@ -65,6 +69,7 @@ class DescribeAutoScalingGroup(PhantomBaseService):
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="DescribeAutoScalingGroup")
+    @statsd
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
         log_request(req, user_obj)
@@ -105,6 +110,7 @@ class SetDesiredCapacity(PhantomBaseService):
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="SetDesiredCapacity")
+    @statsd
     def __call__(self, req):
         user_obj = self.get_user_obj(req)
         log_request(req, user_obj)
@@ -135,6 +141,7 @@ class CreateOrUpdateTags(PhantomBaseService):
 
     @webob.dec.wsgify
     @CatchErrorDecorator(appname="CreateOrUpdateTags")
+    @statsd
     def __call__(self, req):
 
         user_obj = self.get_user_obj(req)
