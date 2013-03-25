@@ -31,6 +31,10 @@
             "password": "${zkpw}"
           }
         },
+        "statsd": {
+          "host": "localhost",
+          "port": 8125
+        },
         "logging": {
           "formatters": {
             "default": {
