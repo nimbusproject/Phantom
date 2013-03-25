@@ -28,7 +28,11 @@
     "rabbit_exchange": "${rabbitmq_exchange}",
     "syslog_server": "${syslog_host}",
     "syslog_port": 514,
-    "port": 8445
+    "port": 8445,
+    "statsd": {
+      "host": "localhost",
+      "port": 8125
+    }
   },
   "appdir": "/home/${epu_username}/phantom",
   "username": "${epu_username}",

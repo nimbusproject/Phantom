@@ -23,8 +23,8 @@ def statsd(func):
         after = time.time()
         if phantom_service._cfg.statsd_client is not None:
             try:
-                phantom_service._cfg.statsd_client.timing('autoscale.timing.%s' % str(phantom_service.__class__.__name__), (after - before) * 1000)
-                phantom_service._cfg.statsd_client.incr('autoscale.count.%s' % str(phantom_service.__class__.__name__))
+                phantom_service._cfg.statsd_client.timing('autoscale.%s.timing' % str(phantom_service.__class__.__name__), (after - before) * 1000)
+                phantom_service._cfg.statsd_client.incr('autoscale.%s.count' % str(phantom_service.__class__.__name__))
             except:
                 logger = logging.getLogger("phantom")
                 logger.exception("Failed to submit metrics")
