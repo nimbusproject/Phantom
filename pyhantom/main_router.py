@@ -72,7 +72,8 @@ class MainRouter(PhantomBaseService):
             #    user_obj.close()
             after = time.time()
             if self._cfg.statsd_client is not None:
-                self._cfg.statsd_client.timing('autoscale.timing.MainRouter', (after - before) * 1000)
+                self._cfg.statsd_client.incr('autoscale.MainRouter.count')
+                self._cfg.statsd_client.timing('autoscale.MainRouter.timing', (after - before) * 1000)
             pass
 
         log(logging.INFO, "%s Exiting main router" % (request_id))
