@@ -12,6 +12,11 @@
     }
   },
   "autoscale": {
+    "retrieve_method": "${phantom_retrieve_method}",
+    "retrieve_config": {
+      "archive_url": "${phantom_archive_url}"
+    },
+    "install_method": "${phantom_install_method}",
     "git_repo": "git://github.com/nimbusproject/Phantom.git",
     "git_branch": "master",
     "logfile": "/home/${epu_username}/phantom/phantom.log",

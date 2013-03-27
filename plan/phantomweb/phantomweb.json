@@ -5,6 +5,11 @@
     "path": "/home/${epu_username}/app-venv"
   },
   "phantomweb": {
+    "retrieve_method": "${phantomweb_retrieve_method}",
+    "retrieve_config": {
+      "archive_url": "${phantomweb_archive_url}"
+    },
+    "install_method": "${phantomweb_install_method}",
     "git_repo": "git://github.com/nimbusproject/PhantomWebApp.git",
     "git_branch": "master",
     "syslog_server": "${syslog_host}",
