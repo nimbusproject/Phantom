@@ -47,7 +47,7 @@
       "git_reference": "${epu_git_branch}"
     },
     "install_config": {
-      "install_method": "py_venv_offline_setup",
+      "install_method": "${epu_install_method}",
       "package_repo": "${package_repo}",
       "extras": ["exceptional", "statsd"]
     }
