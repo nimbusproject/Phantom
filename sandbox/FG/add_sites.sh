@@ -1,7 +1,7 @@
 #!/bin/bash
 
 thisdir=`dirname $0`
-sites="hotel alamo sierra foxtrot ec2"
+sites="hotel alamo sierra foxtrot ec2 india-openstack"
 #sites="ec2"
 
 if [ -z $PHANTOM_EPU_RABBIT_HOST ]; then
