@@ -1,7 +1,4 @@
-name: alamo
-description: The FutureGrid Nimbus cloud in Texas
-driver_class: libcloud.compute.drivers.ec2.NimbusNodeDriver
-driver_kwargs:
-    host: nimbus.futuregrid.tacc.utexas.edu
-    port: 8444
-    secure: True
+type: nimbus
+host: nimbus.futuregrid.tacc.utexas.edu
+port: 8444
+secure: True
