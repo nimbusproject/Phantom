@@ -11,7 +11,7 @@ fi
 
 for site in $sites
 do
-    cmd="ceictl -b $PHANTOM_EPU_RABBIT_HOST -x $EXCHANGE_SCOPE -u $RABBITMQ_USERNAME -p $RABBITMQ_PASSWORD site add $site --definition $thisdir/$site.yml"
+    cmd="ceictl -b $PHANTOM_EPU_RABBIT_HOST -x $EXCHANGE_SCOPE -u $RABBITMQ_USERNAME -p $RABBITMQ_PASSWORD site add common::$site --definition $thisdir/$site.yml"
     echo $cmd   
     $cmd
 done
