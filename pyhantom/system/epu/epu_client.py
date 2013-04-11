@@ -122,12 +122,12 @@ class EPUSystem(SystemAPI):
         self._dashi_conn = DashiCeiConnection(self._rabbit, self._rabbituser, self._rabbitpw, exchange=self._rabbitexchange, timeout=60, port=self._rabbit_port, ssl=ssl)
 
         try:
-            self._opentsdb_host = cfg.phantom.sensor.opentsdb_host
+            self._opentsdb_host = cfg.phantom.sensor.opentsdb.host
         except AttributeError:
             self._opentsdb_host = DEFAULT_OPENTSDB_HOST
 
         try:
-            self._opentsdb_port = cfg.phantom.sensor.opentsdb_port
+            self._opentsdb_port = cfg.phantom.sensor.opentsdb.port
         except AttributeError:
             self._opentsdb_port = DEFAULT_OPENTSDB_PORT
 

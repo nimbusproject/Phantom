@@ -1,8 +1,4 @@
-name: sierra
-description: The FutureGrid Nimbus cloud in San Diego
-driver_class: libcloud.compute.drivers.ec2.NimbusNodeDriver
-driver_kwargs:
-    host: s83r.idp.sdsc.futuregrid.org
-    port: 8444
-    secure: True
-
+type: nimbus
+host: s83r.idp.sdsc.futuregrid.org
+port: 8444
+secure: True

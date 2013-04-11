@@ -1,7 +1,4 @@
-name: hotel
-description: The FutureGrid Nimbus cloud in Chicago
-driver_class: libcloud.compute.drivers.ec2.NimbusNodeDriver
-driver_kwargs:
-    host: svc.uc.futuregrid.org
-    port: 8444
-    secure: True
+type: nimbus
+host: svc.uc.futuregrid.org
+port: 8444
+secure: True

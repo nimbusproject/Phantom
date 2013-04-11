@@ -45,10 +45,10 @@ single_site_n_preserving_definition = {
 
 def validate_cloud(cloud_string):
 
-    la = cloud_string.split(':')
-    if len(la) != 2:
+    la = cloud_string.rpartition(":")
+    if len(la) != 3 or la[1] != ":":
         raise PhantomAWSException('InvalidParameterValue', details="The format is <cloud site name>:<integer size>.  You sent %s" % (cloud_string))
-    (site_name, n_vms) = la
+    (site_name, _, n_vms) = la
 
     try:
         int(n_vms)
