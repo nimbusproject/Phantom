@@ -118,10 +118,28 @@ def calc_aws4_signature(secret_key, req, access_dict):
     l = sorted(l)
     cr.append('\n'.join(l) + '\n')
     cr.append(access_dict['SignedHeaders'])
-    cr.append(sha256(req.body).hexdigest())
+
+    # For POST requests, boto encodes the parameters in the body using urllib.quote, turning spaces into %20.
+    # However, our web framework reencodes the body and turns all %20 into +.
+    # Restore the original body sent by boto using req.params (which contains decoded values with spaces).
+    if req.method == "POST":
+        keys = req.params.keys()
+        keys.sort()
+        pairs = []
+        for key in keys:
+            if key == 'Signature':
+                continue
+            val = boto.utils.get_utf8_value(req.params[key])
+            pairs.append(urllib.quote(key, safe='') + '=' +
+                         urllib.quote(val, safe='-_~'))
+        body = '&'.join(pairs)
+    else:
+        body = req.body
+
+    cr.append(sha256(body).hexdigest())
 
     canonical_request = '\n'.join(cr)
-    
+
     sts_a = ['AWS4-HMAC-SHA256', req.headers['X-Amz-Date'], access_dict['CredentialScope'], sha256(canonical_request).hexdigest()]
     sts = '\n'.join(sts_a)
 
