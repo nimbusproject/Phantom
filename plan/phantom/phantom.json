@@ -29,6 +29,10 @@
     "syslog_server": "${syslog_host}",
     "syslog_port": 514,
     "port": 8445,
+    "opentsdb": {
+      "host": "${opentsdb_host}",
+      "port": 4242
+    },
     "statsd": {
       "host": "localhost",
       "port": 8125
