@@ -5,7 +5,7 @@
       "appdir": "/home/${epu_username}/opentsdbproxy",
       "port": 5252,
       "django_project_path": "/home/${epu_username}/phantomweb",
-      "django_settings_module": "phantomweb.settings",
+      "django_settings_module": "phantomweb.settings_nologging",
       "virtualenv": {
           "path": "/home/${epu_username}/app-venv",
           "python": "${python}",
