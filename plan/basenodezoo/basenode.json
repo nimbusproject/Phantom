@@ -58,6 +58,13 @@
   "tcollector": {
       "tsd_port": 4242
   },
+  "collectd": {
+    "plugins": ["syslog", "cpu", "df", "entropy", "load", "memory", "processes", "users"]
+  },
+  "collectd_librato": {
+    "email": "${librato_email}",
+    "api_token": "${librato_token}"
+  },
   "recipes": [
     "apt",
     "zookeeper",
@@ -68,6 +75,8 @@
     "opentsdb",
     "tcollector",
     "statsd",
+    "collectd",
+    "collectd-librato",
     "epu"
   ]
 }
