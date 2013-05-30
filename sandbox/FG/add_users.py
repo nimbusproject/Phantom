@@ -58,6 +58,11 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
 
     region = RegionInfo(name="nimbus", endpoint=host)
     ec2conn = boto.connect_ec2(access_key, access_secret, region=region, port=port, validate_certs=False)
+
+    # Workaround for a bug in Nimbus <= 2.10.1:
+    # import_key_pair does not properly update an existing key
+    if ec2conn.get_key_pair(keyname) is not None:
+        ec2conn.delete_key_pair(keyname)
     ec2conn.import_key_pair(keyname, keytext)
 
 
