@@ -233,6 +233,10 @@ class EPUSystem(SystemAPI):
                     ot_lc = LaunchConfigurationType('LaunchConfiguration')
                     ot_lc.BlockDeviceMappings = AWSListType('BlockDeviceMappings')
 
+                    if 'CreatedTime' not in mapped_def.keys():
+                        # This is an LC that was created with the new Phantom API, ignore it
+                        continue
+
                     tm = _get_time(mapped_def['CreatedTime'])
                     ot_lc.CreatedTime = DateTimeType('CreatedTime', tm)
 
