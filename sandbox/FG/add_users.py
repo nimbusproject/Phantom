@@ -61,8 +61,12 @@ def register_key_with_iaas(iaas_url, keytext, keyname, access_key, access_secret
 
     # Workaround for a bug in Nimbus <= 2.10.1:
     # import_key_pair does not properly update an existing key
-    if ec2conn.get_key_pair(keyname) is not None:
-        ec2conn.delete_key_pair(keyname)
+    try:
+        if ec2conn.get_key_pair(keyname) is not None:
+            ec2conn.delete_key_pair(keyname)
+    except IndexError:
+        # This exception is raised when boto can't find a key on Nimbus
+        pass
     ec2conn.import_key_pair(keyname, keytext)
 
 
