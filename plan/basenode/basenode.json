@@ -48,7 +48,6 @@
     },
     "install_config": {
       "install_method": "${epu_install_method}",
-      "package_repo": "${package_repo}",
       "extras": ["exceptional", "statsd"]
     }
   },
