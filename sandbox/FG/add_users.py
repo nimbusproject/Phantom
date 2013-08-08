@@ -80,7 +80,7 @@ def add_one_user(authz, dtrs_client, access_key, access_secret, pub_key, email, 
     print "public key is %s" % (pub_key)
     for host in hosts:
         try:
-            dtrs_client.add_credentials(access_key, host, creds)
+            dtrs_client.add_credentials(username, host, creds)
         except dashi.exceptions.DashiError:
             print "Failed to add credentials for site %s" % host
             pass

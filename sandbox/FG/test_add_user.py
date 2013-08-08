@@ -59,7 +59,7 @@ def add_one_user(dtrs_client, access_key, access_secret, pub_key, username):
     print "public key is %s" % (pub_key)
     for host in hosts:
         try:
-            dtrs_client.add_credentials(access_key, host, creds)
+            dtrs_client.add_credentials(username, host, creds)
         except:
             pass
         try:
