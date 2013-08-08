@@ -149,9 +149,9 @@ class EPUSystem(SystemAPI):
 
         # see if that name already exists
         dt_def = None
-        exists = self._check_dt_name_exists(dt_name, user_obj.access_id)
+        exists = self._check_dt_name_exists(dt_name, user_obj.displayname)
         if exists:
-            dt_def = self._get_dt_details(dt_name, user_obj.access_id)
+            dt_def = self._get_dt_details(dt_name, user_obj.displayname)
         if not dt_def:
             dt_def = {}
             dt_def['mappings'] = {}
@@ -185,15 +185,15 @@ class EPUSystem(SystemAPI):
             dt_def['contextualization']['userdata'] = lc.UserData
 
         if exists:
-            self._dtrs_client.update_dt(user_obj.access_id, dt_name, dt_def)
+            self._dtrs_client.update_dt(user_obj.displayname, dt_name, dt_def)
         else:
-            self._dtrs_client.add_dt(user_obj.access_id, dt_name, dt_def)
+            self._dtrs_client.add_dt(user_obj.displayname, dt_name, dt_def)
 
 
     @LogEntryDecorator(classname="EPUSystem")
     def delete_launch_config(self, user_obj, name):
         (dt_name, site_name) = _breakup_name(name)
-        dt_def = self._get_dt_details(dt_name, user_obj.access_id)
+        dt_def = self._get_dt_details(dt_name, user_obj.displayname)
         if not dt_def:
             raise PhantomAWSException('InvalidParameterValue', details="Name %s not found" % (name))
         if site_name not in dt_def['mappings']:
@@ -202,15 +202,15 @@ class EPUSystem(SystemAPI):
         del dt_def['mappings'][site_name]
 
         if len(dt_def['mappings']) == 0:
-            self._dtrs_client.remove_dt(user_obj.access_id, dt_name)
+            self._dtrs_client.remove_dt(user_obj.displayname, dt_name)
         else:
-            self._dtrs_client.update_dt(user_obj.access_id, dt_name, dt_def)
+            self._dtrs_client.update_dt(user_obj.displayname, dt_name, dt_def)
 
     @LogEntryDecorator(classname="EPUSystem")
     def get_launch_configs(self, user_obj, names=None, max=-1, startToken=None):
         next_token = None
 
-        dts = self._dtrs_client.list_dts(user_obj.access_id)
+        dts = self._dtrs_client.list_dts(user_obj.displayname)
         dts.sort()
 
         # now that we have the final list, look up each description
@@ -219,7 +219,7 @@ class EPUSystem(SystemAPI):
             if lc_list_type.get_length() >= max and max > -1:
                 break
 
-            dt_descr = self._get_dt_details(lc_name, user_obj.access_id)
+            dt_descr = self._get_dt_details(lc_name, user_obj.displayname)
             for site in sorted(dt_descr['mappings'].keys()):
                 mapped_def = dt_descr['mappings'][site]
                 out_name = '%s@%s' % (lc_name, site)
@@ -300,7 +300,7 @@ class EPUSystem(SystemAPI):
         
         log(logging.INFO, "Creating autoscale group with %s" % (conf))
         try:
-            self._epum_client.add_domain(asg.AutoScalingGroupName, definition_name, conf, caller=user_obj.access_id)
+            self._epum_client.add_domain(asg.AutoScalingGroupName, definition_name, conf, caller=user_obj.displayname)
         except DashiError, de:
             if de.exc_type == u'WriteConflictError':
                 raise PhantomAWSException('InvalidParameterValue', details="auto scale name already exists")
@@ -318,14 +318,14 @@ class EPUSystem(SystemAPI):
 
         try:
             if engine_conf:
-                self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
+                self._epum_client.reconfigure_domain(name, conf, caller=user_obj.displayname)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise
 
     @LogEntryDecorator(classname="EPUSystem")
     def get_autoscale_groups(self, user_obj, names=None, max=-1, startToken=None):
-        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        epu_list = self._epum_client.list_domains(caller=user_obj.displayname)
         log(logging.DEBUG, "Incoming epu list is %s" %(str(epu_list)))
 
         next_token = None
@@ -340,7 +340,7 @@ class EPUSystem(SystemAPI):
                 startToken = None
 
             if startToken is None and (names is None or asg_name in names):
-                asg_description = self._epum_client.describe_domain(asg_name, caller=user_obj.access_id)
+                asg_description = self._epum_client.describe_domain(asg_name, caller=user_obj.displayname)
                 asg = convert_epu_description_to_asg_out(asg_description, asg_name)
                 asg_list_type.add_item(asg)
 
@@ -350,16 +350,16 @@ class EPUSystem(SystemAPI):
     @LogEntryDecorator(classname="EPUSystem")
     def delete_autoscale_group(self, user_obj, name, force):
         try:
-            log(logging.INFO, "deleting %s for user %s" % (str(name), user_obj.access_id))
-            self._epum_client.remove_domain(name, caller=user_obj.access_id)
+            log(logging.INFO, "deleting %s for user %s" % (str(name), user_obj.displayname))
+            self._epum_client.remove_domain(name, caller=user_obj.displayname)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise
 
     def _find_group_by_instance(self, user_obj, inst_id):
-        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        epu_list = self._epum_client.list_domains(caller=user_obj.displayname)
         for domain_name in epu_list:
-            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.access_id)
+            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.displayname)
 
             inst_list = desc['instances']
             for inst in inst_list:
@@ -370,9 +370,9 @@ class EPUSystem(SystemAPI):
 
     def _find_all_instances(self, user_obj, instance_id_list=None):
         instances = []
-        epu_list = self._epum_client.list_domains(caller=user_obj.access_id)
+        epu_list = self._epum_client.list_domains(caller=user_obj.displayname)
         for domain_name in epu_list:
-            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.access_id)
+            desc = self._epum_client.describe_domain(domain_name, caller=user_obj.displayname)
             inst_list = desc['instances']
             for inst in inst_list:
 
@@ -419,8 +419,8 @@ class EPUSystem(SystemAPI):
                 conf['engine_conf']['minimum_vms'] = desired_size
                 conf['engine_conf']['maximum_vms'] = desired_size
 
-            log(logging.INFO, "calling reconfigure_domain with %s for user %s" % (str(conf), user_obj.access_id))
-            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.access_id)
+            log(logging.INFO, "calling reconfigure_domain with %s for user %s" % (str(conf), user_obj.displayname))
+            self._epum_client.reconfigure_domain(name, conf, caller=user_obj.displayname)
         except DashiError, de:
             log(logging.ERROR, "An error altering ASG: %s" % (str(de)))
             raise

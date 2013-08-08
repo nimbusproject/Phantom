@@ -95,7 +95,7 @@ class EPUSystemWithLocalDB(SystemLocalDB):
         conf['engine_conf']['epuworker_allocation'] = db_lc.InstanceType
         conf['engine_conf']['iaas_key'] = user_obj.access_id
         conf['engine_conf']['iaas_secret'] = user_obj.secret_key
-        conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones + "-" + user_obj.access_id
+        conf['engine_conf']['iaas_site'] = db_asg.AvailabilityZones + "-" + user_obj.displayname
         conf['engine_conf']['iaas_allocation'] = db_lc.InstanceType
 
         log(logging.INFO, "Creating autoscale group with %s" % (conf))

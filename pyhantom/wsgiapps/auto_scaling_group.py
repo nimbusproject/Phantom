@@ -129,7 +129,7 @@ class SetDesiredCapacity(PhantomBaseService):
         doc = self.get_default_response_body_dom(doc_name="SetDesiredCapacityResponse")
         res.unicode_body = doc.documentElement.toprettyxml()
 
-        log(logging.INFO, "User %s change %s capacity to %d" % (user_obj.access_id, input.AutoScalingGroupName, input.DesiredCapacity))
+        log(logging.INFO, "User %s change %s capacity to %d" % (user_obj.displayname, input.AutoScalingGroupName, input.DesiredCapacity))
         log_reply(doc, user_obj)
         return res
 
