@@ -116,16 +116,6 @@ what we use most of the time.
   
   Note that those are the controls for the "thing installed".
   
-  All subsequent dependency resolution happens via the dependency lists that
-  come as part of that installation -- by way of the server listed in the
-  "appinstall:package_repo" configuration.
-  
-* appinstall:package_repo
-
-  The "thing installed" has a dependency list and this package repository
-  configuration is what is used during the installation process to resolve
-  the dependencies.
-
 * appinstall:install_method
 
   This can have the following values:
