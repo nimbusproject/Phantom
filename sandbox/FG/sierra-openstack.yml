@@ -3,3 +3,4 @@ host: s77r.idp.sdsc.futuregrid.org
 port: 8773
 secure: false
 path: /services/Cloud
+needs_elastic_ip: True
