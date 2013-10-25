@@ -3,3 +3,4 @@ host: 149.165.146.50
 port: 8773
 secure: false
 path: /services/Cloud
+opentsdb_tag: phantom_unique

@@ -41,7 +41,9 @@
     "rabbit_user": "${rabbitmq_username}",
     "rabbit_password": "${rabbitmq_password}",
     "rabbit_exchange": "${rabbitmq_exchange}",
-    "rabbit_ssl": "False"
+    "rabbit_ssl": "False",
+    "opentsdb_host": "${opentsdb_host}",
+    "opentsdb_port": "${opentsdb_port}"
   },
   "appdir": "/home/${epu_username}/phantomweb",
   "username": "${epu_username}",
