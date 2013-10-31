@@ -3,3 +3,4 @@ host: openstack.futuregrid.tacc.utexas.edu
 port: 8773
 secure: true
 path: /services/Cloud
+needs_elastic_ip: True
