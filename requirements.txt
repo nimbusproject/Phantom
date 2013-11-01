@@ -1,6 +1,6 @@
 amqp==1.0.10
 anyjson==0.3.3
-apache-libcloud==0.11.1
+https://github.com/apache/libcloud/archive/455f11c9d40ead11d3e4ad7a2f38f4f90b78c866.tar.gz
 boto==2.8.0
 ceiclient==0.1.2
 CherryPy==3.2.3
