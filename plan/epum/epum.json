@@ -77,7 +77,25 @@
           }
         },
         "epumanagement": {
-          "default_user": "${epu_username}"
+          "provisioner_vars": {
+            "broker_host": "${rabbitmq_host}",
+            "broker_port": 5672,
+            "broker_username": "${rabbitmq_username}",
+            "broker_password": "${rabbitmq_password}",
+            "broker_exchange": "default_dashi_exchange",
+            "broker_vhost": "/"
+          },
+          "default_user": "${epu_username}",
+          "initial_definitions": {
+            "pd_definition": {
+              "general": {
+                "engine_class": "epu.decisionengine.impls.needy.NeedyEngine"
+              },
+              "health": {
+                "monitor_health": false
+              }
+            }
+          }
         }
       }
     }

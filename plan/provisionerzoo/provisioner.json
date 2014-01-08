@@ -86,7 +86,6 @@
           "secret": "${ctxbroker_secret}"
         },
         "ssl_no_host_check": "True",
-        "contextualization_disabled": "True",
         "statsd": {
           "host": "localhost",
           "port": 8125
