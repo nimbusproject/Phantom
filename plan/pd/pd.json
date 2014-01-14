@@ -1,0 +1,92 @@
+{
+  "epu": {
+    "username": "${epu_username}",
+    "groupname": "${epu_groupname}",
+    "virtualenv": {
+      "path": "/home/${epu_username}/app-venv",
+      "python": "${python}",
+      "virtualenv": "${virtualenv}"
+    },
+    "action": [
+      "run"
+    ],
+    "run_config": {
+      "program": "epu-processdispatcher-service",
+      "run_directory": "/home/${epu_username}/pd",
+      "run_method": "supervised",
+      "autorestart": true,
+      "config": {
+        "server": {
+          "amqp": {
+            "host": "${rabbitmq_host}",
+            "username": "${rabbitmq_username}",
+            "password": "${rabbitmq_password}"
+          }
+        },
+        "statsd": {
+          "host": "localhost",
+          "port": 8125
+        },
+        "logging": {
+          "formatters": {
+            "detailed": {
+              "format": "%(asctime)s %(name)-25s:%(lineno)4d[%(process)5d] %(levelname)s: %(message)s"
+            },
+            "detailednostamp": {
+              "format": "%(name)-25s:%(lineno)4d[%(process)5d] %(levelname)s: %(message)s"
+            }
+          },
+          "handlers": {
+            "file": {
+              "formatter": "detailed",
+              "level": "DEBUG"
+            },
+            "syslog": {
+              "address": [
+                "${syslog_host}",
+                514
+              ],
+              "formatter": "detailednostamp",
+              "level": "DEBUG"
+            },
+            "exceptional": {
+              "class": "exceptional.ExceptionalLogHandler",
+              "api_key": "${exceptional_api_key}",
+              "environment": false,
+              "append_log_messages": true,
+              "level": "ERROR"
+            }
+          },
+          "root": {
+            "handlers": [
+              "file",
+              "syslog",
+              "exceptional"
+            ]
+          }
+        },
+        "processdispatcher": {
+          "service_name": "process_dispatcher",
+          "static_resources": false,
+          "definition_id": "pd_definition",
+          "domain_config": {
+            "engine_conf": {
+              "deployable_type": "default",
+              "iaas_site": "hotel"
+            }
+          },
+          "engines": {
+            "default": {
+              "base_need": 0,
+              "deployable_type": "eeagent",
+              "slots": 4
+            }
+          }
+        }
+      }
+    }
+  },
+  "recipes": [
+    "epu"
+  ]
+}
