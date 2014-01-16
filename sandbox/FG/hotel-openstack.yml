@@ -1,0 +1,5 @@
+type: openstack
+host: openstack.uc.futuregrid.org
+port: 8773
+secure: true
+path: /services/Cloud
