@@ -96,7 +96,7 @@ if [ "X" != "X$1" ]; then
 fi
 EOF
 
-echo "chef-solo -l \$CHEFLEVEL -c /opt/run/$RUN_NAME/chefconf.rb -j /opt/run/$RUN_NAME/chefroles.json" >> rerun-chef-$RUN_NAME.sh
+echo "sudo chef-solo -l \$CHEFLEVEL -c /opt/run/$RUN_NAME/chefconf.rb -j /opt/run/$RUN_NAME/chefroles.json" >> rerun-chef-$RUN_NAME.sh
 echo 'exit $?' >> rerun-chef-$RUN_NAME.sh
 
 chmod +x rerun-chef-$RUN_NAME.sh
