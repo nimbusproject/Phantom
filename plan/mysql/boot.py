@@ -18,7 +18,7 @@ dbuser=vals_dict['dbuser']
 
 commands = []
 commands.append('sudo -E apt-get -y update')
-commands.append('sudo -E apt-get -y -q install mysql-server-5.1')
+commands.append('sudo -E apt-get -y -q install mysql-server')
 commands.append('sudo -E mysqladmin -u root password %s' % (password))
 commands.append('sudo -E mysqladmin --password=%s create %s' % (password, dbname))
 commands.append('sudo -E mysqladmin --password=%s create %s' % (password, webdbname))
