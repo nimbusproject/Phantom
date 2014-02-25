@@ -24,7 +24,7 @@ commands.append('sudo -E mysqladmin --password=%s create %s' % (password, dbname
 commands.append('sudo -E mysqladmin --password=%s create %s' % (password, webdbname))
 commands.append("sudo -E mysql --password=%s -e \"GRANT INDEX, Select, Insert, Update, Create, Delete, Alter ON *.* TO '%s'@'%%' IDENTIFIED BY '%s';\"" % (password, dbuser, password))
 commands.append("sudo -E sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/my.cnf")
-commands.append("sudo -E /etc/init.d/mysql restart")
+commands.append("sudo -E service mysql restart")
 
 for cmd in commands:
     print cmd
