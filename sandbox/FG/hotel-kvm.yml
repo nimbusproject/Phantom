@@ -1,0 +1,4 @@
+type: nimbus
+host: login1.uc.futuregrid.org
+port: 8444
+secure: True
