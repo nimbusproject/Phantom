@@ -1,4 +1,0 @@
-type: nimbus
-host: s83r.idp.sdsc.futuregrid.org
-port: 8444
-secure: True
