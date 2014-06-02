@@ -3,6 +3,10 @@ host: openstack.uc.futuregrid.org
 port: 8773
 secure: true
 path: /services/Cloud
+image_generation: True
+provider_url: https://openstack.uc.futuregrid.org:15000/v2.0
+region: RegionOne
+ip_pool_name: novanetwork
 instance_types:
   - m1.tiny
   - m1.small

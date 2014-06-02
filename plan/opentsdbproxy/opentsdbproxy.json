@@ -7,7 +7,7 @@
       "django_project_path": "/home/${epu_username}/phantomweb",
       "django_settings_module": "phantomweb.settings_nologging",
       "virtualenv": {
-          "path": "/home/${epu_username}/app-venv",
+          "path": "/home/${epu_username}/web-venv",
           "python": "${python}",
           "virtualenv": "${virtualenv}"
       }

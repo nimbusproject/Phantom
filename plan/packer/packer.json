@@ -1,0 +1,12 @@
+{
+  "packer": {
+      "username": "${epu_username}",
+      "groupname": "${epu_groupname}",
+      "git_repo": "git://github.com/priteau/packer.git",
+      "git_branch": "phantom",
+      "nimbus_cloud_client": "${nimbus_cloud_client}"
+  },
+  "recipes": [
+    "packer"
+  ]
+}

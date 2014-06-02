@@ -2,3 +2,8 @@ type: nimbus
 host: nimbus.futuregrid.tacc.utexas.edu
 port: 8444
 secure: True
+image_generation: True
+factory_identity: /C=US/2.5.4.17=78711/ST=TX/L=Austin/2.5.4.9=1 University Station/O=The University of Texas at Austin/OU=TACC - Texas Advanced Computing Center/CN=nimbus.futuregrid.tacc.utexas.edu
+factory_port: 8443
+repository_port: 8888
+mount_as: hda

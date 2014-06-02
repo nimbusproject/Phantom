@@ -2,7 +2,12 @@
   "virtualenv": {
     "python": "${python}",
     "virtualenv": "${virtualenv}",
-    "path": "/home/${epu_username}/app-venv"
+    "path": "/home/${epu_username}/web-venv"
+  },
+  "supervisord": {
+    "command": "celery -A phantomweb worker -l info",
+    "name": "celery",
+    "command_prefix": "env DJANGO_SETTINGS_MODULE=phantomweb.settings_nologging PATH=/home/${epu_username}/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
   },
   "phantomweb": {
     "retrieve_method": "${phantomweb_retrieve_method}",
@@ -43,13 +48,15 @@
     "rabbit_exchange": "${rabbitmq_exchange}",
     "rabbit_ssl": "False",
     "opentsdb_host": "${opentsdb_host}",
-    "opentsdb_port": "${opentsdb_port}"
+    "opentsdb_port": "${opentsdb_port}",
+    "nimbus_cloud_client": "${nimbus_cloud_client}"
   },
   "appdir": "/home/${epu_username}/phantomweb",
   "username": "${epu_username}",
   "groupname": "${epu_groupname}",
   "appname": "phantomweb",
   "recipes": [
-    "phantomweb"
+    "phantomweb",
+    "supervisord"
   ]
 }

@@ -2,3 +2,8 @@ type: nimbus
 host: login1.uc.futuregrid.org
 port: 8444
 secure: True
+image_generation: True
+factory_identity: /C=US/2.5.4.17=47405/ST=IN/L=Bloomington/2.5.4.9=900 E. 7th St./2.5.4.9=IMU M005/O=Indiana University/OU=FutureGrid/CN=svc.uc.futuregrid.org
+factory_port: 8443
+repository_port: 8888
+mount_as: hda

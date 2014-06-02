@@ -3,7 +3,14 @@ host: s77r.idp.sdsc.futuregrid.org
 port: 8773
 secure: false
 path: /services/Cloud
+image_generation: True
+provider_url: https://s77r.idp.sdsc.futuregrid.org:5000/v2.0
+region: RegionOne
+ip_pool_name: novanetwork
 needs_elastic_ip: True
+packer_insecure: True
+use_floating_ip: True
+floating_ip_pool: nova
 instance_types:
   - m1.tiny
   - m1.small
