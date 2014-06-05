@@ -4,6 +4,13 @@ port: 8773
 secure: false
 path: /services/Cloud
 needs_elastic_ip: True
+image_generation: True
+provider_url: https://149.165.146.57:5000/v2.0
+region: RegionOne
+ip_pool_name: novanetwork
+packer_insecure: True
+use_floating_ip: True
+floating_ip_pool: nova
 instance_types:
   - m1.tiny
   - m1.small
