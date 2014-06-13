@@ -1,7 +1,7 @@
 #!/bin/bash
 
 thisdir=`dirname $0`
-sites="alamo-openstack alamo ec2-eu ec2 foxtrot hotel hotel-openstack india-openstack sierra-openstack sierra"
+sites="alamo-openstack alamo ec2-eu ec2 foxtrot hotel hotel-openstack india-openstack sierra-openstack"
 
 if [ -z $PHANTOM_EPU_RABBIT_HOST ]; then
     echo "Please setup the environment"
