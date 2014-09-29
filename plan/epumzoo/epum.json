@@ -67,20 +67,12 @@
               "filters": [
                 "domain"
               ]
-            },
-            "exceptional": {
-              "class": "exceptional.ExceptionalLogHandler",
-              "api_key": "${exceptional_api_key}",
-              "environment": false,
-              "append_log_messages": true,
-              "level": "ERROR"
             }
           },
           "root": {
             "handlers": [
               "file",
-              "syslog",
-              "exceptional"
+              "syslog"
             ]
           }
         },
